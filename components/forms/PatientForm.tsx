@@ -16,7 +16,7 @@ import {
 import { Input } from '@/components/ui/input';
 import CustomFormField from '../CustomFormField';
 import SubmitButton from '../SubmitButton';
-import UserFormValidation from '@/lib/validation';
+import { UserFormValidation } from '@/lib/validation';
 import { createUser } from '@/lib/actions/patient.actions';
 import { useRouter } from 'next/navigation';
 
@@ -42,7 +42,6 @@ const PatientForm = () => {
   });
 
   const onSubmit = async (values: z.infer<typeof UserFormValidation>) => {
-    console.log('inside submit');
     setIsLoading(true);
     try {
       const userData = {
@@ -51,7 +50,6 @@ const PatientForm = () => {
         phone: values.phone,
       };
       const user = await createUser(userData);
-      console.log(user);
       if (user) router.push(`/patients/${user.$id}/register`);
     } catch (error) {
       console.log(error);
