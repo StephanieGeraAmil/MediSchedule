@@ -154,9 +154,6 @@ export const getAppointment = async (appointmentId: string) => {
       appointmentId,
       []
     );
-
-    console.log(appointment);
-
     return parseStringify(appointment);
   } catch (error) {
     console.error(
