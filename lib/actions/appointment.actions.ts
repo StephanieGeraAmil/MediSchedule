@@ -151,13 +151,16 @@ export const getAppointment = async (appointmentId: string) => {
     const appointment = await databases.getDocument(
       DATABASE_ID!,
       APPOINTMENT_COLLECTION_ID!,
-      appointmentId
+      appointmentId,
+      []
     );
+
+    console.log(appointment);
 
     return parseStringify(appointment);
   } catch (error) {
     console.error(
-      'An error occurred while retrieving the existing patient:',
+      'An error occurred while retrieving the existing appointment:',
       error
     );
   }
