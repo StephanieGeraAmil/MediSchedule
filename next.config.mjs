@@ -1,4 +1,4 @@
-import { withSentryConfig } from "@sentry/nextjs";
+import { withSentryConfig } from '@sentry/nextjs';
 /** @type {import('next').NextConfig} */
 const nextConfig = {};
 
@@ -6,8 +6,8 @@ export default withSentryConfig(nextConfig, {
   // For all available options, see:
   // https://github.com/getsentry/sentry-webpack-plugin#options
 
-  org: "javascript-mastery",
-  project: "care-pulse",
+  org: 'javascript-mastery',
+  project: 'care-pulse',
 
   // Only print logs for uploading source maps in CI
   silent: !process.env.CI,
@@ -35,4 +35,7 @@ export default withSentryConfig(nextConfig, {
   // https://docs.sentry.io/product/crons/
   // https://vercel.com/docs/cron-jobs
   automaticVercelMonitors: true,
+  experimental: {
+    esmExternals: false,
+  },
 });
