@@ -34,7 +34,7 @@ interface CustomProps {
   disabled?: boolean;
   dateFormat?: string;
   showTimeSelect?: boolean;
-  childern?: React.ReactNode;
+  children?: React.ReactNode;
   renderSkeleton?: (field: any) => React.ReactNode;
 }
 
