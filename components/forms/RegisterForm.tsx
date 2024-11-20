@@ -44,6 +44,7 @@ import FileUploader from '../FileUploader';
 const RegisterForm = ({ user }: { user: User }) => {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  // eslint-disable-next-line eslint-rule-name
   const form = useForm<z.infer<typeof PatientFormValidation>>({
     resolver: zodResolver(PatientFormValidation),
     defaultValues: {

@@ -1,8 +1,12 @@
 {
-  "extends": ["next/core-web-vitals", "next/typescript"],
+  "extends": [
+    "next/core-web-vitals",
+    "next/typescript",
+    "plugin:@typescript-eslint/recommended"
+  ],
   "plugins": ["react", "import"],
   "rules": {
-    "react/react-in-jsx-scope": "off", // Example rule customization
+    "react/react-in-jsx-scope": "off",
     "import/no-unresolved": "error"
   },
   "env": {
