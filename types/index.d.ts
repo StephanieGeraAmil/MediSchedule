@@ -21,7 +21,7 @@ declare interface User extends CreateUserParams {
   $id: string;
 }
 
-declare interface RegisterUserParams extends CreateUserParams {
+declare interface RegisterUserParams {
   userId: string;
   birthDate: Date;
   gender: Gender;
@@ -42,6 +42,7 @@ declare interface RegisterUserParams extends CreateUserParams {
   privacyConsent: boolean;
   phone: string;
   name: string;
+  email: string;
 }
 
 declare type CreateAppointmentParams = {
