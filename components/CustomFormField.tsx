@@ -21,6 +21,7 @@ import ReactDatePicker from 'react-datepicker';
 import { Select, SelectContent, SelectValue, SelectTrigger } from './ui/select';
 import { Textarea } from './ui/textarea';
 import { Checkbox } from './ui/checkbox';
+import { PasswordInput } from './PasswordInput';
 
 interface CustomProps {
   control: Control<any>;
@@ -91,6 +92,7 @@ const RenderField = ({ field, props }: { field: any; props: CustomProps }) => {
         </FormControl>
       );
       break;
+
     case FormFieldType.SKELETON:
       return renderSkeleton ? renderSkeleton(field) : null;
       break;

@@ -32,7 +32,7 @@ const AppointmentForm = ({
 }: {
   userId: string;
   patientId: string;
-  type: 'create' | 'schedule' | 'cancel';
+  type: 'create' | 're-schedule' | 'cancel' | 'complete' | 'no-show';
   appointment?: Appointment;
   setOpen?: Dispatch<SetStateAction<boolean>>;
 }) => {
@@ -61,14 +61,20 @@ const AppointmentForm = ({
 
     let status;
     switch (type) {
-      case 'schedule':
+      case 're-schedule':
         status = 'scheduled';
         break;
       case 'cancel':
         status = 'cancelled';
         break;
+      case 'no-show':
+        status = 'no-show';
+        break;
+      case 'complete':
+        status = 'completed';
+        break;
       default:
-        status = 'pending';
+        status = 'scheduled';
     }
 
     try {
@@ -103,7 +109,7 @@ const AppointmentForm = ({
           },
           type,
         };
-
+        console.log(appointmentToUpdate);
         const updatedAppointment = await updateAppointment(appointmentToUpdate);
 
         if (updatedAppointment) {
@@ -122,11 +128,17 @@ const AppointmentForm = ({
     case 'cancel':
       buttonLabel = 'Cancel Appointment';
       break;
-    case 'schedule':
+    case 're-schedule':
       buttonLabel = 'Schedule Appointment';
       break;
+    case 'no-show':
+      buttonLabel = 'No-Show';
+      break;
+    case 'complete':
+      buttonLabel = 'Completed';
+      break;
     default:
-      buttonLabel = 'Submit Apppointment';
+      buttonLabel = 'Schedule Apppointment';
   }
 
   return (
@@ -141,7 +153,7 @@ const AppointmentForm = ({
           </section>
         )}
 
-        {type !== 'cancel' && (
+        {!['cancel', 'complete', 'no-show'].includes(type) && (
           <>
             <CustomFormField
               fieldType={FormFieldType.SELECT}
@@ -184,7 +196,7 @@ const AppointmentForm = ({
                 name="reason"
                 label="Appointment reason"
                 placeholder="Annual montly check-up"
-                disabled={type === 'schedule'}
+                disabled={type === 're-schedule'}
               />
 
               <CustomFormField
@@ -193,7 +205,7 @@ const AppointmentForm = ({
                 name="note"
                 label="Comments/notes"
                 placeholder="Prefer afternoon appointments, if possible"
-                disabled={type === 'schedule'}
+                disabled={type === 're-schedule'}
               />
             </div>
           </>
@@ -211,7 +223,7 @@ const AppointmentForm = ({
 
         <SubmitButton
           isLoading={isLoading}
-          className={`${type === 'cancel' ? 'shad-danger-btn' : 'shad-primary-btn'} w-full`}
+          className={`${['cancel', 'no-show'].includes(type) ? 'shad-danger-btn' : 'shad-primary-btn'} w-full`}
         >
           {buttonLabel}
         </SubmitButton>

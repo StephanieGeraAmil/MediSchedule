@@ -35,36 +35,21 @@ export const createAppointment = async (
 //  GET RECENT APPOINTMENTS
 export const getRecentAppointmentList = async () => {
   try {
+    console.log('here in the actions');
     const appointments = await databases.listDocuments(
       DATABASE_ID!,
       APPOINTMENT_COLLECTION_ID!,
       [Query.orderDesc('$createdAt')]
     );
-
-    // const scheduledAppointments = (
-    //   appointments.documents as Appointment[]
-    // ).filter((appointment) => appointment.status === "scheduled");
-
-    // const pendingAppointments = (
-    //   appointments.documents as Appointment[]
-    // ).filter((appointment) => appointment.status === "pending");
-
-    // const cancelledAppointments = (
-    //   appointments.documents as Appointment[]
-    // ).filter((appointment) => appointment.status === "cancelled");
-
-    // const data = {
-    //   totalCount: appointments.total,
-    //   scheduledCount: scheduledAppointments.length,
-    //   pendingCount: pendingAppointments.length,
-    //   cancelledCount: cancelledAppointments.length,
-    //   documents: appointments.documents,
-    // };
+    console.log('after bd call');
+    console.log(appointments);
 
     const initialCounts = {
       scheduledCount: 0,
       pendingCount: 0,
       cancelledCount: 0,
+      completedCount: 0,
+      noShowCount: 0,
     };
 
     const counts = (appointments.documents as Appointment[]).reduce(
@@ -72,6 +57,12 @@ export const getRecentAppointmentList = async () => {
         switch (appointment.status) {
           case 'scheduled':
             acc.scheduledCount++;
+            break;
+          case 'completed':
+            acc.completedCount++;
+            break;
+          case 'no-show':
+            acc.noShowCount++;
             break;
           case 'pending':
             acc.pendingCount++;
@@ -84,7 +75,7 @@ export const getRecentAppointmentList = async () => {
       },
       initialCounts
     );
-
+    console.log(counts);
     const data = {
       totalCount: appointments.total,
       ...counts,
