@@ -32,19 +32,10 @@ import { SelectItem } from '../ui/select';
 import Image from 'next/image';
 import FileUploader from '../FileUploader';
 
-// export enum FormFieldType {
-//   INPUT = 'input',
-//   TEXTAREA = 'textarea',
-//   PHONE_INPUT = 'phoneinput',
-//   CHECKBOX = 'checkbox',
-//   DATE_PICKER = 'datepicker',
-//   SELECT = 'select',
-//   SKELETON = 'skeleton',
-// }
 const RegisterForm = ({ user }: { user: User }) => {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  // eslint-disable-next-line eslint-rule-name
+
   const form = useForm<z.infer<typeof PatientFormValidation>>({
     resolver: zodResolver(PatientFormValidation),
     defaultValues: {
