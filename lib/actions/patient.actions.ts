@@ -17,8 +17,15 @@ import { parseStringify } from '../utils';
 // CREATE APPWRITE USER
 export const createUser = async (userData: CreateUserParams) => {
   try {
-    let user = await users.get(userData.email);
-    if (!user) {
+    const existingUsers = await users.list([
+      Query.equal('email', userData.email),
+    ]);
+
+    let user;
+    if (existingUsers.total > 0) {
+      // User already exists
+      user = existingUsers.users[0];
+    } else {
       // Create new user -> https://appwrite.io/docs/references/1.5.x/server-nodejs/users#create
       user = await users.createBcryptUser(
         ID.unique(),
