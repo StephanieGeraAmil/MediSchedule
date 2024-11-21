@@ -5,6 +5,8 @@ import { StatCard } from '@/components/StatCard';
 import { columns } from '@/components/table/columns';
 import { DataTable } from '@/components/table/DataTable';
 import { getRecentAppointmentList } from '@/lib/actions/appointment.actions';
+import { Button } from '@/components/ui/button';
+import { CreationsModal } from '@/components/CreationsModal';
 
 const AdminPage = async () => {
   const appointments = await getRecentAppointmentList();
@@ -27,11 +29,18 @@ const AdminPage = async () => {
       </header>
 
       <main className="admin-main">
-        <section className="w-full space-y-4">
-          <h1 className="header">Welcome 👋</h1>
-          <p className="text-dark-700">
-            Start the day with managing appointments
-          </p>
+        <section className="w-full flex flex-col md:flex-row space-y-4 md:space-y-0 justify-between">
+          <div className="w-full md:w-1/2 flex flex-col gap-2">
+            <h1 className="header">Welcome 👋</h1>
+            <p className="text-dark-700">
+              Start the day with managing appointments
+            </p>
+          </div>
+          <div className="w-full md:w-1/2 flex justify-end gap-2">
+            <CreationsModal type="newUser" />
+            <CreationsModal type="newDoctor" />
+            <CreationsModal type="newAppointment" />
+          </div>
         </section>
 
         <section className="admin-stat">
