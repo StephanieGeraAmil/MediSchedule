@@ -16,6 +16,8 @@ import { Appointment } from '@/types/appwrite.types';
 import AppointmentForm from './forms/AppointmentForm';
 
 import 'react-datepicker/dist/react-datepicker.css';
+import PatientForm from './forms/PatientForm';
+import DoctorForm from './forms/DoctorForm';
 
 export const CreationsModal = ({
   type,
@@ -38,14 +40,9 @@ export const CreationsModal = ({
             </DialogDescription>
           )}
         </DialogHeader>
-
-        {/* <AppointmentForm
-          userId={userId}
-          patientId={patientId}
-          type={type}
-          appointment={appointment}
-          setOpen={setOpen}
-        /> */}
+        {type == 'newUser' && <PatientForm />}
+        {/* {type == 'newDoctor' && <DoctorForm />}
+        {type == 'newAppointment' && <AppointmentForm type={'create'} />} */}
       </DialogContent>
     </Dialog>
   );
