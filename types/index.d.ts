@@ -13,9 +13,14 @@ declare type Status =
   | 'completed'
   | 'no-show';
 
-declare interface CreateUserParams {
+declare interface LoginParams {
   email: string;
   password: string;
+}
+declare interface CreateUserParams {
+  email: string;
+  phone: string;
+  name: string;
 }
 declare interface User extends CreateUserParams {
   $id: string;
