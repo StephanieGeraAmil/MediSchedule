@@ -62,7 +62,11 @@ const PatientForm = () => {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 flex-1">
         <section className="mb-12 space-y-4">
           <h1 className="header">Hi there 👋</h1>
-          <p className="text-dark-700">Welcome to our site</p>
+          <p className="text-dark-700">Welcome to our site.</p>
+          <p className="text-dark-500">
+            Please log in. If you don't have an account yet, please request one
+            from CarePulse.
+          </p>
         </section>
         {/* <CustomFormField
           control={form.control}

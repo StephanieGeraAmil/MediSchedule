@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import Image from 'next/image';
 
 type StatCardProps = {
-  type: 'appointments' | 'pending' | 'cancelled' | 'completed' | 'no-show';
+  type: 'scheduled' | 'pending' | 'cancelled' | 'completed' | 'no-show';
   count: number;
   label: string;
   icon: string;
@@ -13,8 +13,8 @@ export const StatCard = ({ count = 0, label, icon, type }: StatCardProps) => {
   return (
     <div
       className={clsx('stat-card', {
-        'bg-appointments': type === 'completed',
-        'bg-pending': type === 'appointments',
+        'bg-appointments': type === 'scheduled',
+        'bg-pending': type === 'completed',
         'bg-cancelled': type === 'no-show',
       })}
     >
@@ -24,7 +24,12 @@ export const StatCard = ({ count = 0, label, icon, type }: StatCardProps) => {
           height={32}
           width={32}
           alt="appointments"
-          className="size-8 w-fit"
+          className={clsx('size-8 w-fit', {
+            'fill-green-500': type === 'completed',
+            'fill-blue-500': type === 'cancelled',
+            'fill-red-500': type === 'no-show',
+            'fill-yellow-300': type === 'scheduled',
+          })}
         />
         <h2 className="text-32-bold text-white">{count}</h2>
       </div>

@@ -8,13 +8,14 @@ import {
   ENDPOINT,
   PATIENT_COLLECTION_ID,
   PROJECT_ID,
+  account,
   databases,
   storage,
   users,
 } from '../appwrite.config';
 import { parseStringify } from '../utils';
 
-// CREATE APPWRITE USER
+// LOGIN APPWRITE
 export const createUser = async (userData: CreateUserParams) => {
   try {
     const existingUsers = await users.list([
@@ -23,28 +24,37 @@ export const createUser = async (userData: CreateUserParams) => {
 
     let user;
     if (existingUsers.total > 0) {
-      // User already exists
-      user = existingUsers.users[0];
-    } else {
-      // Create new user -> https://appwrite.io/docs/references/1.5.x/server-nodejs/users#create
-      user = await users.createBcryptUser(
-        ID.unique(),
-        userData.email,
-        userData.password
-      );
-    }
+      // User  exists
+      //log in
 
+      try {
+        const session = await account.createEmailPasswordSession(
+          userData.email,
+          userData.password
+        );
+        if (session) {
+          // User successfully logged in
+          user = existingUsers.users[0];
+        }
+      } catch (error: any) {
+        if (error.code === 401) {
+          // Wrong password error
+          throw new Error('User is registered, but the password is incorrect.');
+        }
+        throw error; // Rethrow other unexpected errors
+      }
+    }
+    //  else {
+    //   // Create new user -> https://appwrite.io/docs/references/1.5.x/server-nodejs/users#create
+    //   user = await users.createBcryptUser(
+    //     ID.unique(),
+    //     userData.email,
+    //     userData.password
+    //   );
+    // }
     return parseStringify(user);
   } catch (error: any) {
-    // Check existing user
-    // if (error && error?.code === 409) {
-    //   const existingUser = await users.list([
-    //     Query.equal('email', [user.email]),
-    //   ]);
-
-    //   return existingUser.users[0];
-    // }
-    console.error('An error occurred while creating a new user:', error);
+    console.error('An error occurred while login in:', error);
   }
 };
 
@@ -67,6 +77,8 @@ export const registerPatient = async ({
   ...patient
 }: RegisterUserParams) => {
   try {
+    console.log(patient);
+
     // Upload file ->  // https://appwrite.io/docs/references/cloud/client-web/storage#createFile
     let file;
     if (identificationDocument) {
@@ -93,7 +105,6 @@ export const registerPatient = async ({
         ...patient,
       }
     );
-    const updatedUser = await users.updatePhone(patient.userId, patient.phone);
 
     return parseStringify(newPatient);
   } catch (error) {

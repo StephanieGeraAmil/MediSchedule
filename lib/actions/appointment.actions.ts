@@ -152,3 +152,19 @@ export const getAppointment = async (appointmentId: string) => {
     );
   }
 };
+//GET APPOINTMENTS OF PATIENT
+export const getPatientAppointmentList = async (userId: string) => {
+  try {
+    const appointment = await databases.listDocuments(
+      DATABASE_ID!,
+      APPOINTMENT_COLLECTION_ID!,
+      [Query.equal('patient', userId), Query.orderDesc('$createdAt')]
+    );
+    return parseStringify(appointment);
+  } catch (error) {
+    console.error(
+      'An error occurred while retrieving the existing appointment list:',
+      error
+    );
+  }
+};

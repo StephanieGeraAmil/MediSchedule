@@ -4,11 +4,11 @@ import Link from 'next/link';
 import { StatCard } from '@/components/StatCard';
 import { columns } from '@/components/table/columns';
 import { DataTable } from '@/components/table/DataTable';
-import { getRecentAppointmentList } from '@/lib/actions/appointment.actions';
+import { getPatientAppointmentList } from '@/lib/actions/appointment.actions';
 
-const AdminPage = async () => {
-  const appointments = await getRecentAppointmentList();
-  console.log(appointments);
+const PatientPage = async () => {
+  const appointments = await getPatientAppointmentList();
+  //console.log(appointments);
 
   return (
     <div className="mx-auto flex max-w-7xl flex-col space-y-14">
@@ -22,16 +22,11 @@ const AdminPage = async () => {
             className="h-8 w-fit"
           />
         </Link>
-
-        <p className="text-16-semibold">Admin Dashboard</p>
       </header>
 
       <main className="admin-main">
         <section className="w-full space-y-4">
           <h1 className="header">Welcome 👋</h1>
-          <p className="text-dark-700">
-            Start the day with managing appointments
-          </p>
         </section>
 
         <section className="admin-stat">
@@ -42,7 +37,7 @@ const AdminPage = async () => {
             icon={'/assets/icons/check.svg'}
           />
           <StatCard
-            type="scheduled"
+            type="appointments"
             count={appointments.scheduledCount}
             label="Scheduled appointments"
             icon={'/assets/icons/appointments.svg'}
@@ -61,4 +56,4 @@ const AdminPage = async () => {
   );
 };
 
-export default AdminPage;
+export default PatientPage;
