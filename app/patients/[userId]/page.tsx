@@ -8,7 +8,6 @@ import { getPatientAppointmentList } from '@/lib/actions/appointment.actions';
 
 const PatientPage = async () => {
   const appointments = await getPatientAppointmentList();
-  //console.log(appointments);
 
   return (
     <div className="mx-auto flex max-w-7xl flex-col space-y-14">
