@@ -19,7 +19,6 @@ import SubmitButton from '../SubmitButton';
 import { PatientFormValidation } from '@/lib/validation';
 import { getUser, registerPatient } from '@/lib/actions/patient.actions';
 import { useRouter } from 'next/navigation';
-import { FormFieldType } from './PatientForm';
 import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
 import {
   Doctors,
@@ -31,6 +30,8 @@ import { Label } from '../ui/label';
 import { SelectItem } from '../ui/select';
 import Image from 'next/image';
 import FileUploader from '../FileUploader';
+import { z } from 'zod';
+import { FormFieldType } from '@/lib/utils';
 
 const RegisterForm = ({ user }: { user: User }) => {
   const [isLoading, setIsLoading] = useState(false);

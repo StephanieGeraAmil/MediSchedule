@@ -19,9 +19,9 @@ import { Appointment } from '@/types/appwrite.types';
 import 'react-datepicker/dist/react-datepicker.css';
 
 import CustomFormField from '../CustomFormField';
-import { FormFieldType } from './PatientForm';
 import SubmitButton from '../SubmitButton';
 import { Form } from '../ui/form';
+import { FormFieldType } from '@/lib/utils';
 
 const AppointmentForm = ({
   userId,
@@ -31,7 +31,7 @@ const AppointmentForm = ({
   setOpen,
 }: {
   userId: string;
-  patientId: string;
+  patientId?: string;
   type: 'create' | 're-schedule' | 'cancel' | 'complete' | 'no-show';
   appointment?: Appointment;
   setOpen?: Dispatch<SetStateAction<boolean>>;
@@ -144,15 +144,6 @@ const AppointmentForm = ({
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="flex-1 space-y-6">
-        {type === 'create' && (
-          <section className="mb-12 space-y-4">
-            <h1 className="header">New Appointment</h1>
-            <p className="text-dark-700">
-              Request a new appointment in 10 seconds.
-            </p>
-          </section>
-        )}
-
         {!['cancel', 'complete', 'no-show'].includes(type) && (
           <>
             <CustomFormField

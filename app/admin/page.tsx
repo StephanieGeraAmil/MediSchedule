@@ -36,9 +36,9 @@ const AdminPage = async () => {
             </p>
           </div>
           <div className="w-full md:w-1/2 flex justify-end gap-2">
-            <CreationsModal type="newUser" />
-            <CreationsModal type="newDoctor" />
-            <CreationsModal type="newAppointment" />
+            <CreationsModal type="newUser" userId={''} />
+            <CreationsModal type="newDoctor" userId={''} />
+            <CreationsModal type="newAppointment" userId={''} />
           </div>
         </section>
 

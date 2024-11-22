@@ -11,7 +11,6 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Control } from 'react-hook-form';
-import { FormFieldType } from './forms/PatientForm';
 import Image from 'next/image';
 import PhoneInput from 'react-phone-number-input';
 import 'react-phone-number-input/style.css';
@@ -22,6 +21,7 @@ import { Select, SelectContent, SelectValue, SelectTrigger } from './ui/select';
 import { Textarea } from './ui/textarea';
 import { Checkbox } from './ui/checkbox';
 import { PasswordInput } from './PasswordInput';
+import { FormFieldType } from '@/lib/utils';
 
 interface CustomProps {
   control: Control<any>;

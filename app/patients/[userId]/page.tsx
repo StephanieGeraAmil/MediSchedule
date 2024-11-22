@@ -5,9 +5,10 @@ import { StatCard } from '@/components/StatCard';
 import { columns } from '@/components/table/columns';
 import { DataTable } from '@/components/table/DataTable';
 import { getPatientAppointmentList } from '@/lib/actions/appointment.actions';
+import { CreationsModal } from '@/components/CreationsModal';
 
-const PatientPage = async () => {
-  const appointments = await getPatientAppointmentList();
+const PatientPage = async ({ params: { userId } }: SearchParamProps) => {
+  const appointments = await getPatientAppointmentList(userId);
 
   return (
     <div className="mx-auto flex max-w-7xl flex-col space-y-14">
@@ -24,8 +25,13 @@ const PatientPage = async () => {
       </header>
 
       <main className="admin-main">
-        <section className="w-full space-y-4">
-          <h1 className="header">Welcome 👋</h1>
+        <section className="w-full flex flex-col md:flex-row space-y-4 md:space-y-0 justify-between">
+          <div className="w-full md:w-1/2 flex flex-col gap-2">
+            <h1 className="header">Welcome 👋</h1>
+          </div>
+          <div className="w-full md:w-1/2 flex justify-end gap-2">
+            <CreationsModal type="newAppointment" userId={userId} />
+          </div>
         </section>
 
         <section className="admin-stat">
@@ -36,7 +42,7 @@ const PatientPage = async () => {
             icon={'/assets/icons/check.svg'}
           />
           <StatCard
-            type="appointments"
+            type="scheduled"
             count={appointments.scheduledCount}
             label="Scheduled appointments"
             icon={'/assets/icons/appointments.svg'}

@@ -16,41 +16,39 @@ import {
 import { Input } from '@/components/ui/input';
 import CustomFormField from '../CustomFormField';
 import SubmitButton from '../SubmitButton';
-import { UserFormValidation } from '@/lib/validation';
-import { createUser } from '@/lib/actions/patient.actions';
+import { LoginValidation, UserFormValidation } from '@/lib/validation';
+import { getPatient, login } from '@/lib/actions/patient.actions';
 import { useRouter } from 'next/navigation';
+import { PasswordInput } from '../PasswordInput';
+import { FormFieldType } from '@/lib/utils';
 
-export enum FormFieldType {
-  INPUT = 'input',
-  TEXTAREA = 'textarea',
-  PHONE_INPUT = 'phoneinput',
-  CHECKBOX = 'checkbox',
-  DATE_PICKER = 'datepicker',
-  SELECT = 'select',
-  SKELETON = 'skeleton',
-}
 const UserForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const form = useForm<z.infer<typeof UserFormValidation>>({
-    resolver: zodResolver(UserFormValidation),
+  const form = useForm<z.infer<typeof LoginValidation>>({
+    resolver: zodResolver(LoginValidation),
     defaultValues: {
-      name: '',
       email: '',
-      phone: '',
+      password: '',
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof UserFormValidation>) => {
+  const onSubmit = async (values: z.infer<typeof LoginValidation>) => {
     setIsLoading(true);
     try {
       const userData = {
-        name: values.name,
         email: values.email,
-        phone: values.phone,
+        password: values.password,
       };
-      const user = await createUser(userData);
-      if (user) router.push(`/admin`);
+      const user = await login(userData);
+      if (user) {
+        const patient = await getPatient(user.$id);
+        if (patient) {
+          router.push(`/patients/${user.$id}`);
+        } else {
+          router.push(`/patients/${user.$id}/register`);
+        }
+      }
     } catch (error) {
       console.log(error);
     }
@@ -60,19 +58,12 @@ const UserForm = () => {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 flex-1">
         <section className="mb-12 space-y-4">
           <h1 className="header">Hi there 👋</h1>
+          <p className="text-dark-700">Welcome to our site.</p>
           <p className="text-dark-700">
-            Enter the user's information to create an account
+            Please log in. If you don't have an account yet, please request one
+            from CarePulse.
           </p>
         </section>
-        <CustomFormField
-          control={form.control}
-          fieldType={FormFieldType.INPUT}
-          name="name"
-          label="Full name"
-          placeholder="John Doe"
-          iconSrc="assets/icons/user.svg"
-          iconAlt="user"
-        />
         <CustomFormField
           control={form.control}
           fieldType={FormFieldType.INPUT}
@@ -84,10 +75,18 @@ const UserForm = () => {
         />
         <CustomFormField
           control={form.control}
-          fieldType={FormFieldType.PHONE_INPUT}
-          name="phone"
-          label="Phone Number"
-          placeholder="(555) 123-4567"
+          fieldType={FormFieldType.SKELETON}
+          name="password"
+          label="Password"
+          renderSkeleton={field => (
+            <PasswordInput
+              id="password"
+              value={field.value}
+              onChange={field.onChange}
+              autoComplete="password"
+              className="shad-input border-0"
+            />
+          )}
         />
 
         <SubmitButton isLoading={isLoading}>Get Started</SubmitButton>

@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import Link from 'next/link';
 import { PassKeyModal } from '@/components/PassKeyModal';
+import UserForm from '@/components/forms/UserForm';
 
 export default function Home({ searchParams }: SearchParamProps) {
   const isAdmin = searchParams.admin === 'true';
@@ -18,7 +19,7 @@ export default function Home({ searchParams }: SearchParamProps) {
             alt="logo"
             className="mb-12 h-10 w-fit"
           />
-          <PatientForm />
+          <UserForm />
           <div className="text-14-regular mt-20 flex justify-between">
             <p className="justify-items-end text-dark-600 xl:text-left">
               © 2024 MediSchedule

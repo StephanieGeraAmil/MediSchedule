@@ -8,8 +8,8 @@ import {
   ENDPOINT,
   PATIENT_COLLECTION_ID,
   PROJECT_ID,
-  account,
   databases,
+  account,
   storage,
   users,
 } from '../appwrite.config';
@@ -60,6 +60,7 @@ export const login = async (userData: LoginParams) => {
 // CREATE APPWRITE USER
 export const createUser = async (user: CreateUserParams) => {
   try {
+    console.log('in createUser action');
     // Create new user -> https://appwrite.io/docs/references/1.5.x/server-nodejs/users#create
     const newuser = await users.create(
       ID.unique(),
@@ -69,6 +70,7 @@ export const createUser = async (user: CreateUserParams) => {
       user.name
     );
 
+    console.log(newuser);
     return parseStringify(newuser);
   } catch (error: any) {
     // Check existing user
