@@ -1,17 +1,6 @@
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
-export enum FormFieldType {
-  INPUT = 'input',
-  TEXTAREA = 'textarea',
-  PHONE_INPUT = 'phoneinput',
-  CHECKBOX = 'checkbox',
-  DATE_PICKER = 'datepicker',
-  SELECT = 'select',
-  SKELETON = 'skeleton',
-  PASSWORD_INPUT = 'passwordinput',
-}
-
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }

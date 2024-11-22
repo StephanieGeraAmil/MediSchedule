@@ -49,6 +49,15 @@ declare interface RegisterUserParams {
   name: string;
   email: string;
 }
+declare interface RegisterDoctorParams {
+  birthDate: Date;
+  speciality: string;
+  photoFile: FormData | undefined;
+  phone: string;
+  name: string;
+  email: string;
+  identificationNumber: string | undefined;
+}
 
 declare type CreateAppointmentParams = {
   userId: string;

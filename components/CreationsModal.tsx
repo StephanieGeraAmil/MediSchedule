@@ -44,12 +44,13 @@ export const CreationsModal = ({
             )}
           </div>
         </section>
-
-        {type == 'newUser' && <PatientForm />}
-        {type == 'newDoctor' && <DoctorForm />}
-        {type == 'newAppointment' && (
-          <AppointmentForm type={'create'} userId={userId} />
-        )}
+        <div className="max-h-[450px] overflow-y-auto">
+          {type == 'newUser' && <PatientForm />}
+          {type == 'newDoctor' && <DoctorForm />}
+          {type == 'newAppointment' && (
+            <AppointmentForm type={'create'} userId={userId} />
+          )}
+        </div>
       </DialogContent>
     </Dialog>
   );

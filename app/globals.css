@@ -348,3 +348,25 @@
 .PhoneInputInput::placeholder {
   color: #1a1d21;
 }
+/* COMPONENTS OVERRIDES*/
+.roundedCheckbox {
+  position: relative;
+  width: 24px;
+  height: 24px;
+  border: 1px solid #ccc;
+  border-radius: 50%;
+  appearance: none !important;
+  cursor: pointer;
+}
+
+.roundedCheckbox:checked::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 70%; /* Adjust size of the filled circle */
+  height: 70%;
+  background-color: currentColor; /* Use current color */
+  border-radius: 50%;
+}

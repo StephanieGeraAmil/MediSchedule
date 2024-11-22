@@ -19,7 +19,7 @@ import SubmitButton from '../SubmitButton';
 import { UserFormValidation } from '@/lib/validation';
 import { createUser } from '@/lib/actions/patient.actions';
 import { useRouter } from 'next/navigation';
-import { FormFieldType } from '@/lib/utils';
+import { FormFieldType } from '@/constants';
 
 const PatientForm = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -34,7 +34,6 @@ const PatientForm = () => {
   });
 
   const onSubmit = async (values: z.infer<typeof UserFormValidation>) => {
-    console.log('onsubmit');
     setIsLoading(true);
     try {
       const userData = {

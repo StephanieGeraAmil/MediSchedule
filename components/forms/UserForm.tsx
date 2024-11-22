@@ -20,7 +20,7 @@ import { LoginValidation, UserFormValidation } from '@/lib/validation';
 import { getPatient, login } from '@/lib/actions/patient.actions';
 import { useRouter } from 'next/navigation';
 import { PasswordInput } from '../PasswordInput';
-import { FormFieldType } from '@/lib/utils';
+import { FormFieldType } from '@/constants';
 
 const UserForm = () => {
   const [isLoading, setIsLoading] = useState(false);

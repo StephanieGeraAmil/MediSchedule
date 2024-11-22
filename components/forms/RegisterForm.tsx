@@ -31,7 +31,7 @@ import { SelectItem } from '../ui/select';
 import Image from 'next/image';
 import FileUploader from '../FileUploader';
 import { z } from 'zod';
-import { FormFieldType } from '@/lib/utils';
+import { FormFieldType } from '@/constants';
 
 const RegisterForm = ({ user }: { user: User }) => {
   const [isLoading, setIsLoading] = useState(false);

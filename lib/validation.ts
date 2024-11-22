@@ -88,6 +88,21 @@ export const CreateAppointmentSchema = z.object({
   note: z.string().optional(),
   cancellationReason: z.string().optional(),
 });
+export const DoctorFormValidation = z.object({
+  name: z
+    .string()
+    .min(2, 'Name must be at least 2 characters')
+    .max(50, 'Name must be at most 50 characters'),
+  speciality: z.string().min(2, 'Speciality must be at least 2 characters'),
+
+  email: z.string().email('Invalid email address'),
+  phone: z
+    .string()
+    .refine(phone => /^\+\d{10,15}$/.test(phone), 'Invalid phone number'),
+  birthDate: z.coerce.date(),
+  identificationNumber: z.string().optional(),
+  photoFile: z.custom<File[]>().optional(),
+});
 
 export const ScheduleAppointmentSchema = z.object({
   physician: z.string().min(2, 'Select at least one doctor'),

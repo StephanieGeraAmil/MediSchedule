@@ -21,7 +21,7 @@ import { Select, SelectContent, SelectValue, SelectTrigger } from './ui/select';
 import { Textarea } from './ui/textarea';
 import { Checkbox } from './ui/checkbox';
 import { PasswordInput } from './PasswordInput';
-import { FormFieldType } from '@/lib/utils';
+import { FormFieldType } from '@/constants';
 
 interface CustomProps {
   control: Control<any>;

@@ -1,5 +1,41 @@
 export const GenderOptions = ['Male', 'Female', 'Other'];
 
+export const AvaiabilityDaysOptions = [
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday',
+  'Sunday',
+];
+export const AvaiabilityHoursOptions = [
+  '08',
+  '09',
+  '10',
+  '11',
+  '12',
+  '13',
+  '14',
+  '15',
+  '16',
+  '17',
+  '18',
+  '19',
+  '20',
+  '21',
+];
+
+export enum FormFieldType {
+  INPUT = 'input',
+  TEXTAREA = 'textarea',
+  PHONE_INPUT = 'phoneinput',
+  CHECKBOX = 'checkbox',
+  DATE_PICKER = 'datepicker',
+  SELECT = 'select',
+  SKELETON = 'skeleton',
+  PASSWORD_INPUT = 'passwordinput',
+}
 export const PatientFormDefaultValues = {
   firstName: '',
   lastName: '',
@@ -25,7 +61,15 @@ export const PatientFormDefaultValues = {
   disclosureConsent: false,
   privacyConsent: false,
 };
+export const DoctorFormDefaultValues = {
+  firstName: '',
+  lastName: '',
+  email: '',
+  phone: '',
+  birthDate: new Date(Date.now()),
 
+  photoFile: [],
+};
 export const IdentificationTypes = [
   'Birth Certificate',
   "Driver's License",
