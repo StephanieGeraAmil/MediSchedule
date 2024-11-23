@@ -89,6 +89,13 @@ export const CreateAppointmentSchema = z.object({
   cancellationReason: z.string().optional(),
 });
 export const DoctorFormValidation = z.object({
+  weeklyAvaiability: z.array(
+    z.object({
+      day: z.string(),
+      startTime: z.string(),
+      endTime: z.string(),
+    })
+  ),
   name: z
     .string()
     .min(2, 'Name must be at least 2 characters')

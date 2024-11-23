@@ -1,3 +1,4 @@
+'use server';
 const sharp = require('sharp');
 import { ID, InputFile, Query } from 'node-appwrite';
 import {
@@ -20,6 +21,7 @@ export const createDoctor = async ({
   ...doctorData
 }: RegisterDoctorParams) => {
   try {
+    console.log('in the action');
     const transformedImage = await sharp(photoFile)
       .resize(80, 80) // Resize to 80x80
       .toBuffer(); // Convert to a buffer for upload
@@ -35,6 +37,8 @@ export const createDoctor = async ({
 
       file = await storage.createFile(BUCKET_ID!, ID.unique(), inputFile);
     }
+    console.log(file);
+    console.log(doctorData);
 
     // Create new doctor document -> https://appwrite.io/docs/references/cloud/server-nodejs/databases#createDocument
     const newDoctor = await databases.createDocument(
@@ -42,8 +46,8 @@ export const createDoctor = async ({
       DOCTOR_COLLECTION_ID!,
       ID.unique(),
       {
-        transformedImageId: file?.$id ? file.$id : null,
-        transformedImageUrl: file?.$id
+        photoFileId: file?.$id ? file.$id : null,
+        photoFileUrl: file?.$id
           ? `${ENDPOINT}/storage/buckets/${BUCKET_ID}/files/${file.$id}/view??project=${PROJECT_ID}`
           : null,
         ...doctorData,

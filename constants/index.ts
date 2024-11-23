@@ -67,7 +67,7 @@ export const DoctorFormDefaultValues = {
   email: '',
   phone: '',
   birthDate: new Date(Date.now()),
-
+  weeklyAvaiability: [],
   photoFile: [],
 };
 export const IdentificationTypes = [
