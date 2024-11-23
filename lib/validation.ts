@@ -89,7 +89,7 @@ export const CreateAppointmentSchema = z.object({
   cancellationReason: z.string().optional(),
 });
 export const DoctorFormValidation = z.object({
-  weeklyAvaiability: z.array(
+  weeklyAvailability: z.array(
     z.object({
       day: z.string(),
       startTime: z.string(),

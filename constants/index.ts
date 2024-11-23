@@ -1,6 +1,6 @@
 export const GenderOptions = ['Male', 'Female', 'Other'];
 
-export const AvaiabilityDaysOptions = [
+export const AvailabilityDaysOptions = [
   'Monday',
   'Tuesday',
   'Wednesday',
@@ -9,7 +9,7 @@ export const AvaiabilityDaysOptions = [
   'Saturday',
   'Sunday',
 ];
-export const AvaiabilityHoursOptions = [
+export const AvailabilityHoursOptions = [
   '08',
   '09',
   '10',
@@ -67,7 +67,7 @@ export const DoctorFormDefaultValues = {
   email: '',
   phone: '',
   birthDate: new Date(Date.now()),
-  weeklyAvaiability: [],
+  weeklyAvailability: [],
   photoFile: [],
 };
 export const IdentificationTypes = [

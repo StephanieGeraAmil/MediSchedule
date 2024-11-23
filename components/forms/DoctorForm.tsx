@@ -26,8 +26,8 @@ import {
   GenderOptions,
   IdentificationTypes,
   DoctorFormDefaultValues,
-  AvaiabilityDaysOptions,
-  AvaiabilityHoursOptions,
+  AvailabilityDaysOptions,
+  AvailabilityHoursOptions,
   FormFieldType,
 } from '@/constants';
 import { Label } from '../ui/label';
@@ -77,7 +77,7 @@ const DoctorForm = () => {
         photoFile: values.photoFile ? formData : undefined,
       };
       console.log(doctorData);
-      console.log(values.weeklyAvaiability);
+      console.log(values.weeklyAvailability);
       const newDoctor = await createDoctor(doctorData);
       if (newDoctor) {
         console.log(newDoctor);
@@ -141,13 +141,13 @@ const DoctorForm = () => {
         <CustomFormField
           control={form.control}
           fieldType={FormFieldType.SKELETON}
-          name="weeklyAvaiability"
+          name="weeklyAvailability"
           label="Days Avaiable"
           placeholder=""
           renderSkeleton={field => (
             <FormControl>
               <div className="flex gap-6 flex-col">
-                {AvaiabilityDaysOptions.map(day => {
+                {AvailabilityDaysOptions.map(day => {
                   const isChecked = (field.value || []).some(
                     (a: Availability) => a.day === day
                   );
