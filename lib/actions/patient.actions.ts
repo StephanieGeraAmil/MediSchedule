@@ -39,19 +39,12 @@ export const login = async (userData: LoginParams) => {
       } catch (error: any) {
         if (error.code === 401) {
           // Wrong password error
-          throw new Error('User is registered, but the password is incorrect.');
+          throw new Error('incorrect password.');
         }
         throw error; // Rethrow other unexpected errors
       }
     }
-    //  else {
-    //   // Create new user -> https://appwrite.io/docs/references/1.5.x/server-nodejs/users#create
-    //   user = await users.createBcryptUser(
-    //     ID.unique(),
-    //     userData.email,
-    //     userData.password
-    //   );
-    // }
+
     return parseStringify(user);
   } catch (error: any) {
     console.error('An error occurred while login in:', error);
@@ -66,7 +59,7 @@ export const createUser = async (user: CreateUserParams) => {
       ID.unique(),
       user.email,
       user.phone,
-      undefined,
+      user.password,
       user.name
     );
 

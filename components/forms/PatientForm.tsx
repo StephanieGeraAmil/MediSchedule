@@ -1,6 +1,6 @@
 'use client';
 import { z } from 'zod';
-import React, { useState } from 'react';
+import React, { Dispatch, SetStateAction, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
@@ -20,8 +20,13 @@ import { UserFormValidation } from '@/lib/validation';
 import { createUser } from '@/lib/actions/patient.actions';
 import { useRouter } from 'next/navigation';
 import { FormFieldType } from '@/constants';
+import { PasswordInput } from '../PasswordInput';
 
-const PatientForm = () => {
+const PatientForm = ({
+  setOpen,
+}: {
+  setOpen?: Dispatch<SetStateAction<boolean>>;
+}) => {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const form = useForm<z.infer<typeof UserFormValidation>>({
@@ -40,15 +45,19 @@ const PatientForm = () => {
         name: values.name,
         email: values.email,
         phone: values.phone,
+        password: values.password,
       };
       console.log(userData);
       const user = await createUser(userData);
       console.log(user);
       if (user) {
-        router.push(`/admin`);
+        setOpen && setOpen(false);
+        form.reset();
       }
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsLoading(false);
     }
   };
   return (
@@ -78,6 +87,21 @@ const PatientForm = () => {
           name="phone"
           label="Phone Number"
           placeholder="(555) 123-4567"
+        />
+        <CustomFormField
+          control={form.control}
+          fieldType={FormFieldType.SKELETON}
+          name="password"
+          label="Password"
+          renderSkeleton={field => (
+            <PasswordInput
+              id="password"
+              value={field.value}
+              onChange={field.onChange}
+              autoComplete="password"
+              className="shad-input border-2"
+            />
+          )}
         />
 
         <SubmitButton isLoading={isLoading}>Get Started</SubmitButton>

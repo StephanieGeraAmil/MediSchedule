@@ -20,7 +20,7 @@ import ReactDatePicker from 'react-datepicker';
 import { Select, SelectContent, SelectValue, SelectTrigger } from './ui/select';
 import { Textarea } from './ui/textarea';
 import { Checkbox } from './ui/checkbox';
-import { PasswordInput } from './PasswordInput';
+// import { PasswordInput } from './PasswordInput';
 import { FormFieldType } from '@/constants';
 
 interface CustomProps {
@@ -187,13 +187,6 @@ const CustomFormField = (props: CustomProps) => {
             <FormLabel>{label}</FormLabel>
           )}
           <RenderField field={field} props={props} />
-          {/* <FormLabel>{label}</FormLabel>
-            <FormControl>
-              <Input placeholder={placeholder} {...field} />
-            </FormControl>
-            <FormDescription>
-             {description}
-            </FormDescription> */}
           <FormMessage className="shad-error" />
         </FormItem>
       )}

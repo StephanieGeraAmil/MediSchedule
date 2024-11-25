@@ -8,6 +8,8 @@ export const UserFormValidation = z.object({
   phone: z
     .string()
     .refine(phone => /^\+\d{10,15}$/.test(phone), 'Invalid phone number'),
+
+  password: z.string().min(8, 'Password must be at least 8 characters.'),
 });
 export const LoginValidation = z.object({
   email: z.string().email('Invalid email address.'),

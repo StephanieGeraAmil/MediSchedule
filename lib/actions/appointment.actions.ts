@@ -1,12 +1,13 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { ID, Query } from 'node-appwrite';
+import { ID, Permission, Query, Role } from 'node-appwrite';
 
 import { Appointment } from '@/types/appwrite.types';
 
 import {
   APPOINTMENT_COLLECTION_ID,
+  PATIENT_COLLECTION_ID,
   DATABASE_ID,
   databases,
   messaging,
@@ -18,17 +19,48 @@ export const createAppointment = async (
   appointment: CreateAppointmentParams
 ) => {
   try {
-    const newAppointment = await databases.createDocument(
+    // first I need to check that there is no appoinment for the same dr in that schedule
+    const prevAppointment = await databases.listDocuments(
       DATABASE_ID!,
       APPOINTMENT_COLLECTION_ID!,
-      ID.unique(),
-      appointment
+      [
+        Query.equal('physician', appointment.physician),
+        Query.equal('schedule', appointment.schedule.toISOString()),
+      ]
     );
+    if (prevAppointment.documents.length === 0) {
+      //I get the patientId from the userId if i dont have a patientId
+      if (!appointment.patient) {
+        const patients = await databases.listDocuments(
+          DATABASE_ID!,
+          PATIENT_COLLECTION_ID!,
+          [Query.equal('userId', [appointment.userId])]
+        );
+        if (!patients.documents.length) {
+          throw new Error('No patient found for the given user ID.');
+        } else {
+          appointment.patient = parseStringify(patients.documents[0]);
+        }
+      }
+      console.log(appointment);
+      //I create the appoinment
+      const newAppointment = await databases.createDocument(
+        DATABASE_ID!,
+        APPOINTMENT_COLLECTION_ID!,
+        ID.unique(),
+        appointment
+      );
 
-    revalidatePath('/admin');
-    return parseStringify(newAppointment);
+      revalidatePath('/admin');
+      return parseStringify(newAppointment);
+    } else {
+      throw new Error(
+        'That schedule was just taken by another user. Please select another.'
+      );
+    }
   } catch (error) {
     console.error('An error occurred while creating a new appointment:', error);
+    throw error;
   }
 };
 
@@ -156,6 +188,30 @@ export const getPatientAppointmentList = async (userId: string) => {
       [Query.equal('patient', userId), Query.orderDesc('$createdAt')]
     );
     return parseStringify(appointment);
+  } catch (error) {
+    console.error(
+      'An error occurred while retrieving the existing appointment list:',
+      error
+    );
+  }
+};
+//GET APPOINTMENTS FOR NEXT MONTH
+export const getNextMonthsAppointments = async () => {
+  try {
+    const today = new Date();
+    const nextMonth = new Date();
+    nextMonth.setMonth(today.getMonth() + 1);
+    const appointments = await databases.listDocuments(
+      DATABASE_ID!,
+      APPOINTMENT_COLLECTION_ID!,
+      [
+        Query.greaterThanEqual('schedule', today.toISOString()),
+        Query.lessThanEqual('schedule', nextMonth.toISOString()),
+        Query.orderAsc('schedule'),
+        Query.select(['schedule', 'dr']),
+      ]
+    );
+    return parseStringify(appointments);
   } catch (error) {
     console.error(
       'An error occurred while retrieving the existing appointment list:',

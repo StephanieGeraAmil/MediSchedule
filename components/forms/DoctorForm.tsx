@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { Dispatch, SetStateAction, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
@@ -43,7 +43,11 @@ interface Availability {
   endTime: string;
 }
 
-const DoctorForm = () => {
+const DoctorForm = ({
+  setOpen,
+}: {
+  setOpen?: Dispatch<SetStateAction<boolean>>;
+}) => {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
@@ -81,9 +85,13 @@ const DoctorForm = () => {
       const newDoctor = await createDoctor(doctorData);
       if (newDoctor) {
         console.log(newDoctor);
+        setOpen && setOpen(false);
+        form.reset();
       }
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsLoading(false);
     }
   };
   return (

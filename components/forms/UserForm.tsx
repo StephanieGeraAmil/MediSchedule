@@ -41,7 +41,10 @@ const UserForm = () => {
         password: values.password,
       };
       const user = await login(userData);
-      if (user) {
+      console.log(user);
+      if (!user) {
+        throw new Error('Invalid credentials');
+      } else {
         const patient = await getPatient(user.$id);
         if (patient) {
           router.push(`/patients/${user.$id}`);
@@ -49,8 +52,16 @@ const UserForm = () => {
           router.push(`/patients/${user.$id}/register`);
         }
       }
-    } catch (error) {
+    } catch (error: any) {
+      form.setError('password', {
+        type: 'server',
+        message: error.message || 'An unexpected error occurred.',
+      });
       console.log(error);
+
+      console.log(form.formState.errors);
+    } finally {
+      setIsLoading(false);
     }
   };
   return (

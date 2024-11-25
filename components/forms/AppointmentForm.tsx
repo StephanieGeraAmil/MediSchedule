@@ -78,16 +78,29 @@ const AppointmentForm = ({
     }
 
     try {
-      if (type === 'create' && patientId) {
-        const appointmentData = {
-          userId,
-          patient: patientId,
-          physician: values.physician,
-          schedule: new Date(values.schedule),
-          reason: values.reason!,
-          status: status as Status,
-          note: values.note,
-        };
+      if (type === 'create') {
+        let appointmentData;
+        if (patientId) {
+          appointmentData = {
+            userId,
+            patient: patientId,
+            physician: values.physician,
+            schedule: new Date(values.schedule),
+            reason: values.reason!,
+            status: status as Status,
+            note: values.note,
+          };
+        } else {
+          //if patientId is missing is because the user is the patient
+          appointmentData = {
+            userId,
+            physician: values.physician,
+            schedule: new Date(values.schedule),
+            reason: values.reason!,
+            status: status as Status,
+            note: values.note,
+          };
+        }
 
         const newAppointment = await createAppointment(appointmentData);
 

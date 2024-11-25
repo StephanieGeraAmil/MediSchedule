@@ -21,6 +21,7 @@ declare interface CreateUserParams {
   email: string;
   phone: string;
   name: string;
+  password: string;
 }
 declare interface User extends CreateUserParams {
   $id: string;
@@ -61,7 +62,7 @@ declare interface RegisterDoctorParams {
 
 declare type CreateAppointmentParams = {
   userId: string;
-  patient: string;
+  patient?: string;
   physician: string;
   reason: string;
   schedule: Date;
