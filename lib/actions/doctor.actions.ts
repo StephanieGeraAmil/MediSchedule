@@ -14,6 +14,7 @@ import {
   users,
 } from '../appwrite.config';
 import { parseStringify } from '../utils';
+import { Buffer } from 'buffer';
 
 // REGISTER DOCTOR
 export const createDoctor = async ({
@@ -21,41 +22,38 @@ export const createDoctor = async ({
   ...doctorData
 }: RegisterDoctorParams) => {
   try {
-    console.log('in the action');
-    console.log(photoFile);
     let file;
     if (photoFile) {
-      // Convert FormData to Buffer if needed
-      let bufferFile;
-      if (photoFile instanceof FormData) {
-        const fileField = photoFile.get('file'); // Adjust the key to match your form field
-        if (fileField instanceof Blob) {
-          bufferFile = Buffer.from(await fileField.arrayBuffer());
-        } else {
-          throw new Error('Invalid file input: Expected a Blob');
-        }
-      } else if (photoFile instanceof Buffer) {
-        bufferFile = photoFile;
-      } else {
-        throw new Error('Unsupported file type for photoFile');
-      }
-      const transformedImage = await sharp(bufferFile)
-        .resize(80, 80) // Resize to 80x80
-        .toBuffer(); // Convert to a buffer for upload
-      // Upload file ->  // https://appwrite.io/docs/references/cloud/client-web/storage#createFile
+      const blobFile = photoFile.get('blobFile');
+      const fileName = photoFile.get('fileName');
 
-      if (transformedImage) {
-        const inputFile =
-          transformedImage &&
-          InputFile.fromBlob(
-            transformedImage?.get('blobFile') as Blob,
-            transformedImage?.get('fileName') as string
+      if (blobFile instanceof Blob) {
+        // Convert Blob to Buffer
+        const bufferFile = Buffer.from(await blobFile.arrayBuffer());
+        const transformedImage = await sharp(bufferFile)
+          .resize(80, 80)
+          .composite([
+            {
+              input: Buffer.from(
+                `<svg width="80" height="80">
+                  <rect width="80" height="80" rx="40" ry="40" />
+                </svg>`
+              ),
+              blend: 'dest-in',
+            },
+          ])
+          .toBuffer();
+        // Upload file ->  // https://appwrite.io/docs/references/cloud/client-web/storage#createFile
+
+        if (transformedImage) {
+          const inputFile = InputFile.fromBlob(
+            new Blob([transformedImage]),
+            fileName as string
           );
 
-        file = await storage.createFile(BUCKET_ID!, ID.unique(), inputFile);
+          file = await storage.createFile(BUCKET_ID!, ID.unique(), inputFile);
+        }
       }
-      console.log(file);
-      console.log(doctorData);
     }
 
     // Create new doctor document -> https://appwrite.io/docs/references/cloud/server-nodejs/databases#createDocument

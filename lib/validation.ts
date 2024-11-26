@@ -109,7 +109,7 @@ export const DoctorFormValidation = z.object({
     .string()
     .refine(phone => /^\+\d{10,15}$/.test(phone), 'Invalid phone number'),
   birthDate: z.coerce.date(),
-  identificationNumber: z.string().optional(),
+  identificationNumber: z.string(),
   photoFile: z.custom<File[]>().optional(),
 });
 

@@ -42,7 +42,6 @@ export const createAppointment = async (
           appointment.patient = parseStringify(patients.documents[0]);
         }
       }
-      console.log(appointment);
       //I create the appoinment
       const newAppointment = await databases.createDocument(
         DATABASE_ID!,

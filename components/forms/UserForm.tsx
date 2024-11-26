@@ -59,7 +59,7 @@ const UserForm = () => {
       });
       console.log(error);
 
-      console.log(form.formState.errors);
+      // console.log(form.formState.errors);
     } finally {
       setIsLoading(false);
     }

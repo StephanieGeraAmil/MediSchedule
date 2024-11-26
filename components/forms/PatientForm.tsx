@@ -47,9 +47,7 @@ const PatientForm = ({
         phone: values.phone,
         password: values.password,
       };
-      console.log(userData);
       const user = await createUser(userData);
-      console.log(user);
       if (user) {
         setOpen && setOpen(false);
         form.reset();

@@ -3,24 +3,24 @@
 import React, { Dispatch, SetStateAction, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { Button } from '@/components/ui/button';
+// import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
+  // FormDescription,
+  // FormField,
+  // FormItem,
+  // FormLabel,
+  // FormMessage,
 } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
+// import { Input } from '@/components/ui/input';
 import CustomFormField from '../CustomFormField';
 import SubmitButton from '../SubmitButton';
 import { DoctorFormValidation, PatientFormValidation } from '@/lib/validation';
-import { getUser, registerPatient } from '@/lib/actions/patient.actions';
+// import { getUser, registerPatient } from '@/lib/actions/patient.actions';
 import { createDoctor } from '@/lib/actions/doctor.actions';
 import { useRouter } from 'next/navigation';
-import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
+// import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
 import {
   Doctors,
   GenderOptions,
@@ -29,13 +29,15 @@ import {
   AvailabilityDaysOptions,
   AvailabilityHoursOptions,
   FormFieldType,
+  SpecialityList,
 } from '@/constants';
 import { Label } from '../ui/label';
-import { SelectItem } from '../ui/select';
-import Image from 'next/image';
+// import { SelectItem } from '../ui/select';
+// import Image from 'next/image';
 import FileUploader from '../FileUploader';
 import { z } from 'zod';
 import { Checkbox } from '../ui/checkbox';
+import { SelectItem } from '../ui/select';
 
 interface Availability {
   day: string;
@@ -59,7 +61,6 @@ const DoctorForm = ({
   });
 
   const onSubmit = async (values: z.infer<typeof DoctorFormValidation>) => {
-    console.log('in the submit');
     setIsLoading(true);
     let formData;
     if (values.photoFile && values.photoFile?.length > 0) {
@@ -71,6 +72,7 @@ const DoctorForm = ({
       formData.append('fileName', values.photoFile[0].name);
     }
     try {
+      const availabilityString = JSON.stringify(values.weeklyAvailability);
       const doctorData = {
         name: values.name,
         email: values.email,
@@ -79,12 +81,10 @@ const DoctorForm = ({
         birthDate: new Date(values.birthDate),
         speciality: values.speciality,
         photoFile: values.photoFile ? formData : undefined,
+        weeklyAvailability: availabilityString,
       };
-      console.log(doctorData);
-      console.log(values.weeklyAvailability);
       const newDoctor = await createDoctor(doctorData);
       if (newDoctor) {
-        console.log(newDoctor);
         setOpen && setOpen(false);
         form.reset();
       }
@@ -140,11 +140,19 @@ const DoctorForm = ({
           />
           <CustomFormField
             control={form.control}
-            fieldType={FormFieldType.INPUT}
+            fieldType={FormFieldType.SELECT}
             name="speciality"
             label="Speciality"
-            placeholder="Surgeon"
-          />
+            placeholder="Select a Speciality"
+          >
+            {SpecialityList.map(speciality => (
+              <SelectItem key={speciality} value={speciality}>
+                <div className="flex cursor-pointer items-center gap-2">
+                  <p>{speciality}</p>
+                </div>
+              </SelectItem>
+            ))}
+          </CustomFormField>
         </div>
         <CustomFormField
           control={form.control}
@@ -303,7 +311,6 @@ const DoctorForm = ({
           fieldType={FormFieldType.SKELETON}
           name="photoFile"
           label="Photo"
-          placeholder=""
           renderSkeleton={field => (
             <FormControl>
               <FileUploader files={field.value} onChange={field.onChange} />
