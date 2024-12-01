@@ -38,6 +38,7 @@ import FileUploader from '../FileUploader';
 import { z } from 'zod';
 import { Checkbox } from '../ui/checkbox';
 import { SelectItem } from '../ui/select';
+import { PasswordInput } from '../PasswordInput';
 
 interface Availability {
   day: string;
@@ -82,6 +83,7 @@ const DoctorForm = ({
         speciality: values.speciality,
         photoFile: values.photoFile ? formData : undefined,
         weeklyAvailability: availabilityString,
+        password: values.password,
       };
       const newDoctor = await createDoctor(doctorData);
       if (newDoctor) {
@@ -315,6 +317,21 @@ const DoctorForm = ({
             <FormControl>
               <FileUploader files={field.value} onChange={field.onChange} />
             </FormControl>
+          )}
+        />
+        <CustomFormField
+          control={form.control}
+          fieldType={FormFieldType.SKELETON}
+          name="password"
+          label="Initial Password"
+          renderSkeleton={field => (
+            <PasswordInput
+              id="password"
+              value={field.value}
+              onChange={field.onChange}
+              autoComplete="password"
+              className="shad-input border-2"
+            />
           )}
         />
         <SubmitButton isLoading={isLoading}>Get Started</SubmitButton>

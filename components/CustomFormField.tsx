@@ -36,6 +36,8 @@ interface CustomProps {
   dateFormat?: string;
   showTimeSelect?: boolean;
   children?: React.ReactNode;
+  maxDate?: Date;
+  filterDate?: (date: Date) => boolean;
   renderSkeleton?: (field: any) => React.ReactNode;
 }
 
@@ -53,6 +55,8 @@ const RenderField = ({ field, props }: { field: any; props: CustomProps }) => {
     dateFormat,
     renderSkeleton,
     children,
+    maxDate,
+    filterDate,
   } = props;
   switch (fieldType) {
     case FormFieldType.INPUT:
@@ -114,6 +118,8 @@ const RenderField = ({ field, props }: { field: any; props: CustomProps }) => {
               dateFormat={dateFormat ?? 'dd/MM/yyyy'}
               timeInputLabel="Time:"
               wrapperClassName="date-picker"
+              maxDate={props.maxDate}
+              filterDate={props.filterDate}
             />
           </FormControl>
         </div>

@@ -58,12 +58,15 @@ declare interface RegisterDoctorParams {
   name: string;
   email: string;
   identificationNumber: string | undefined;
+  password: string;
 }
 
 declare type CreateAppointmentParams = {
-  userId: string;
-  patient?: string;
+  userId?: string | undefined;
+  patient?: string | undefined;
+  identificationNumber?: string | undefined;
   physician: string;
+  doctor: string;
   reason: string;
   schedule: Date;
   status: Status;
@@ -72,7 +75,7 @@ declare type CreateAppointmentParams = {
 
 declare type UpdateAppointmentParams = {
   appointmentId: string;
-  userId: string;
+  userId?: string;
   // timeZone: string;
   appointment: Appointment;
   type: string;

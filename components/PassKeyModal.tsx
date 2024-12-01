@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { login } from '@/lib/actions/patient.actions';
 
 import {
   AlertDialog,
@@ -58,7 +59,6 @@ export const PassKeyModal = () => {
       const encryptedKey = encryptKey(passkey);
 
       localStorage.setItem('accessKey', encryptedKey);
-
       setOpen(false);
     } else {
       setError('Invalid passkey. Please try again.');

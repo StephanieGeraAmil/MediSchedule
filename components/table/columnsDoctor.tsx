@@ -10,7 +10,7 @@ import { Appointment } from '@/types/appwrite.types';
 import { AppointmentModal } from '../AppointmentModal';
 import { StatusBadge } from '../StatusBadge';
 
-export const columns: ColumnDef<Appointment>[] = [
+export const columnsDoctor: ColumnDef<Appointment>[] = [
   {
     header: '#',
     cell: ({ row }) => {
@@ -49,56 +49,30 @@ export const columns: ColumnDef<Appointment>[] = [
       );
     },
   },
-  {
-    accessorKey: 'physician',
-    header: 'Doctor',
-    cell: ({ row }) => {
-      const appointment = row.original;
+  // {
+  //   accessorKey: 'physician',
+  //   header: 'Doctor',
+  //   cell: ({ row }) => {
+  //     const appointment = row.original;
 
-      const doctor = Doctors.find(
-        doctor => doctor.name === appointment.physician
-      );
+  //     const doctor = Doctors.find(
+  //       doctor => doctor.name === appointment.physician
+  //     );
 
-      return (
-        <div className="flex items-center gap-3">
-          <Image
-            src={doctor?.image!}
-            alt="doctor"
-            width={100}
-            height={100}
-            className="size-8"
-          />
-          <p className="whitespace-nowrap">Dr. {doctor?.name}</p>
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: 'doctor',
-    header: 'Doctor',
-    cell: ({ row }) => {
-      const appointment = row.original;
-
-      // const doctor = Doctors.find(
-      //   doctor => doctor.name === appointment.physician
-      // );
-
-      return (
-        <div className="flex items-center gap-3">
-          <Image
-            src={appointment.doctor?.photoFileUrl || ''}
-            alt="doctor"
-            width={100}
-            height={100}
-            className="size-8"
-          />
-          <p className="whitespace-nowrap">
-            Dr. {appointment.doctor?.name || ''}
-          </p>
-        </div>
-      );
-    },
-  },
+  //     return (
+  //       <div className="flex items-center gap-3">
+  //         <Image
+  //           src={doctor?.image!}
+  //           alt="doctor"
+  //           width={100}
+  //           height={100}
+  //           className="size-8"
+  //         />
+  //         <p className="whitespace-nowrap">Dr. {doctor?.name}</p>
+  //       </div>
+  //     );
+  //   },
+  // },
   {
     id: 'actions',
     header: () => <div className="pl-4">Actions</div>,
@@ -119,18 +93,18 @@ export const columns: ColumnDef<Appointment>[] = [
             appointment={appointment}
             type="no-show"
           />
-          <AppointmentModal
+          {/* <AppointmentModal
             patientId={appointment.patient.$id}
-            // userId={appointment.userId}
+            userId={appointment.userId}
             appointment={appointment}
             type="re-schedule"
           />
           <AppointmentModal
             patientId={appointment.patient.$id}
-            // userId={appointment.userId}
+            userId={appointment.userId}
             appointment={appointment}
             type="cancel"
-          />
+          /> */}
         </div>
       );
     },

@@ -3,12 +3,12 @@ import Link from 'next/link';
 
 import { StatCard } from '@/components/StatCard';
 import { DataTable } from '@/components/table/DataTable';
-import { getPatientAppointmentList } from '@/lib/actions/appointment.actions';
+import { getDoctorAppointmentList } from '@/lib/actions/appointment.actions';
 import { CreationsModal } from '@/components/CreationsModal';
-import { columnsPatient } from '@/components/table/columnsPatient';
+import { columnsDoctor } from '@/components/table/columnsDoctor';
 
-const PatientPage = async ({ params: { userId } }: SearchParamProps) => {
-  const appointments = await getPatientAppointmentList(userId);
+const DoctorPage = async ({ params: { userId } }: SearchParamProps) => {
+  const appointments = await getDoctorAppointmentList(userId);
 
   return (
     <div className="mx-auto flex max-w-7xl flex-col space-y-14">
@@ -28,9 +28,6 @@ const PatientPage = async ({ params: { userId } }: SearchParamProps) => {
         <section className="w-full flex flex-col md:flex-row space-y-4 md:space-y-0 justify-between">
           <div className="w-full md:w-1/2 flex flex-col gap-2">
             <h1 className="header">Welcome 👋</h1>
-          </div>
-          <div className="w-full md:w-1/2 flex justify-end gap-2">
-            <CreationsModal type="newAppointment" userId={userId} />
           </div>
         </section>
 
@@ -55,10 +52,10 @@ const PatientPage = async ({ params: { userId } }: SearchParamProps) => {
           />
         </section>
 
-        <DataTable columns={columnsPatient} data={appointments.documents} />
+        <DataTable columns={columnsDoctor} data={appointments.documents} />
       </main>
     </div>
   );
 };
 
-export default PatientPage;
+export default DoctorPage;

@@ -81,7 +81,8 @@ export const PatientFormValidation = z.object({
     }),
 });
 export const CreateAppointmentSchema = z.object({
-  physician: z.string().min(2, 'Select at least one doctor'),
+  physician: z.string().min(2, 'Select a doctor'),
+  doctor: z.string().min(2, 'Select a doctor'),
   schedule: z.coerce.date(),
   reason: z
     .string()
@@ -89,6 +90,7 @@ export const CreateAppointmentSchema = z.object({
     .max(500, 'Reason must be at most 500 characters'),
   note: z.string().optional(),
   cancellationReason: z.string().optional(),
+  identificationNumber: z.string().optional(),
 });
 export const DoctorFormValidation = z.object({
   weeklyAvailability: z.array(

@@ -18,6 +18,7 @@ import CustomFormField from '../CustomFormField';
 import SubmitButton from '../SubmitButton';
 import { LoginValidation, UserFormValidation } from '@/lib/validation';
 import { getPatient, login } from '@/lib/actions/patient.actions';
+import { getDoctor } from '@/lib/actions/doctor.actions';
 import { useRouter } from 'next/navigation';
 import { PasswordInput } from '../PasswordInput';
 import { FormFieldType } from '@/constants';
@@ -49,7 +50,12 @@ const UserForm = () => {
         if (patient) {
           router.push(`/patients/${user.$id}`);
         } else {
-          router.push(`/patients/${user.$id}/register`);
+          const doctor = await getDoctor(user.$id);
+          if (doctor) {
+            router.push(`/doctors/${user.$id}`);
+          } else {
+            router.push(`/patients/${user.$id}/register`);
+          }
         }
       }
     } catch (error: any) {

@@ -24,7 +24,7 @@ export const CreationsModal = ({
   userId,
 }: {
   type: 'newUser' | 'newDoctor' | 'newAppointment';
-  userId: string;
+  userId?: string;
 }) => {
   const [open, setOpen] = useState(false);
 

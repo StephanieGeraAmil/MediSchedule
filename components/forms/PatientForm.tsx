@@ -90,7 +90,7 @@ const PatientForm = ({
           control={form.control}
           fieldType={FormFieldType.SKELETON}
           name="password"
-          label="Password"
+          label="Initial Password"
           renderSkeleton={field => (
             <PasswordInput
               id="password"
