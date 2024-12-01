@@ -9,11 +9,49 @@ import {
   PATIENT_COLLECTION_ID,
   PROJECT_ID,
   databases,
+  account,
   storage,
   users,
 } from '../appwrite.config';
 import { parseStringify } from '../utils';
 
+// LOGIN APPWRITE
+export const login = async (userData: LoginParams) => {
+  try {
+    const existingUsers = await users.list([
+      Query.equal('email', userData.email),
+    ]);
+
+    let user;
+    if (existingUsers.total > 0) {
+      // User  exists
+      //log in
+
+      try {
+        const session = await account.createEmailPasswordSession(
+          userData.email,
+          userData.password
+        );
+        console.log('session');
+        console.log(session);
+        if (session) {
+          // User successfully logged in
+          user = existingUsers.users[0];
+        }
+      } catch (error: any) {
+        if (error.code === 401) {
+          // Wrong password error
+          throw new Error('incorrect password.');
+        }
+        throw error; // Rethrow other unexpected errors
+      }
+    }
+
+    return parseStringify(user);
+  } catch (error: any) {
+    console.error('An error occurred while login in:', error);
+  }
+};
 // CREATE APPWRITE USER
 export const createUser = async (user: CreateUserParams) => {
   try {
@@ -22,7 +60,7 @@ export const createUser = async (user: CreateUserParams) => {
       ID.unique(),
       user.email,
       user.phone,
-      undefined,
+      user.password,
       user.name
     );
 
@@ -44,7 +82,6 @@ export const createUser = async (user: CreateUserParams) => {
 export const getUser = async (userId: string) => {
   try {
     const user = await users.get(userId);
-
     return parseStringify(user);
   } catch (error) {
     console.error(

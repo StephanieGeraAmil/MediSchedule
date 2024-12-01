@@ -1,5 +1,41 @@
 export const GenderOptions = ['Male', 'Female', 'Other'];
 
+export const AvailabilityDaysOptions = [
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday',
+  'Sunday',
+];
+export const AvailabilityHoursOptions = [
+  '08',
+  '09',
+  '10',
+  '11',
+  '12',
+  '13',
+  '14',
+  '15',
+  '16',
+  '17',
+  '18',
+  '19',
+  '20',
+  '21',
+];
+
+export enum FormFieldType {
+  INPUT = 'input',
+  TEXTAREA = 'textarea',
+  PHONE_INPUT = 'phoneinput',
+  CHECKBOX = 'checkbox',
+  DATE_PICKER = 'datepicker',
+  SELECT = 'select',
+  SKELETON = 'skeleton',
+  PASSWORD_INPUT = 'passwordinput',
+}
 export const PatientFormDefaultValues = {
   firstName: '',
   lastName: '',
@@ -25,7 +61,47 @@ export const PatientFormDefaultValues = {
   disclosureConsent: false,
   privacyConsent: false,
 };
-
+export const DoctorFormDefaultValues = {
+  firstName: '',
+  lastName: '',
+  email: '',
+  phone: '',
+  birthDate: new Date(Date.now()),
+  identificationNumber: '',
+  weeklyAvailability: [],
+  photoFile: [],
+};
+export const SpecialityList = [
+  'Anesthesiology',
+  'Cardiology',
+  'Dermatology',
+  'Emergency Medicine',
+  'Endocrinology',
+  'Family Medicine',
+  'Gastroenterology',
+  'Geriatrics',
+  'Gynecology',
+  'Hematology',
+  'Infectious Disease',
+  'Internal Medicine',
+  'Nephrology',
+  'Neurology',
+  'Obstetrics',
+  'Oncology',
+  'Ophthalmology',
+  'Orthopedic Surgery',
+  'Otolaryngology',
+  'Pediatrics',
+  'Physical Medicine and Rehabilitation',
+  'Plastic Surgery',
+  'Psychiatry',
+  'Pulmonology',
+  'Radiology',
+  'Rheumatology',
+  'Surgery',
+  'Urology',
+  'Vascular Surgery',
+];
 export const IdentificationTypes = [
   'Birth Certificate',
   "Driver's License",
@@ -80,7 +156,9 @@ export const Doctors = [
 ];
 
 export const StatusIcon = {
-  scheduled: '/assets/icons/check.svg',
+  scheduled: '/assets/icons/appointments.svg',
   pending: '/assets/icons/pending.svg',
-  cancelled: '/assets/icons/cancelled.svg',
+  'no-show': '/assets/icons/cancelled.svg',
+  completed: '/assets/icons/check.svg',
+  cancelled: '/assets/icons/closeblue.svg',
 };

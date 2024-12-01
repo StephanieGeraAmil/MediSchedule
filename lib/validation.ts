@@ -8,6 +8,12 @@ export const UserFormValidation = z.object({
   phone: z
     .string()
     .refine(phone => /^\+\d{10,15}$/.test(phone), 'Invalid phone number'),
+
+  password: z.string().min(8, 'Password must be at least 8 characters.'),
+});
+export const LoginValidation = z.object({
+  email: z.string().email('Invalid email address.'),
+  password: z.string().min(8, 'Password must be at least 8 characters.'),
 });
 
 export const PatientFormValidation = z.object({
@@ -75,7 +81,8 @@ export const PatientFormValidation = z.object({
     }),
 });
 export const CreateAppointmentSchema = z.object({
-  physician: z.string().min(2, 'Select at least one doctor'),
+  physician: z.string().min(2, 'Select a doctor'),
+  doctor: z.string().min(2, 'Select a doctor'),
   schedule: z.coerce.date(),
   reason: z
     .string()
@@ -83,6 +90,29 @@ export const CreateAppointmentSchema = z.object({
     .max(500, 'Reason must be at most 500 characters'),
   note: z.string().optional(),
   cancellationReason: z.string().optional(),
+  identificationNumber: z.string().optional(),
+});
+export const DoctorFormValidation = z.object({
+  weeklyAvailability: z.array(
+    z.object({
+      day: z.string(),
+      startTime: z.string(),
+      endTime: z.string(),
+    })
+  ),
+  name: z
+    .string()
+    .min(2, 'Name must be at least 2 characters')
+    .max(50, 'Name must be at most 50 characters'),
+  speciality: z.string().min(2, 'Speciality must be at least 2 characters'),
+
+  email: z.string().email('Invalid email address'),
+  phone: z
+    .string()
+    .refine(phone => /^\+\d{10,15}$/.test(phone), 'Invalid phone number'),
+  birthDate: z.coerce.date(),
+  identificationNumber: z.string(),
+  photoFile: z.custom<File[]>().optional(),
 });
 
 export const ScheduleAppointmentSchema = z.object({

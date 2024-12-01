@@ -11,7 +11,6 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Control } from 'react-hook-form';
-import { FormFieldType } from './forms/PatientForm';
 import Image from 'next/image';
 import PhoneInput from 'react-phone-number-input';
 import 'react-phone-number-input/style.css';
@@ -21,6 +20,8 @@ import ReactDatePicker from 'react-datepicker';
 import { Select, SelectContent, SelectValue, SelectTrigger } from './ui/select';
 import { Textarea } from './ui/textarea';
 import { Checkbox } from './ui/checkbox';
+// import { PasswordInput } from './PasswordInput';
+import { FormFieldType } from '@/constants';
 
 interface CustomProps {
   control: Control<any>;
@@ -35,6 +36,8 @@ interface CustomProps {
   dateFormat?: string;
   showTimeSelect?: boolean;
   children?: React.ReactNode;
+  maxDate?: Date;
+  filterDate?: (date: Date) => boolean;
   renderSkeleton?: (field: any) => React.ReactNode;
 }
 
@@ -52,6 +55,8 @@ const RenderField = ({ field, props }: { field: any; props: CustomProps }) => {
     dateFormat,
     renderSkeleton,
     children,
+    maxDate,
+    filterDate,
   } = props;
   switch (fieldType) {
     case FormFieldType.INPUT:
@@ -91,6 +96,7 @@ const RenderField = ({ field, props }: { field: any; props: CustomProps }) => {
         </FormControl>
       );
       break;
+
     case FormFieldType.SKELETON:
       return renderSkeleton ? renderSkeleton(field) : null;
       break;
@@ -112,6 +118,8 @@ const RenderField = ({ field, props }: { field: any; props: CustomProps }) => {
               dateFormat={dateFormat ?? 'dd/MM/yyyy'}
               timeInputLabel="Time:"
               wrapperClassName="date-picker"
+              maxDate={props.maxDate}
+              filterDate={props.filterDate}
             />
           </FormControl>
         </div>
@@ -185,13 +193,6 @@ const CustomFormField = (props: CustomProps) => {
             <FormLabel>{label}</FormLabel>
           )}
           <RenderField field={field} props={props} />
-          {/* <FormLabel>{label}</FormLabel>
-            <FormControl>
-              <Input placeholder={placeholder} {...field} />
-            </FormControl>
-            <FormDescription>
-             {description}
-            </FormDescription> */}
           <FormMessage className="shad-error" />
         </FormItem>
       )}

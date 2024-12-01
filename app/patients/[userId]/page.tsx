@@ -2,14 +2,13 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import { StatCard } from '@/components/StatCard';
-import { columns } from '@/components/table/columns';
 import { DataTable } from '@/components/table/DataTable';
-import { getRecentAppointmentList } from '@/lib/actions/appointment.actions';
-import { Button } from '@/components/ui/button';
+import { getPatientAppointmentList } from '@/lib/actions/appointment.actions';
 import { CreationsModal } from '@/components/CreationsModal';
+import { columnsPatient } from '@/components/table/columnsPatient';
 
-const AdminPage = async () => {
-  const appointments = await getRecentAppointmentList();
+const PatientPage = async ({ params: { userId } }: SearchParamProps) => {
+  const appointments = await getPatientAppointmentList(userId);
 
   return (
     <div className="mx-auto flex max-w-7xl flex-col space-y-14">
@@ -23,22 +22,15 @@ const AdminPage = async () => {
             className="h-8 w-fit"
           />
         </Link>
-
-        <p className="text-16-semibold">Admin Dashboard</p>
       </header>
 
       <main className="admin-main">
         <section className="w-full flex flex-col md:flex-row space-y-4 md:space-y-0 justify-between">
           <div className="w-full md:w-1/2 flex flex-col gap-2">
             <h1 className="header">Welcome 👋</h1>
-            <p className="text-dark-700">
-              Start the day with managing appointments
-            </p>
           </div>
           <div className="w-full md:w-1/2 flex justify-end gap-2">
-            <CreationsModal type="newUser" userId={''} />
-            <CreationsModal type="newDoctor" userId={''} />
-            <CreationsModal type="newAppointment" userId={''} />
+            <CreationsModal type="newAppointment" userId={userId} />
           </div>
         </section>
 
@@ -63,10 +55,10 @@ const AdminPage = async () => {
           />
         </section>
 
-        <DataTable columns={columns} data={appointments.documents} />
+        <DataTable columns={columnsPatient} data={appointments.documents} />
       </main>
     </div>
   );
 };
 
-export default AdminPage;
+export default PatientPage;

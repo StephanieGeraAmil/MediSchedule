@@ -7,6 +7,9 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  images: {
+    domains: ['cloud.appwrite.io'], // Add the Appwrite image domain here
+  },
 };
 
 export default withSentryConfig(nextConfig, {

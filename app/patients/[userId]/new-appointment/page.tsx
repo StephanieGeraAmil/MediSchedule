@@ -6,7 +6,7 @@ import * as Sentry from '@sentry/nextjs';
 const Appointment = async ({ params: { userId } }: SearchParamProps) => {
   const patient = await getPatient(userId);
 
-  Sentry.metrics.set('user_view_new-appointment', patient.name);
+  // Sentry.metrics.set('user_view_new-appointment', patient.name);
   return (
     <div className="flex h-screen max-h-screen">
       <section className="remove-scrollbar container my-auto">
@@ -18,6 +18,13 @@ const Appointment = async ({ params: { userId } }: SearchParamProps) => {
             alt="logo"
             className="mb-12 h-10 w-fit"
           />
+
+          <section className="mb-12 space-y-4">
+            <h1 className="header">New Appointment</h1>
+            <p className="text-dark-700">
+              Request a new appointment in 10 seconds.
+            </p>
+          </section>
 
           <AppointmentForm
             patientId={patient?.$id}

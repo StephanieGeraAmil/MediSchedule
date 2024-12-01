@@ -23,6 +23,16 @@ export interface Patient extends Models.Document {
   identificationDocument: FormData | undefined;
   privacyConsent: boolean;
 }
+export interface Doctor extends Models.Document {
+  userId: string;
+  name: string;
+  email: string;
+  phone: string;
+  birthDate: Date;
+  speciality: string;
+  identificationNumber: string | undefined;
+  photoFile: FormData | undefined;
+}
 
 export interface Appointment extends Models.Document {
   patient: Patient;
@@ -31,6 +41,6 @@ export interface Appointment extends Models.Document {
   physician: string;
   reason: string;
   note: string;
-  userId: string;
   cancellationReason: string | null;
+  doctor: Doctor;
 }

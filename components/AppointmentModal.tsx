@@ -24,9 +24,9 @@ export const AppointmentModal = ({
   type,
 }: {
   patientId: string;
-  userId: string;
+  userId?: string;
   appointment?: Appointment;
-  type: 'schedule' | 'cancel';
+  type: 're-schedule' | 'cancel' | 'complete' | 'no-show';
 }) => {
   const [open, setOpen] = useState(false);
 
@@ -35,7 +35,7 @@ export const AppointmentModal = ({
       <DialogTrigger asChild>
         <Button
           variant="ghost"
-          className={`capitalize ${type === 'schedule' && 'text-green-500'}`}
+          className={`capitalize ${type === 'complete' && 'text-green-500'}`}
         >
           {type}
         </Button>
@@ -43,9 +43,11 @@ export const AppointmentModal = ({
       <DialogContent className="shad-dialog sm:max-w-md">
         <DialogHeader className="mb-4 space-y-3">
           <DialogTitle className="capitalize">{type} Appointment</DialogTitle>
-          <DialogDescription>
-            Please fill in the following details to {type} appointment
-          </DialogDescription>
+          {!['complete', 'no-show'].includes(type) && (
+            <DialogDescription>
+              Please fill in the following details to {type} the appointment
+            </DialogDescription>
+          )}
         </DialogHeader>
 
         <AppointmentForm

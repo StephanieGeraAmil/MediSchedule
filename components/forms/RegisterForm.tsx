@@ -19,7 +19,6 @@ import SubmitButton from '../SubmitButton';
 import { PatientFormValidation } from '@/lib/validation';
 import { getUser, registerPatient } from '@/lib/actions/patient.actions';
 import { useRouter } from 'next/navigation';
-import { FormFieldType } from './PatientForm';
 import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
 import {
   Doctors,
@@ -31,20 +30,13 @@ import { Label } from '../ui/label';
 import { SelectItem } from '../ui/select';
 import Image from 'next/image';
 import FileUploader from '../FileUploader';
+import { z } from 'zod';
+import { FormFieldType } from '@/constants';
 
-// export enum FormFieldType {
-//   INPUT = 'input',
-//   TEXTAREA = 'textarea',
-//   PHONE_INPUT = 'phoneinput',
-//   CHECKBOX = 'checkbox',
-//   DATE_PICKER = 'datepicker',
-//   SELECT = 'select',
-//   SKELETON = 'skeleton',
-// }
 const RegisterForm = ({ user }: { user: User }) => {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  // eslint-disable-next-line eslint-rule-name
+
   const form = useForm<z.infer<typeof PatientFormValidation>>({
     resolver: zodResolver(PatientFormValidation),
     defaultValues: {
