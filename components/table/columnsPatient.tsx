@@ -49,30 +49,30 @@ export const columnsPatient: ColumnDef<Appointment>[] = [
       );
     },
   },
-  {
-    accessorKey: 'physician',
-    header: 'Doctor',
-    cell: ({ row }) => {
-      const appointment = row.original;
+  // {
+  //   accessorKey: 'physician',
+  //   header: 'Doctor',
+  //   cell: ({ row }) => {
+  //     const appointment = row.original;
 
-      const doctor = Doctors.find(
-        doctor => doctor.name === appointment.physician
-      );
+  //     const doctor = Doctors.find(
+  //       doctor => doctor.name === appointment.physician
+  //     );
 
-      return (
-        <div className="flex items-center gap-3">
-          <Image
-            src={doctor?.image!}
-            alt="doctor"
-            width={100}
-            height={100}
-            className="size-8"
-          />
-          <p className="whitespace-nowrap">Dr. {doctor?.name}</p>
-        </div>
-      );
-    },
-  },
+  //     return (
+  //       <div className="flex items-center gap-3">
+  //         <Image
+  //           src={doctor?.image!}
+  //           alt="doctor"
+  //           width={100}
+  //           height={100}
+  //           className="size-8"
+  //         />
+  //         <p className="whitespace-nowrap">Dr. {doctor?.name}</p>
+  //       </div>
+  //     );
+  //   },
+  // },
   {
     id: 'actions',
     header: () => <div className="pl-4">Actions</div>,

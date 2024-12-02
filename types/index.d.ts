@@ -65,7 +65,7 @@ declare type CreateAppointmentParams = {
   userId?: string | undefined;
   patient?: string | undefined;
   identificationNumber?: string | undefined;
-  physician: string;
+  // physician: string;
   doctor: string;
   reason: string;
   schedule: Date;

@@ -52,7 +52,8 @@ export const createAppointment = async (
       DATABASE_ID!,
       APPOINTMENT_COLLECTION_ID!,
       [
-        Query.equal('physician', appointment.physician),
+        // Query.equal('physician', appointment.physician),
+        Query.equal('doctor', appointment.doctor),
         Query.equal('schedule', appointment.schedule.toISOString()),
       ]
     );
@@ -202,8 +203,15 @@ export const updateAppointment = async ({
     );
 
     if (!updatedAppointment) throw Error;
-
-    const smsMessage = `Greetings from CarePulse. ${type === 'schedule' ? `Your appointment is confirmed for ${formatDateTime(appointment.schedule!).dateTime} with Dr. ${appointment.physician}` : `We regret to inform that your appointment for ${formatDateTime(appointment.schedule!).dateTime} is cancelled. Reason:  ${appointment.cancellationReason}`}.`;
+    // with Dr. ${appointment.physician}` : `We regret to inform that your appointment
+    const smsMessage = `Greetings from CarePulse. ${
+      type === 'schedule'
+        ? `Your appointment is confirmed for ${formatDateTime(appointment.schedule!).dateTime} 
+    with Dr. ${appointment.doctor}`
+        : `We regret to inform that your appointment 
+    for ${formatDateTime(appointment.schedule!).dateTime} is cancelled. 
+    Reason:  ${appointment.cancellationReason}`
+    }.`;
     await sendSMSNotification(userId, smsMessage);
 
     revalidatePath('/admin');

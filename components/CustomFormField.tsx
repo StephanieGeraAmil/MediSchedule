@@ -37,7 +37,8 @@ interface CustomProps {
   showTimeSelect?: boolean;
   children?: React.ReactNode;
   maxDate?: Date;
-  filterDate?: (date: Date) => boolean;
+  filterDate?: (date: Date) => boolean; // Custom date filtering logic
+  isTimeSelectable?: (date: Date, time: DateTime) => boolean;
   renderSkeleton?: (field: any) => React.ReactNode;
 }
 
@@ -57,6 +58,7 @@ const RenderField = ({ field, props }: { field: any; props: CustomProps }) => {
     children,
     maxDate,
     filterDate,
+    isTimeSelectable,
   } = props;
   switch (fieldType) {
     case FormFieldType.INPUT:
@@ -118,8 +120,31 @@ const RenderField = ({ field, props }: { field: any; props: CustomProps }) => {
               dateFormat={dateFormat ?? 'dd/MM/yyyy'}
               timeInputLabel="Time:"
               wrapperClassName="date-picker"
-              maxDate={props.maxDate}
-              filterDate={props.filterDate}
+              // maxDate={props.maxDate}
+              // filterDate={props.filterDate}
+              // isTimeSelectable={props.isTimeSelectable}
+              // dayClassName={date =>
+              //   date <= props.maxDate ? 'selectable-day' : 'non-selectable-day'
+              // }
+              // timeClassName={time =>
+              //   props.isTimeSelectable(time)
+              //     ? 'selectable-time'
+              //     : 'non-selectable-time'
+              // }
+              filterDate={date => {
+                const isWithinMaxDate = maxDate ? date <= maxDate : true;
+                const isCustomDateValid = props.filterDate
+                  ? props.filterDate(date)
+                  : true;
+                return isWithinMaxDate && isCustomDateValid;
+              }}
+              dayClassName={date => {
+                const isDisabled = !(
+                  (maxDate ? date <= maxDate : true) &&
+                  (props.filterDate ? props.filterDate(date) : true)
+                );
+                return isDisabled ? 'disabled-date' : '';
+              }}
             />
           </FormControl>
         </div>
