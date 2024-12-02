@@ -143,7 +143,7 @@ const RenderField = ({ field, props }: { field: any; props: CustomProps }) => {
                   (maxDate ? date <= maxDate : true) &&
                   (props.filterDate ? props.filterDate(date) : true)
                 );
-                return isDisabled ? 'disabled-date' : '';
+                return isDisabled ? 'non-selectable-day' : '';
               }}
             />
           </FormControl>
