@@ -370,3 +370,23 @@
   background-color: currentColor; /* Use current color */
   border-radius: 50%;
 }
+
+.non-selectable-day {
+  color: black; /* Gray out non-selectable dates */
+  pointer-events: none; /* Prevent clicking */
+  /* text-decoration: line-through;  */
+}
+
+.selectable-day {
+  color: #ccc; /* Default color for selectable dates */
+}
+.non-selectable-time {
+  color: black; /* Gray out non-selectable times */
+  pointer-events: none; /* Prevent clicking */
+  /* text-decoration: line-through; Optional */
+}
+
+/* For selectable times */
+.selectable-time {
+  color: #ccc; /* Default color for selectable times */
+}

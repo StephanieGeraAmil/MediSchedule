@@ -13,7 +13,7 @@ const RequestSuccess = async ({
   const appointmentId = (searchParams?.appointmentId as string) || '';
   const appointment = await getAppointment(appointmentId);
 
-  const doctor = Doctors.find(doctor => doctor.name === appointment?.physician);
+  // const doctor = Doctors.find(doctor => doctor.name === appointment?.physician);
 
   return (
     <div className=" flex h-screen max-h-screen px-[5%]">
@@ -44,7 +44,7 @@ const RequestSuccess = async ({
 
         <section className="request-details">
           <p>Requested appointment details: </p>
-          <div className="flex items-center gap-3">
+          {/* <div className="flex items-center gap-3">
             <Image
               src={doctor?.image!}
               alt="doctor"
@@ -53,7 +53,7 @@ const RequestSuccess = async ({
               className="size-6"
             />
             <p className="whitespace-nowrap">Dr. {doctor?.name}</p>
-          </div>
+          </div> */}
           <div className="flex gap-2">
             <Image
               src="/assets/icons/calendar.svg"

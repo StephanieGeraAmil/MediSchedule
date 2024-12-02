@@ -72,7 +72,7 @@ const AppointmentForm = ({
   const form = useForm<z.infer<typeof AppointmentFormValidation>>({
     resolver: zodResolver(AppointmentFormValidation),
     defaultValues: {
-      physician: appointment ? appointment?.physician : '',
+      // physician: appointment ? appointment?.physician : '',
       doctor: appointment ? appointment?.doctor : doctorsList[0]?.name,
       schedule: appointment
         ? new Date(appointment?.schedule!)
@@ -104,6 +104,14 @@ const AppointmentForm = ({
     );
 
     return !isDateTaken;
+  };
+
+  const isTimeSelectable = time => {
+    const hour = time.getHours();
+    const minute = time.getMinutes();
+
+    // Example logic: Disable times outside 9:00 AM - 5:00 PM
+    return hour >= 9 && hour <= 17; // Customize as needed
   };
   const maxDate = new Date(new Date().setMonth(new Date().getMonth() + 1));
 
@@ -147,7 +155,7 @@ const AppointmentForm = ({
 
         const appointmentData = {
           ...patientData,
-          physician: values.physician,
+          // physician: values.physician,
           doctor: values.doctor,
           schedule: new Date(values.schedule),
           reason: values.reason!,
@@ -169,7 +177,7 @@ const AppointmentForm = ({
           // userId,
           appointmentId: appointment?.$id!,
           appointment: {
-            physician: values.physician,
+            // physician: values.physician,
             doctor: values.doctor,
             schedule: new Date(values.schedule),
             status: status,
@@ -225,7 +233,7 @@ const AppointmentForm = ({
               />
             )}
 
-            <CustomFormField
+            {/* <CustomFormField
               fieldType={FormFieldType.SELECT}
               control={form.control}
               name="physician"
@@ -246,7 +254,7 @@ const AppointmentForm = ({
                   </div>
                 </SelectItem>
               ))}
-            </CustomFormField>
+            </CustomFormField> */}
             <CustomFormField
               fieldType={FormFieldType.SELECT}
               control={form.control}
@@ -280,6 +288,7 @@ const AppointmentForm = ({
               dateFormat="MM/dd/yyyy  -  h:mm aa"
               maxDate={maxDate}
               filterDate={filter}
+              isTimeSelectable={isTimeSelectable}
             />
 
             <div
