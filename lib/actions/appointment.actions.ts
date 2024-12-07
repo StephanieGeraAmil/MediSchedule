@@ -8,6 +8,7 @@ import { Appointment } from '@/types/appwrite.types';
 import {
   APPOINTMENT_COLLECTION_ID,
   PATIENT_COLLECTION_ID,
+  DOCTOR_COLLECTION_ID,
   DATABASE_ID,
   databases,
   messaging,
@@ -260,12 +261,50 @@ export const getPatientAppointmentList = async (userId: string) => {
     );
 
     const patient = patients.documents[0].$id;
-    const appointment = await databases.listDocuments(
+    const appointments = await databases.listDocuments(
       DATABASE_ID!,
       APPOINTMENT_COLLECTION_ID!,
       [Query.equal('patient', patient), Query.orderDesc('$createdAt')]
     );
-    return parseStringify(appointment);
+    // return parseStringify(appointment);
+    const initialCounts = {
+      scheduledCount: 0,
+      pendingCount: 0,
+      cancelledCount: 0,
+      completedCount: 0,
+      noShowCount: 0,
+    };
+
+    const counts = (appointments.documents as Appointment[]).reduce(
+      (acc, appointment) => {
+        switch (appointment.status) {
+          case 'scheduled':
+            acc.scheduledCount++;
+            break;
+          case 'completed':
+            acc.completedCount++;
+            break;
+          case 'no-show':
+            acc.noShowCount++;
+            break;
+          case 'pending':
+            acc.pendingCount++;
+            break;
+          case 'cancelled':
+            acc.cancelledCount++;
+            break;
+        }
+        return acc;
+      },
+      initialCounts
+    );
+    const data = {
+      totalCount: appointments.total,
+      ...counts,
+      documents: appointments.documents,
+    };
+
+    return parseStringify(data);
   } catch (error) {
     console.error(
       'An error occurred while retrieving the existing appointment list:',
@@ -278,18 +317,56 @@ export const getDoctorAppointmentList = async (userId: string) => {
   try {
     const doctors = await databases.listDocuments(
       DATABASE_ID!,
-      PATIENT_COLLECTION_ID!,
+      DOCTOR_COLLECTION_ID!,
       [Query.equal('userId', [userId])]
     );
     console.log(doctors);
-    const doctor = doctors.documents[0] || '';
+    const doctor = doctors.documents[0]?.$id || '';
     const appointments = await databases.listDocuments(
       DATABASE_ID!,
       APPOINTMENT_COLLECTION_ID!,
       [Query.equal('doctor', doctor), Query.orderDesc('$createdAt')]
     );
     console.log(appointments);
-    //return parseStringify(appointment.documents);
+    // return parseStringify(appointments.documents);
+    const initialCounts = {
+      scheduledCount: 0,
+      pendingCount: 0,
+      cancelledCount: 0,
+      completedCount: 0,
+      noShowCount: 0,
+    };
+
+    const counts = (appointments.documents as Appointment[]).reduce(
+      (acc, appointment) => {
+        switch (appointment.status) {
+          case 'scheduled':
+            acc.scheduledCount++;
+            break;
+          case 'completed':
+            acc.completedCount++;
+            break;
+          case 'no-show':
+            acc.noShowCount++;
+            break;
+          case 'pending':
+            acc.pendingCount++;
+            break;
+          case 'cancelled':
+            acc.cancelledCount++;
+            break;
+        }
+        return acc;
+      },
+      initialCounts
+    );
+    const data = {
+      totalCount: appointments.total,
+      ...counts,
+      documents: appointments.documents,
+    };
+
+    return parseStringify(data);
   } catch (error) {
     console.error(
       'An error occurred while retrieving the existing appointment list:',

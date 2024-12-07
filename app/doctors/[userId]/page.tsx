@@ -6,6 +6,7 @@ import { DataTable } from '@/components/table/DataTable';
 import { getDoctorAppointmentList } from '@/lib/actions/appointment.actions';
 import { CreationsModal } from '@/components/CreationsModal';
 import { columnsDoctor } from '@/components/table/columnsDoctor';
+import { useEffect } from 'react';
 
 const DoctorPage = async ({ params: { userId } }: SearchParamProps) => {
   const appointments = await getDoctorAppointmentList(userId);
