@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
@@ -20,8 +20,9 @@ import { PatientFormValidation } from '@/lib/validation';
 import { getUser, registerPatient } from '@/lib/actions/patient.actions';
 import { useRouter } from 'next/navigation';
 import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
+import { getDoctorList } from '@/lib/actions/doctor.actions';
 import {
-  Doctors,
+  // Doctors,
   GenderOptions,
   IdentificationTypes,
   PatientFormDefaultValues,
@@ -35,7 +36,21 @@ import { FormFieldType } from '@/constants';
 
 const RegisterForm = ({ user }: { user: User }) => {
   const [isLoading, setIsLoading] = useState(false);
+  const [doctorsList, setDoctorsList] = useState([]);
   const router = useRouter();
+
+  useEffect(() => {
+    const fetchDoctors = async () => {
+      try {
+        const doctors = await getDoctorList();
+        setDoctorsList(doctors.documents);
+      } catch (error) {
+        console.error('Error fetching doctors list:', error);
+      }
+    };
+
+    fetchDoctors();
+  }, []);
 
   const form = useForm<z.infer<typeof PatientFormValidation>>({
     resolver: zodResolver(PatientFormValidation),
@@ -218,20 +233,21 @@ const RegisterForm = ({ user }: { user: User }) => {
           label="Primary Physician"
           placeholder="Select a Physician"
         >
-          {Doctors.map(doctor => (
-            <SelectItem key={doctor.name} value={doctor.name}>
-              <div className="flex cursor-pointer items-center gap-2">
-                <Image
-                  src={doctor.image}
-                  alt={doctor.name}
-                  width={32}
-                  height={32}
-                  className="rounded-full border border-dark-500"
-                />
-                <p>{doctor.name}</p>
-              </div>
-            </SelectItem>
-          ))}
+          {doctorsList &&
+            doctorsList.map((doctor, i) => (
+              <SelectItem key={doctor.name + i} value={doctor.$id}>
+                <div className="flex cursor-pointer items-center gap-2">
+                  <Image
+                    src={doctor.photoFileUrl}
+                    width={32}
+                    height={32}
+                    alt="doctor"
+                    className="rounded-full border border-dark-500"
+                  />
+                  <p>{doctor.name}</p>
+                </div>
+              </SelectItem>
+            ))}
         </CustomFormField>
         <div className="flex flex-col gap-6 xl:flex-row">
           <CustomFormField
