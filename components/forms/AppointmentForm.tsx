@@ -9,7 +9,6 @@ import { useForm, useWatch } from 'react-hook-form';
 import { effect, z } from 'zod';
 
 import { SelectItem } from '@/components/ui/select';
-// import { Doctors } from '@/constants';
 import {
   createAppointment,
   getNextMonthsAppointments,

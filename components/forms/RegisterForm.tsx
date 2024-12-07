@@ -22,7 +22,6 @@ import { useRouter } from 'next/navigation';
 import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
 import { getDoctorList } from '@/lib/actions/doctor.actions';
 import {
-  // Doctors,
   GenderOptions,
   IdentificationTypes,
   PatientFormDefaultValues,
@@ -107,7 +106,6 @@ const RegisterForm = ({ user }: { user: User }) => {
       const newPatient = await registerPatient(patientData);
 
       if (newPatient) {
-        // router.push(`/patients/${user.$id}/new-appointment`);
         router.push(`/patients/${user.$id}`);
       }
     } catch (error) {
