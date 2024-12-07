@@ -120,31 +120,17 @@ const RenderField = ({ field, props }: { field: any; props: CustomProps }) => {
               dateFormat={dateFormat ?? 'dd/MM/yyyy'}
               timeInputLabel="Time:"
               wrapperClassName="date-picker"
-              // maxDate={props.maxDate}
-              // filterDate={props.filterDate}
-              // isTimeSelectable={props.isTimeSelectable}
-              // dayClassName={date =>
-              //   date <= props.maxDate ? 'selectable-day' : 'non-selectable-day'
-              // }
-              // timeClassName={time =>
-              //   props.isTimeSelectable(time)
-              //     ? 'selectable-time'
-              //     : 'non-selectable-time'
-              // }
               filterDate={date => {
+                //checking that no date greater than 1 month is able to be selected
                 const isWithinMaxDate = maxDate ? date <= maxDate : true;
+                //add a control that the doctor selected has avaiability on that day of the week TODO
                 const isCustomDateValid = props.filterDate
                   ? props.filterDate(date)
                   : true;
                 return isWithinMaxDate && isCustomDateValid;
               }}
-              dayClassName={date => {
-                const isDisabled = !(
-                  (maxDate ? date <= maxDate : true) &&
-                  (props.filterDate ? props.filterDate(date) : true)
-                );
-                return isDisabled ? 'non-selectable-day' : '';
-              }}
+              dayClassName={props.filterDate}
+              timeClassName={props.isTimeSelectable}
             />
           </FormControl>
         </div>

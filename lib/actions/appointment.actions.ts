@@ -15,15 +15,10 @@ import {
   users,
 } from '../appwrite.config';
 import { formatDateTime, parseStringify } from '../utils';
+
 const checkSession = async () => {
   try {
-    let user = await account.getSession('current');
-    if (!user) {
-      user = await account.createSession(
-        process.env.NEXT_PUBLIC_ADMIN_EMAIL || '',
-        process.env.NEXT_PUBLIC_PASSWORD || ''
-      );
-    }
+    const user = await account.get(); // Fetch logged-in user details
     console.log('User is logged in:', user);
     return true; // User is logged in
   } catch (error) {
@@ -33,8 +28,8 @@ const checkSession = async () => {
     //   process.env.NEXT_PUBLIC_PASSWORD || ''
     // );
     // console.log('session');
-    // console.log(session);
 
+    // Server-side actions should not rely on user sessions; consider using API keys instead.
     return false; // User is not logged in
   }
 };
@@ -44,9 +39,10 @@ export const createAppointment = async (
 ) => {
   try {
     console.log('in the action');
-    // console.log(appointment);
+    console.log(appointment);
     const user = checkSession();
     console.log(user);
+    console.log('*********************************************************');
     // first I need to check that there is no appoinment for the same dr in that schedule
     const prevAppointment = await databases.listDocuments(
       DATABASE_ID!,
@@ -58,10 +54,15 @@ export const createAppointment = async (
       ]
     );
     if (prevAppointment.documents.length === 0) {
-      //if I dont have an user Id but i have a patient-> i'm creating the appoinment from the patient overview
       if (!appointment.patient) {
-        if (appointment.userId) {
-          //i get the patient that has that userId
+        //if i dont  have a patient
+        console.log('dont have a patient');
+        if (
+          appointment.userId &&
+          appointment.userId != process.env.NEXT_ADMIN_USER_ID
+        ) {
+          //if i have an userId i get the patient that has that userId
+          console.log('have a userId');
           const patients = await databases.listDocuments(
             DATABASE_ID!,
             PATIENT_COLLECTION_ID!,
@@ -71,9 +72,12 @@ export const createAppointment = async (
             throw new Error('No patient found for the given user ID.');
           } else {
             appointment.patient = parseStringify(patients.documents[0]);
+            //  appointment.userId = patients?.documents[0]?.userId || '';
           }
         } else if (appointment.identificationNumber) {
-          //i get the patient that has that identification number
+          console.log('have a identification number');
+          //if I dont have an user Id i get the patient that has a certain identification number
+          // appointment.patient = '673f29150006984c4948';
           const patients = await databases.listDocuments(
             DATABASE_ID!,
             PATIENT_COLLECTION_ID!,
@@ -83,24 +87,32 @@ export const createAppointment = async (
               ]),
             ]
           );
+          console.log(patients);
           if (!patients.documents.length) {
             throw new Error(
               'No patient found for the given dentification number.'
             );
           } else {
-            appointment.patient = parseStringify(patients.documents[0]);
-            // console.log('patient');
-            // console.log(patients.documents[0]);
-            // console.log('userId');
+            appointment.patient = parseStringify(patients.documents[0].$id);
+            // appointment.userId = patients?.documents[0]?.userId || '';
           }
         }
       }
-      //I create the appoinment
+      console.log('about to create');
+      const appointmentToCreate = {
+        schedule: appointment.schedule,
+        patient: appointment.patient,
+        doctor: appointment.doctor,
+        note: appointment.note,
+        reason: appointment.reason,
+        status: 'scheduled',
+      };
+      //once i have a patient I am able to  create the appoinment
       const newAppointment = await databases.createDocument(
         DATABASE_ID!,
         APPOINTMENT_COLLECTION_ID!,
         ID.unique(),
-        appointment
+        appointmentToCreate
       );
 
       // revalidatePath('/admin');
@@ -241,10 +253,17 @@ export const getAppointment = async (appointmentId: string) => {
 //GET APPOINTMENTS OF PATIENT
 export const getPatientAppointmentList = async (userId: string) => {
   try {
+    const patients = await databases.listDocuments(
+      DATABASE_ID!,
+      PATIENT_COLLECTION_ID!,
+      [Query.equal('userId', [userId])]
+    );
+
+    const patient = patients.documents[0].$id;
     const appointment = await databases.listDocuments(
       DATABASE_ID!,
       APPOINTMENT_COLLECTION_ID!,
-      [Query.equal('patient', userId), Query.orderDesc('$createdAt')]
+      [Query.equal('patient', patient), Query.orderDesc('$createdAt')]
     );
     return parseStringify(appointment);
   } catch (error) {
@@ -257,12 +276,20 @@ export const getPatientAppointmentList = async (userId: string) => {
 //GET APPOINTMENTS OF DOCTOR
 export const getDoctorAppointmentList = async (userId: string) => {
   try {
-    const appointment = await databases.listDocuments(
+    const doctors = await databases.listDocuments(
+      DATABASE_ID!,
+      PATIENT_COLLECTION_ID!,
+      [Query.equal('userId', [userId])]
+    );
+    console.log(doctors);
+    const doctor = doctors.documents[0] || '';
+    const appointments = await databases.listDocuments(
       DATABASE_ID!,
       APPOINTMENT_COLLECTION_ID!,
-      [Query.equal('doctor', userId), Query.orderDesc('$createdAt')]
+      [Query.equal('doctor', doctor), Query.orderDesc('$createdAt')]
     );
-    return parseStringify(appointment);
+    console.log(appointments);
+    //return parseStringify(appointment.documents);
   } catch (error) {
     console.error(
       'An error occurred while retrieving the existing appointment list:',

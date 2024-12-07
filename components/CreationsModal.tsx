@@ -26,6 +26,10 @@ export const CreationsModal = ({
   type: 'newUser' | 'newDoctor' | 'newAppointment';
   userId?: string;
 }) => {
+  const userLoggedId =
+    typeof window !== 'undefined'
+      ? window.localStorage.getItem('userId')
+      : null;
   const [open, setOpen] = useState(false);
 
   return (
@@ -49,8 +53,8 @@ export const CreationsModal = ({
           {type == 'newDoctor' && <DoctorForm setOpen={setOpen} />}
           {type == 'newAppointment' && (
             <AppointmentForm
-              type={'create'}
-              userId={userId}
+              type="create"
+              userId={userLoggedId}
               setOpen={setOpen}
             />
           )}

@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { login } from '@/lib/actions/patient.actions';
+import { login } from '@/lib/actions/user.actions';
 
 import {
   AlertDialog,
@@ -34,15 +34,32 @@ export const PassKeyModal = () => {
       : null;
 
   useEffect(() => {
-    const accessKey = encryptedKey && decryptKey(encryptedKey);
+    const handleAccessKeyValidation = async () => {
+      const accessKey = encryptedKey && decryptKey(encryptedKey);
 
-    if (path)
-      if (accessKey === process.env.NEXT_PUBLIC_ADMIN_PASSKEY!.toString()) {
-        setOpen(false);
-        router.push('/admin');
-      } else {
-        setOpen(true);
+      if (path) {
+        if (accessKey === process.env.NEXT_PUBLIC_ADMIN_PASSKEY!.toString()) {
+          const userData = {
+            email: process.env.NEXT_PUBLIC_ADMIN_EMAIL || '',
+            password: process.env.NEXT_PUBLIC_PASSWORD || '',
+          };
+          try {
+            const user = await login(userData);
+            if (user) {
+              setOpen(false);
+              localStorage.setItem('userId', user);
+              router.push('/admin');
+            }
+          } catch (error) {
+            console.error('Failed to log in:', error);
+          }
+        } else {
+          setOpen(true);
+        }
       }
+    };
+
+    handleAccessKeyValidation();
   }, [encryptedKey]);
 
   const closeModal = () => {

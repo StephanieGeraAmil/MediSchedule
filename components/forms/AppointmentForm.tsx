@@ -92,13 +92,40 @@ const AppointmentForm = ({
   //   // Additional logic if needed when doctor changes
   // }, [selectedDoctor]);
   //filter function for the datepicker
+  // const filter = (date: Date): boolean => {
+  //   if (!selectedDoctor || !nextMonthAppintmentList.length) return true;
+  //   // Disable dates already booked for the selected doctor
+  //   const doctorAppointments = nextMonthAppintmentList.filter(
+  //     appt => appt.doctorId === selectedDoctor
+  //   );
+  //   console.log(doctorAppointments);
+  //   const isDateTaken = doctorAppointments.some(
+  //     appt => new Date(appt.schedule).toDateString() === date.toDateString()
+  //   );
+
+  //   return !isDateTaken;
+  // };
+
+  // // const filter = date => {
+  // //   const isDisabled = !(
+  // //     (maxDate ? date <= maxDate : true)
+  // //     // &&
+  // //     // (props.filterDate ?  : true)
+  // //   );
+  // //   return isDisabled ? 'non-selectable-day' : 'selectable-day';
+  // // };
   const filter = (date: Date): boolean => {
+    // Only allow dates within the maxDate
+    if (maxDate && date > maxDate) return false;
+
+    // Filter based on doctor's availability
     if (!selectedDoctor || !nextMonthAppintmentList.length) return true;
-    // Disable dates already booked for the selected doctor
+
     const doctorAppointments = nextMonthAppintmentList.filter(
-      appt => appt.doctorId === selectedDoctor
+      appt => appt.doctor === selectedDoctor
     );
-    console.log(doctorAppointments);
+
+    // Check if date is already taken
     const isDateTaken = doctorAppointments.some(
       appt => new Date(appt.schedule).toDateString() === date.toDateString()
     );
@@ -106,12 +133,48 @@ const AppointmentForm = ({
     return !isDateTaken;
   };
 
-  const isTimeSelectable = time => {
-    const hour = time.getHours();
-    const minute = time.getMinutes();
+  // const isTimeSelectable = time => {
+  //   // Filter times based on the doctor's appointments
+  //   const selectedDate = field.value;
+  //   // const selectedDate = field.value;
+  //   if (!selectedDate) return 'selectable-time';
 
-    // Example logic: Disable times outside 9:00 AM - 5:00 PM
-    return hour >= 9 && hour <= 17; // Customize as needed
+  //   const selectedDay = new Date(selectedDate);
+  //   selectedDay.setHours(0, 0, 0, 0);
+
+  //   const isTimeTaken = nextMonthAppintmentList.some(appointment => {
+  //     const appointmentDate = new Date(appointment.schedule);
+  //     appointmentDate.setHours(0, 0, 0, 0);
+
+  //     return (
+  //       appointment.doctor === selectedDoctor &&
+  //       appointmentDate.getTime() === selectedDay.getTime() &&
+  //       new Date(appointment.schedule).getTime() === time.getTime()
+  //     );
+  //   });
+  //   return isTimeTaken ? 'non-selectable-time' : 'selectable-time';
+  // };
+  const dayClassName = (date: Date): string => {
+    const isDisabled = !filterDate(date);
+    return isDisabled ? 'non-selectable-day' : 'selectable-day';
+  };
+
+  const timeClassName = (time: Date): string => {
+    if (!field.value || !selectedDoctor || !nextMonthAppintmentList.length)
+      return 'selectable-time';
+
+    const selectedDate = new Date(field.value);
+    selectedDate.setHours(0, 0, 0, 0); // Set to the start of the day
+
+    // Filter appointments for the same day
+    const doctorAppointments = nextMonthAppintmentList.filter(appt => {
+      const appointmentDate = new Date(appt.schedule);
+      appointmentDate.setHours(0, 0, 0, 0);
+      return (
+        appt.doctor === selectedDoctor &&
+        appointmentDate.getTime() === selectedDate.getTime()
+      );
+    });
   };
   const maxDate = new Date(new Date().setMonth(new Date().getMonth() + 1));
 
@@ -145,11 +208,13 @@ const AppointmentForm = ({
         let patientData: Record<string, string> = {};
         if (patientId) {
           patientData.patient = patientId;
-        } else if (userId) {
-          //i'm in the patient overview
-          patientData.userId = userId;
+          // patientData.userId = userId;
+          // } else if (userId) {
+          //   //i'm in the patient overview
+          //   patientData.userId = userId;
         } else if (values.identificationNumber) {
           patientData.identificationNumber = values.identificationNumber;
+          // patientData.userId = userId;
           //i'm in the admin
         }
 
@@ -161,6 +226,7 @@ const AppointmentForm = ({
           reason: values.reason!,
           status: status,
           note: values.note,
+          userId: userId ? userId : '',
         };
         console.log(appointmentData);
 
@@ -223,7 +289,7 @@ const AppointmentForm = ({
       <form onSubmit={form.handleSubmit(onSubmit)} className="flex-1 space-y-6">
         {!['cancel', 'complete', 'no-show'].includes(type) && (
           <>
-            {!userId && (
+            {userId != process.env.NEXT_ADMIN_USER_ID && (
               <CustomFormField
                 control={form.control}
                 fieldType={FormFieldType.INPUT}
@@ -287,8 +353,11 @@ const AppointmentForm = ({
               showTimeSelect
               dateFormat="MM/dd/yyyy  -  h:mm aa"
               maxDate={maxDate}
+              // filterDate={filter}
+              // isTimeSelectable={isTimeSelectable}
               filterDate={filter}
-              isTimeSelectable={isTimeSelectable}
+              dayClassName={dayClassName}
+              timeClassName={timeClassName}
             />
 
             <div
