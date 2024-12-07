@@ -32,8 +32,6 @@ export const login = async (userData: LoginParams) => {
           userData.email,
           userData.password
         );
-        console.log('session');
-        console.log(session);
         if (session) {
           // User successfully logged in
           user = existingUsers.users[0];

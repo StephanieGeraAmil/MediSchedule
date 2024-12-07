@@ -72,8 +72,7 @@ const AppointmentForm = ({
   const form = useForm<z.infer<typeof AppointmentFormValidation>>({
     resolver: zodResolver(AppointmentFormValidation),
     defaultValues: {
-      // physician: appointment ? appointment?.physician : '',
-      doctor: appointment ? appointment?.doctor : doctorsList[0]?.name,
+      doctor: appointment ? appointment?.doctor.$id : doctorsList[0].$id,
       schedule: appointment
         ? new Date(appointment?.schedule!)
         : new Date(Date.now()),
@@ -83,14 +82,12 @@ const AppointmentForm = ({
       identificationNumber: '',
     },
   });
+
   const selectedDoctor = useWatch({
     control: form.control,
-    name: 'doctor', // The field you want to watch
+    name: 'doctor',
   });
-  // useEffect(() => {
-  //   console.log('Doctor selected:', selectedDoctor);
-  //   // Additional logic if needed when doctor changes
-  // }, [selectedDoctor]);
+
   //filter function for the datepicker
   // const filter = (date: Date): boolean => {
   //   if (!selectedDoctor || !nextMonthAppintmentList.length) return true;
@@ -299,28 +296,6 @@ const AppointmentForm = ({
               />
             )}
 
-            {/* <CustomFormField
-              fieldType={FormFieldType.SELECT}
-              control={form.control}
-              name="physician"
-              label="Doctor old"
-              placeholder="Select a doctor"
-            >
-              {Doctors.map((doctor, i) => (
-                <SelectItem key={doctor.name + i} value={doctor.name}>
-                  <div className="flex cursor-pointer items-center gap-2">
-                    <Image
-                      src={doctor.image}
-                      width={32}
-                      height={32}
-                      alt="doctor"
-                      className="rounded-full border border-dark-500"
-                    />
-                    <p>{doctor.name}</p>
-                  </div>
-                </SelectItem>
-              ))}
-            </CustomFormField> */}
             <CustomFormField
               fieldType={FormFieldType.SELECT}
               control={form.control}

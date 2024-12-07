@@ -19,18 +19,9 @@ import { formatDateTime, parseStringify } from '../utils';
 
 const checkSession = async () => {
   try {
-    const user = await account.get(); // Fetch logged-in user details
-    console.log('User is logged in:', user);
+    const user = await account.get();
     return true; // User is logged in
   } catch (error) {
-    console.log('No active session:', error);
-    // const session = await account.createEmailPasswordSession(
-    //   process.env.NEXT_PUBLIC_ADMIN_EMAIL || '',
-    //   process.env.NEXT_PUBLIC_PASSWORD || ''
-    // );
-    // console.log('session');
-
-    // Server-side actions should not rely on user sessions; consider using API keys instead.
     return false; // User is not logged in
   }
 };
@@ -39,11 +30,7 @@ export const createAppointment = async (
   appointment: CreateAppointmentParams
 ) => {
   try {
-    console.log('in the action');
-    console.log(appointment);
     const user = checkSession();
-    console.log(user);
-    console.log('*********************************************************');
     // first I need to check that there is no appoinment for the same dr in that schedule
     const prevAppointment = await databases.listDocuments(
       DATABASE_ID!,
@@ -57,13 +44,11 @@ export const createAppointment = async (
     if (prevAppointment.documents.length === 0) {
       if (!appointment.patient) {
         //if i dont  have a patient
-        console.log('dont have a patient');
         if (
           appointment.userId &&
           appointment.userId != process.env.NEXT_ADMIN_USER_ID
         ) {
           //if i have an userId i get the patient that has that userId
-          console.log('have a userId');
           const patients = await databases.listDocuments(
             DATABASE_ID!,
             PATIENT_COLLECTION_ID!,
@@ -76,9 +61,7 @@ export const createAppointment = async (
             //  appointment.userId = patients?.documents[0]?.userId || '';
           }
         } else if (appointment.identificationNumber) {
-          console.log('have a identification number');
-          //if I dont have an user Id i get the patient that has a certain identification number
-          // appointment.patient = '673f29150006984c4948';
+          //i get the patient that has a certain identification number
           const patients = await databases.listDocuments(
             DATABASE_ID!,
             PATIENT_COLLECTION_ID!,
@@ -88,7 +71,6 @@ export const createAppointment = async (
               ]),
             ]
           );
-          console.log(patients);
           if (!patients.documents.length) {
             throw new Error(
               'No patient found for the given dentification number.'
@@ -99,7 +81,6 @@ export const createAppointment = async (
           }
         }
       }
-      console.log('about to create');
       const appointmentToCreate = {
         schedule: appointment.schedule,
         patient: appointment.patient,
@@ -116,7 +97,6 @@ export const createAppointment = async (
         appointmentToCreate
       );
 
-      // revalidatePath('/admin');
       return parseStringify(newAppointment);
     } else {
       throw new Error(

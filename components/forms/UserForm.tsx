@@ -42,7 +42,6 @@ const UserForm = () => {
         password: values.password,
       };
       const user = await login(userData);
-      console.log(user);
       if (!user) {
         throw new Error('Invalid credentials');
       } else {
@@ -64,8 +63,6 @@ const UserForm = () => {
         message: error.message || 'An unexpected error occurred.',
       });
       console.log(error);
-
-      // console.log(form.formState.errors);
     } finally {
       setIsLoading(false);
     }
