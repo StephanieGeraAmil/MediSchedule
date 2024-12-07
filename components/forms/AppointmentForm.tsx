@@ -71,7 +71,7 @@ const AppointmentForm = ({
   const form = useForm<z.infer<typeof AppointmentFormValidation>>({
     resolver: zodResolver(AppointmentFormValidation),
     defaultValues: {
-      doctor: appointment ? appointment?.doctor.$id : doctorsList[0].$id,
+      doctor: appointment ? appointment?.doctor.$id : doctorsList[0]?.$id,
       schedule: appointment
         ? new Date(appointment?.schedule!)
         : new Date(Date.now()),
