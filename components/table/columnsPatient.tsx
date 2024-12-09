@@ -49,6 +49,32 @@ export const columnsPatient: ColumnDef<Appointment>[] = [
       );
     },
   },
+  {
+    accessorKey: 'doctor',
+    header: 'Doctor',
+    cell: ({ row }) => {
+      const appointment = row.original;
+
+      // const doctor = Doctors.find(
+      //   doctor => doctor.name === appointment.physician
+      // );
+
+      return (
+        <div className="flex items-center gap-3">
+          <Image
+            src={appointment.doctor?.photoFileUrl || ''}
+            alt="doctor"
+            width={100}
+            height={100}
+            className="size-8"
+          />
+          <p className="whitespace-nowrap">
+            Dr. {appointment.doctor?.name || ''}
+          </p>
+        </div>
+      );
+    },
+  },
   // {
   //   accessorKey: 'physician',
   //   header: 'Doctor',

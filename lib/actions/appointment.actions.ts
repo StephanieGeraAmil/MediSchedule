@@ -46,7 +46,7 @@ export const createAppointment = async (
         //if i dont  have a patient
         if (
           appointment.userId &&
-          appointment.userId != process.env.NEXT_ADMIN_USER_ID
+          appointment.userId != process.env.NEXT_PUBLIC_ADMIN_USER_ID
         ) {
           //if i have an userId i get the patient that has that userId
           const patients = await databases.listDocuments(
@@ -57,7 +57,7 @@ export const createAppointment = async (
           if (!patients.documents.length) {
             throw new Error('No patient found for the given user ID.');
           } else {
-            appointment.patient = parseStringify(patients.documents[0]);
+            appointment.patient = patients.documents[0].$id;
             //  appointment.userId = patients?.documents[0]?.userId || '';
           }
         } else if (appointment.identificationNumber) {
@@ -76,7 +76,7 @@ export const createAppointment = async (
               'No patient found for the given dentification number.'
             );
           } else {
-            appointment.patient = parseStringify(patients.documents[0].$id);
+            appointment.patient = patients.documents[0].$id;
             // appointment.userId = patients?.documents[0]?.userId || '';
           }
         }
@@ -97,6 +97,7 @@ export const createAppointment = async (
         appointmentToCreate
       );
 
+      revalidatePath('/admin');
       return parseStringify(newAppointment);
     } else {
       throw new Error(
@@ -300,14 +301,12 @@ export const getDoctorAppointmentList = async (userId: string) => {
       DOCTOR_COLLECTION_ID!,
       [Query.equal('userId', [userId])]
     );
-    console.log(doctors);
     const doctor = doctors.documents[0]?.$id || '';
     const appointments = await databases.listDocuments(
       DATABASE_ID!,
       APPOINTMENT_COLLECTION_ID!,
       [Query.equal('doctor', doctor), Query.orderDesc('$createdAt')]
     );
-    console.log(appointments);
     // return parseStringify(appointments.documents);
     const initialCounts = {
       scheduledCount: 0,
@@ -374,7 +373,6 @@ export const getNextMonthsAppointments = async () => {
       schedule: doc.schedule,
       doctorId: doc.doctor?.$id, // Extract only the doctor ID
     }));
-    console.log(filteredAppointments);
     return parseStringify(filteredAppointments);
   } catch (error) {
     console.error(

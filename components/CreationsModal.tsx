@@ -26,8 +26,9 @@ export const CreationsModal = ({
   type: 'newUser' | 'newDoctor' | 'newAppointment';
   userId?: string;
 }) => {
-  const userLoggedId =
-    typeof window !== 'undefined'
+  const userLoggedId = userId
+    ? userId
+    : typeof window !== 'undefined'
       ? window.localStorage.getItem('userId')
       : null;
   const [open, setOpen] = useState(false);

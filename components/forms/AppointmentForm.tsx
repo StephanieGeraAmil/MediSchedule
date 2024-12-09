@@ -58,8 +58,6 @@ const AppointmentForm = ({
       try {
         const appointments = await getNextMonthsAppointments();
         setNextMonthAppintmentList(appointments);
-
-        console.log(appointments);
       } catch (error) {
         console.error('Error fetching nex month appintment list:', error);
       }
@@ -199,8 +197,6 @@ const AppointmentForm = ({
 
     try {
       if (type === 'create') {
-        console.log('in create appointment form');
-        console.log(values.identificationNumber);
         let patientData: Record<string, string> = {};
         if (patientId) {
           patientData.patient = patientId;
@@ -243,6 +239,8 @@ const AppointmentForm = ({
             doctor: values.doctor,
             schedule: new Date(values.schedule),
             status: status,
+            note: values.note,
+            reason: values.reason!,
             cancellationReason: values.cancellationReason,
           },
           type,
@@ -285,7 +283,7 @@ const AppointmentForm = ({
       <form onSubmit={form.handleSubmit(onSubmit)} className="flex-1 space-y-6">
         {!['cancel', 'complete', 'no-show'].includes(type) && (
           <>
-            {userId != process.env.NEXT_ADMIN_USER_ID && (
+            {userId && userId === process.env.NEXT_PUBLIC_ADMIN_USER_ID && (
               <CustomFormField
                 control={form.control}
                 fieldType={FormFieldType.INPUT}
