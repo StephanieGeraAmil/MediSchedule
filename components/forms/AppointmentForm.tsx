@@ -229,7 +229,7 @@ const AppointmentForm = ({
       return isSameDoctor && isSameTime;
     });
     console.log(isDateTimeTaken);
-    if (isDateTimeTaken.length > 0) return false;
+    // if (isDateTimeTaken.length > 0) return false;
     // Disable times outside of the availability range
     if (time >= startTime && time <= endTime) {
       return true;
@@ -287,10 +287,10 @@ const AppointmentForm = ({
       return isSameDoctor && isSameTime;
     });
     console.log(isDateTimeTaken);
-    if (isDateTimeTaken.length > 0) {
-      console.log(isDateTimeTaken);
-      return 'non-selectable-time';
-    }
+    // if (isDateTimeTaken.length > 0) {
+    //   console.log(isDateTimeTaken);
+    //   return 'non-selectable-time';
+    // }
 
     // Disable times outside of the availability range
     if (time >= startTime && time <= endTime) {
