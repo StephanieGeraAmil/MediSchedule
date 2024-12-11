@@ -96,79 +96,81 @@ const AppointmentForm = ({
   const maxDate = new Date(new Date().setMonth(new Date().getMonth() + 1));
   //day
   const filter = (date: Date): boolean => {
-    if (!selectedDoctor || !doctorsList.length) return true;
+    // if (!selectedDoctor || !doctorsList.length) return true;
 
-    // Find the selected doctor's data
-    const doctor = doctorsList.find(doctor => doctor.$id === selectedDoctor);
+    // // Find the selected doctor's data
+    // const doctor = doctorsList.find(doctor => doctor.$id === selectedDoctor);
 
-    if (!doctor || !doctor.weeklyAvailability) return true;
+    // if (!doctor || !doctor.weeklyAvailability) return true;
 
-    // Parse the doctor's weekly availability
-    const weeklyAvailability = JSON.parse(doctor.weeklyAvailability);
+    // // Parse the doctor's weekly availability
+    // const weeklyAvailability = JSON.parse(doctor.weeklyAvailability);
 
-    // Get the day of the week for the selected date
-    const dayOfWeek = date.toLocaleDateString('en-US', { weekday: 'long' });
+    // // Get the day of the week for the selected date
+    // const dayOfWeek = date.toLocaleDateString('en-US', { weekday: 'long' });
 
-    // Find the availability for the selected day
-    const availabilityForDay = weeklyAvailability.find(
-      (day: { day: string }) => day.day === dayOfWeek
-    );
-
-    // If the day is not in the availability, disable it
-    if (!availabilityForDay) return false;
-
-    // Check if the date is already booked
-    // const doctorAppointments = nextMonthAppintmentList.filter(
-    //   appt => appt.doctor === selectedDoctor
+    // // Find the availability for the selected day
+    // const availabilityForDay = weeklyAvailability.find(
+    //   (day: { day: string }) => day.day === dayOfWeek
     // );
 
-    // const isDateTaken = doctorAppointments.some(
-    //   appt => new Date(appt.schedule).toDateString() === date.toDateString()
-    // );
+    // // If the day is not in the availability, disable it
+    // if (!availabilityForDay) return false;
 
-    // if (isDateTaken || date > maxDate) {
-    if (date > maxDate) {
-      return false;
-    } else {
-      return true;
-    }
+    // // Check if the date is already booked
+    // // const doctorAppointments = nextMonthAppintmentList.filter(
+    // //   appt => appt.doctor === selectedDoctor
+    // // );
+
+    // // const isDateTaken = doctorAppointments.some(
+    // //   appt => new Date(appt.schedule).toDateString() === date.toDateString()
+    // // );
+
+    // // if (isDateTaken || date > maxDate) {
+    // if (date > maxDate) {
+    //   return false;
+    // } else {
+    //   return true;
+    // }
+    return true;
   };
 
   const dayClassName = (date: Date): string => {
-    if (!selectedDoctor || !doctorsList.length) return 'selectable-day';
+    // if (!selectedDoctor || !doctorsList.length) return 'selectable-day';
 
-    // Find the selected doctor's data
-    const doctor = doctorsList.find(doctor => doctor.$id === selectedDoctor);
-    if (!doctor || !doctor.weeklyAvailability) return 'selectable-day';
+    // // Find the selected doctor's data
+    // const doctor = doctorsList.find(doctor => doctor.$id === selectedDoctor);
+    // if (!doctor || !doctor.weeklyAvailability) return 'selectable-day';
 
-    // Parse the doctor's weekly availability
-    const weeklyAvailability = JSON.parse(doctor.weeklyAvailability);
+    // // Parse the doctor's weekly availability
+    // const weeklyAvailability = JSON.parse(doctor.weeklyAvailability);
 
-    // Get the day of the week for the selected date
-    const dayOfWeek = date.toLocaleDateString('en-US', { weekday: 'long' });
+    // // Get the day of the week for the selected date
+    // const dayOfWeek = date.toLocaleDateString('en-US', { weekday: 'long' });
 
-    // Find the availability for the selected day
-    const availabilityForDay = weeklyAvailability.find(
-      (day: { day: string }) => day.day === dayOfWeek
-    );
-
-    // If the day is not in the availability, mark as unavailable
-    if (!availabilityForDay) return 'non-selectable-day';
-
-    // Check if the date is already booked
-    // const doctorAppointments = nextMonthAppintmentList.filter(
-    //   appt => appt.doctor === selectedDoctor
-    // );
-    // const isDateTaken = doctorAppointments.some(
-    //   appt => new Date(appt.schedule).toDateString() === date.toDateString()
+    // // Find the availability for the selected day
+    // const availabilityForDay = weeklyAvailability.find(
+    //   (day: { day: string }) => day.day === dayOfWeek
     // );
 
-    // if (isDateTaken || date > maxDate) {
-    if (date > maxDate) {
-      return 'non-selectable-day';
-    } else {
-      return 'selectable-day';
-    }
+    // // If the day is not in the availability, mark as unavailable
+    // if (!availabilityForDay) return 'non-selectable-day';
+
+    // // Check if the date is already booked
+    // // const doctorAppointments = nextMonthAppintmentList.filter(
+    // //   appt => appt.doctor === selectedDoctor
+    // // );
+    // // const isDateTaken = doctorAppointments.some(
+    // //   appt => new Date(appt.schedule).toDateString() === date.toDateString()
+    // // );
+
+    // // if (isDateTaken || date > maxDate) {
+    // if (date > maxDate) {
+    //   return 'non-selectable-day';
+    // } else {
+    //   return 'selectable-day';
+    // }
+    return 'selectable0day';
   };
   /////time
 
