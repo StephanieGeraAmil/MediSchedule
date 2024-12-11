@@ -216,17 +216,18 @@ const AppointmentForm = ({
     // );
 
     const isDateTimeTaken = nextMonthAppintmentList.filter(appt => {
-      const date1 = new Date(time);
-      const date2 = new Date(appt.schedule);
+      // const date1 = new Date(time);
+      // const date2 = new Date(appt.schedule);
 
-      if (isNaN(date1.getTime()) || isNaN(date2.getTime())) {
-        throw new Error('Invalid date format');
-      }
+      // if (isNaN(date1.getTime()) || isNaN(date2.getTime())) {
+      //   throw new Error('Invalid date format');
+      // }
 
-      const isSameDoctor = appt.doctorId === selectedDoctor;
-      const isSameTime = date1.getTime() === date2.getTime();
+      // const isSameDoctor = appt.doctorId === selectedDoctor;
+      // const isSameTime = date1.getTime() === date2.getTime();
 
-      return isSameDoctor && isSameTime;
+      // return isSameDoctor && isSameTime;
+      return true;
     });
     console.log(isDateTimeTaken);
     // if (isDateTimeTaken.length > 0) return false;
@@ -274,17 +275,18 @@ const AppointmentForm = ({
     );
 
     const isDateTimeTaken = nextMonthAppintmentList.filter(appt => {
-      const date1 = new Date(time);
-      const date2 = new Date(appt.schedule);
+      // const date1 = new Date(time);
+      // const date2 = new Date(appt.schedule);
 
-      if (isNaN(date1.getTime()) || isNaN(date2.getTime())) {
-        throw new Error('Invalid date format');
-      }
+      // if (isNaN(date1.getTime()) || isNaN(date2.getTime())) {
+      //   throw new Error('Invalid date format');
+      // }
 
-      const isSameDoctor = appt.doctorId === selectedDoctor;
-      const isSameTime = date1.getTime() === date2.getTime();
+      // const isSameDoctor = appt.doctorId === selectedDoctor;
+      // const isSameTime = date1.getTime() === date2.getTime();
 
-      return isSameDoctor && isSameTime;
+      // return isSameDoctor && isSameTime;
+      return true;
     });
     console.log(isDateTimeTaken);
     // if (isDateTimeTaken.length > 0) {
