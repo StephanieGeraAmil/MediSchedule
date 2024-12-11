@@ -173,39 +173,39 @@ const AppointmentForm = ({
   /////time
 
   const isTimeSelectable = (time: Date): boolean => {
-    console.log(time);
-    // if (!field.value || !selectedDoctor || !doctorsList.length) return true;
-    if (!selectedDate || !selectedDoctor || !doctorsList.length) return true;
+    // console.log(time);
+    // // if (!field.value || !selectedDoctor || !doctorsList.length) return true;
+    // if (!selectedDate || !selectedDoctor || !doctorsList.length) return true;
 
-    // Find the selected doctor's data
-    const doctor = doctorsList.find(doctor => doctor.$id === selectedDoctor);
+    // // Find the selected doctor's data
+    // const doctor = doctorsList.find(doctor => doctor.$id === selectedDoctor);
 
-    if (!doctor || !doctor.weeklyAvailability) return true;
+    // if (!doctor || !doctor.weeklyAvailability) return true;
 
-    // Parse the doctor's weekly availability
-    const weeklyAvailability = JSON.parse(doctor.weeklyAvailability);
+    // // Parse the doctor's weekly availability
+    // const weeklyAvailability = JSON.parse(doctor.weeklyAvailability);
 
-    // Get the day of the week for the selected date
-    // const selectedDate = new Date(field.value);
-    const dayOfWeek = selectedDate.toLocaleDateString('en-US', {
-      weekday: 'long',
-    });
+    // // Get the day of the week for the selected date
+    // // const selectedDate = new Date(field.value);
+    // const dayOfWeek = selectedDate.toLocaleDateString('en-US', {
+    //   weekday: 'long',
+    // });
 
-    // Find the availability for the selected day
-    const availabilityForDay = weeklyAvailability.find(
-      (day: { day: string }) => day.day === dayOfWeek
-    );
+    // // Find the availability for the selected day
+    // const availabilityForDay = weeklyAvailability.find(
+    //   (day: { day: string }) => day.day === dayOfWeek
+    // );
 
-    // If the day is not in the availability, return false
-    if (!availabilityForDay) return false;
+    // // If the day is not in the availability, return false
+    // if (!availabilityForDay) return false;
 
-    // Convert start and end times to Date objects for comparison
-    const startTime = new Date(
-      `${selectedDate.toDateString()} ${availabilityForDay.startTime}`
-    );
-    const endTime = new Date(
-      `${selectedDate.toDateString()} ${availabilityForDay.endTime}`
-    );
+    // // Convert start and end times to Date objects for comparison
+    // const startTime = new Date(
+    //   `${selectedDate.toDateString()} ${availabilityForDay.startTime}`
+    // );
+    // const endTime = new Date(
+    //   `${selectedDate.toDateString()} ${availabilityForDay.endTime}`
+    // );
 
     // const doctorAppointments = nextMonthAppintmentList.filter(
     //   appt => appt.doctorId === selectedDoctor
@@ -241,38 +241,38 @@ const AppointmentForm = ({
   };
 
   const timeClassName = (time: Date): string => {
-    if (!selectedDate || !selectedDoctor || !doctorsList.length)
-      return 'selectable-time';
+    // if (!selectedDate || !selectedDoctor || !doctorsList.length)
+    //   return 'selectable-time';
 
-    // Find the selected doctor's data
-    const doctor = doctorsList.find(doctor => doctor.$id === selectedDoctor);
+    // // Find the selected doctor's data
+    // const doctor = doctorsList.find(doctor => doctor.$id === selectedDoctor);
 
-    if (!doctor || !doctor.weeklyAvailability) return 'selectable-time';
+    // if (!doctor || !doctor.weeklyAvailability) return 'selectable-time';
 
-    // Parse the doctor's weekly availability
-    const weeklyAvailability = JSON.parse(doctor.weeklyAvailability);
+    // // Parse the doctor's weekly availability
+    // const weeklyAvailability = JSON.parse(doctor.weeklyAvailability);
 
-    // Get the day of the week for the selected date
-    // const selectedDate = new Date(field.value);
-    const dayOfWeek = selectedDate.toLocaleDateString('en-US', {
-      weekday: 'long',
-    });
+    // // Get the day of the week for the selected date
+    // // const selectedDate = new Date(field.value);
+    // const dayOfWeek = selectedDate.toLocaleDateString('en-US', {
+    //   weekday: 'long',
+    // });
 
-    // Find the availability for the selected day
-    const availabilityForDay = weeklyAvailability.find(
-      (day: { day: string }) => day.day === dayOfWeek
-    );
+    // // Find the availability for the selected day
+    // const availabilityForDay = weeklyAvailability.find(
+    //   (day: { day: string }) => day.day === dayOfWeek
+    // );
 
-    // If the day is not in the availability, return false
-    if (!availabilityForDay) return 'non-selectable-time';
+    // // If the day is not in the availability, return false
+    // if (!availabilityForDay) return 'non-selectable-time';
 
-    // Convert start and end times to Date objects for comparison
-    const startTime = new Date(
-      `${selectedDate.toDateString()} ${availabilityForDay.startTime}`
-    );
-    const endTime = new Date(
-      `${selectedDate.toDateString()} ${availabilityForDay.endTime}`
-    );
+    // // Convert start and end times to Date objects for comparison
+    // const startTime = new Date(
+    //   `${selectedDate.toDateString()} ${availabilityForDay.startTime}`
+    // );
+    // const endTime = new Date(
+    //   `${selectedDate.toDateString()} ${availabilityForDay.endTime}`
+    // );
 
     // const isDateTimeTaken = nextMonthAppintmentList.filter(appt => {
     //   // const date1 = new Date(time);
