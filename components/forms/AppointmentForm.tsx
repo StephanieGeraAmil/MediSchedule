@@ -231,11 +231,11 @@ const AppointmentForm = ({
     console.log(isDateTimeTaken);
     // if (isDateTimeTaken.length > 0) return false;
     // Disable times outside of the availability range
-    if (time >= startTime && time <= endTime) {
-      return true;
-    } else {
-      return false;
-    }
+    // if (time >= startTime && time <= endTime) {
+    //   return true;
+    // } else {
+    //   return false;
+    // }
     // return true;
   };
 
@@ -293,11 +293,11 @@ const AppointmentForm = ({
     // }
 
     // Disable times outside of the availability range
-    if (time >= startTime && time <= endTime) {
-      return 'selectable-time';
-    } else {
-      return 'non-selectable-time';
-    }
+    // if (time >= startTime && time <= endTime) {
+    //   return 'selectable-time';
+    // } else {
+    //   return 'non-selectable-time';
+    // }
   };
 
   const onSubmit = async (
