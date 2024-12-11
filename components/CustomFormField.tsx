@@ -37,8 +37,10 @@ interface CustomProps {
   showTimeSelect?: boolean;
   children?: React.ReactNode;
   maxDate?: Date;
-  filterDate?: (date: Date) => boolean; // Custom date filtering logic
-  isTimeSelectable?: (date: Date, time: DateTime) => boolean;
+  filterDate?: (date: Date) => boolean;
+  dayClassName?: (date: Date) => string;
+  isTimeSelectable?: (date: Date) => boolean;
+  timeClassName?: (date: Date) => string;
   renderSkeleton?: (field: any) => React.ReactNode;
 }
 
@@ -120,17 +122,19 @@ const RenderField = ({ field, props }: { field: any; props: CustomProps }) => {
               dateFormat={dateFormat ?? 'dd/MM/yyyy'}
               timeInputLabel="Time:"
               wrapperClassName="date-picker"
-              filterDate={date => {
-                //checking that no date greater than 1 month is able to be selected
-                const isWithinMaxDate = maxDate ? date <= maxDate : true;
-                //add a control that the doctor selected has avaiability on that day of the week TODO
-                const isCustomDateValid = props.filterDate
-                  ? props.filterDate(date)
-                  : true;
-                return isWithinMaxDate && isCustomDateValid;
-              }}
-              dayClassName={props.filterDate}
-              timeClassName={props.isTimeSelectable}
+              // filterDate={date => {
+              //   //checking that no date greater than 1 month is able to be selected
+              //   const isWithinMaxDate = maxDate ? date <= maxDate : true;
+              //   //add a control that the doctor selected has avaiability on that day of the week TODO
+              //   const isCustomDateValid = props.filterDate
+              //     ? props.filterDate(date)
+              //     : true;
+              //   return isWithinMaxDate && isCustomDateValid;
+              // }}
+              filterDate={props.filterDate}
+              dayClassName={props.dayClassName}
+              isTimeSelectable={props.isTimeSelectable}
+              timeClassName={props.timeClassName}
             />
           </FormControl>
         </div>
