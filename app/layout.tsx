@@ -23,7 +23,7 @@ const fontSans = Plus_Jakarta_Sans({
 // });
 
 export const metadata: Metadata = {
-  title: 'MediSchedule',
+  title: `${process.env.NEXT_PUBLIC_PROJECT_NAME}`,
   description: 'A healthcare management system',
 };
 

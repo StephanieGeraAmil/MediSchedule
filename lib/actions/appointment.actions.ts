@@ -198,7 +198,7 @@ export const updateAppointment = async ({
 
     if (!updatedAppointment) throw Error;
     // with Dr. ${appointment.physician}` : `We regret to inform that your appointment
-    const smsMessage = `Greetings from CarePulse. ${
+    const smsMessage = `Greetings from ${process.env.NEXT_PUBLIC_PROJECT_NAME}. ${
       type === 'schedule'
         ? `Your appointment is confirmed for ${formatDateTime(appointment.schedule!).dateTime} 
     with Dr. ${appointment.doctor}`
