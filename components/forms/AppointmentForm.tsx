@@ -85,11 +85,9 @@ const AppointmentForm = ({
     name: 'doctor',
   });
   useEffect(() => {
-    console.log(selectedDoctor);
     const doctorAppointments = nextMonthAppintmentList.filter(
       appt => appt.doctorId === selectedDoctor
     );
-    console.log(doctorAppointments);
   }, [selectedDoctor]);
   const selectedDate = useWatch({ control: form.control, name: 'schedule' });
 
@@ -154,7 +152,6 @@ const AppointmentForm = ({
   /////time
 
   const isTimeSelectable = (time: Date): boolean => {
-    console.log(time);
     // if (!field.value || !selectedDoctor || !doctorsList.length) return true;
     if (!selectedDate || !selectedDoctor || !doctorsList.length) return true;
 
@@ -190,7 +187,6 @@ const AppointmentForm = ({
     const doctorAppointments = nextMonthAppintmentList.filter(
       appt => appt.doctorId === selectedDoctor
     );
-    console.log('doctorAppointments', doctorAppointments);
 
     const isDateTimeTaken = nextMonthAppintmentList.filter(appt => {
       const date1 = new Date(time);
@@ -314,7 +310,6 @@ const AppointmentForm = ({
           note: values.note,
           userId: userId ? userId : '',
         };
-        console.log(appointmentData);
 
         const newAppointment = await createAppointment(appointmentData);
 
@@ -404,6 +399,7 @@ const AppointmentForm = ({
                         className="rounded-full border border-dark-500"
                       />
                       <p>{doctor.name}</p>
+                      <p> - {doctor.speciality}</p>
                     </div>
                   </SelectItem>
                 ))}
