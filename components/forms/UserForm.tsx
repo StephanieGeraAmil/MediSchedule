@@ -75,7 +75,8 @@ const UserForm = () => {
           <p className="text-dark-700">Welcome to our site.</p>
           <p className="text-dark-700">
             Please log in. If you don't have an account yet, please request one
-            from MediSchedule.
+            from MediSchedule. (In this testing environment, the admin passkey
+            is 123456.)
           </p>
         </section>
         <CustomFormField
