@@ -8,6 +8,7 @@ import { Appointment } from '@/types/appwrite.types';
 import {
   APPOINTMENT_COLLECTION_ID,
   PATIENT_COLLECTION_ID,
+  DOCTOR_COLLECTION_ID,
   DATABASE_ID,
   databases,
   messaging,
@@ -15,26 +16,12 @@ import {
   users,
 } from '../appwrite.config';
 import { formatDateTime, parseStringify } from '../utils';
+
 const checkSession = async () => {
   try {
-    let user = await account.getSession('current');
-    if (!user) {
-      user = await account.createSession(
-        process.env.NEXT_PUBLIC_ADMIN_EMAIL || '',
-        process.env.NEXT_PUBLIC_PASSWORD || ''
-      );
-    }
-    console.log('User is logged in:', user);
+    const user = await account.get();
     return true; // User is logged in
   } catch (error) {
-    console.log('No active session:', error);
-    // const session = await account.createEmailPasswordSession(
-    //   process.env.NEXT_PUBLIC_ADMIN_EMAIL || '',
-    //   process.env.NEXT_PUBLIC_PASSWORD || ''
-    // );
-    // console.log('session');
-    // console.log(session);
-
     return false; // User is not logged in
   }
 };
@@ -43,10 +30,7 @@ export const createAppointment = async (
   appointment: CreateAppointmentParams
 ) => {
   try {
-    console.log('in the action');
-    // console.log(appointment);
     const user = checkSession();
-    console.log(user);
     // first I need to check that there is no appoinment for the same dr in that schedule
     const prevAppointment = await databases.listDocuments(
       DATABASE_ID!,
@@ -58,10 +42,13 @@ export const createAppointment = async (
       ]
     );
     if (prevAppointment.documents.length === 0) {
-      //if I dont have an user Id but i have a patient-> i'm creating the appoinment from the patient overview
       if (!appointment.patient) {
-        if (appointment.userId) {
-          //i get the patient that has that userId
+        //if i dont  have a patient
+        if (
+          appointment.userId &&
+          appointment.userId != process.env.NEXT_PUBLIC_ADMIN_USER_ID
+        ) {
+          //if i have an userId i get the patient that has that userId
           const patients = await databases.listDocuments(
             DATABASE_ID!,
             PATIENT_COLLECTION_ID!,
@@ -70,10 +57,11 @@ export const createAppointment = async (
           if (!patients.documents.length) {
             throw new Error('No patient found for the given user ID.');
           } else {
-            appointment.patient = parseStringify(patients.documents[0]);
+            appointment.patient = patients.documents[0].$id;
+            //  appointment.userId = patients?.documents[0]?.userId || '';
           }
         } else if (appointment.identificationNumber) {
-          //i get the patient that has that identification number
+          //i get the patient that has a certain identification number
           const patients = await databases.listDocuments(
             DATABASE_ID!,
             PATIENT_COLLECTION_ID!,
@@ -88,22 +76,28 @@ export const createAppointment = async (
               'No patient found for the given dentification number.'
             );
           } else {
-            appointment.patient = parseStringify(patients.documents[0]);
-            // console.log('patient');
-            // console.log(patients.documents[0]);
-            // console.log('userId');
+            appointment.patient = patients.documents[0].$id;
+            // appointment.userId = patients?.documents[0]?.userId || '';
           }
         }
       }
-      //I create the appoinment
+      const appointmentToCreate = {
+        schedule: appointment.schedule,
+        patient: appointment.patient,
+        doctor: appointment.doctor,
+        note: appointment.note,
+        reason: appointment.reason,
+        status: 'scheduled',
+      };
+      //once i have a patient I am able to  create the appoinment
       const newAppointment = await databases.createDocument(
         DATABASE_ID!,
         APPOINTMENT_COLLECTION_ID!,
         ID.unique(),
-        appointment
+        appointmentToCreate
       );
 
-      // revalidatePath('/admin');
+      revalidatePath('/admin');
       return parseStringify(newAppointment);
     } else {
       throw new Error(
@@ -241,12 +235,57 @@ export const getAppointment = async (appointmentId: string) => {
 //GET APPOINTMENTS OF PATIENT
 export const getPatientAppointmentList = async (userId: string) => {
   try {
-    const appointment = await databases.listDocuments(
+    const patients = await databases.listDocuments(
+      DATABASE_ID!,
+      PATIENT_COLLECTION_ID!,
+      [Query.equal('userId', [userId])]
+    );
+
+    const patient = patients.documents[0].$id;
+    const appointments = await databases.listDocuments(
       DATABASE_ID!,
       APPOINTMENT_COLLECTION_ID!,
-      [Query.equal('patient', userId), Query.orderDesc('$createdAt')]
+      [Query.equal('patient', patient), Query.orderDesc('$createdAt')]
     );
-    return parseStringify(appointment);
+    // return parseStringify(appointment);
+    const initialCounts = {
+      scheduledCount: 0,
+      pendingCount: 0,
+      cancelledCount: 0,
+      completedCount: 0,
+      noShowCount: 0,
+    };
+
+    const counts = (appointments.documents as Appointment[]).reduce(
+      (acc, appointment) => {
+        switch (appointment.status) {
+          case 'scheduled':
+            acc.scheduledCount++;
+            break;
+          case 'completed':
+            acc.completedCount++;
+            break;
+          case 'no-show':
+            acc.noShowCount++;
+            break;
+          case 'pending':
+            acc.pendingCount++;
+            break;
+          case 'cancelled':
+            acc.cancelledCount++;
+            break;
+        }
+        return acc;
+      },
+      initialCounts
+    );
+    const data = {
+      totalCount: appointments.total,
+      ...counts,
+      documents: appointments.documents,
+    };
+
+    return parseStringify(data);
   } catch (error) {
     console.error(
       'An error occurred while retrieving the existing appointment list:',
@@ -257,12 +296,56 @@ export const getPatientAppointmentList = async (userId: string) => {
 //GET APPOINTMENTS OF DOCTOR
 export const getDoctorAppointmentList = async (userId: string) => {
   try {
-    const appointment = await databases.listDocuments(
+    const doctors = await databases.listDocuments(
+      DATABASE_ID!,
+      DOCTOR_COLLECTION_ID!,
+      [Query.equal('userId', [userId])]
+    );
+    const doctor = doctors.documents[0]?.$id || '';
+    const appointments = await databases.listDocuments(
       DATABASE_ID!,
       APPOINTMENT_COLLECTION_ID!,
-      [Query.equal('doctor', userId), Query.orderDesc('$createdAt')]
+      [Query.equal('doctor', doctor), Query.orderDesc('$createdAt')]
     );
-    return parseStringify(appointment);
+    // return parseStringify(appointments.documents);
+    const initialCounts = {
+      scheduledCount: 0,
+      pendingCount: 0,
+      cancelledCount: 0,
+      completedCount: 0,
+      noShowCount: 0,
+    };
+
+    const counts = (appointments.documents as Appointment[]).reduce(
+      (acc, appointment) => {
+        switch (appointment.status) {
+          case 'scheduled':
+            acc.scheduledCount++;
+            break;
+          case 'completed':
+            acc.completedCount++;
+            break;
+          case 'no-show':
+            acc.noShowCount++;
+            break;
+          case 'pending':
+            acc.pendingCount++;
+            break;
+          case 'cancelled':
+            acc.cancelledCount++;
+            break;
+        }
+        return acc;
+      },
+      initialCounts
+    );
+    const data = {
+      totalCount: appointments.total,
+      ...counts,
+      documents: appointments.documents,
+    };
+
+    return parseStringify(data);
   } catch (error) {
     console.error(
       'An error occurred while retrieving the existing appointment list:',
@@ -290,7 +373,6 @@ export const getNextMonthsAppointments = async () => {
       schedule: doc.schedule,
       doctorId: doc.doctor?.$id, // Extract only the doctor ID
     }));
-    console.log(filteredAppointments);
     return parseStringify(filteredAppointments);
   } catch (error) {
     console.error(

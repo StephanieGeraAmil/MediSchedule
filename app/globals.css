@@ -372,21 +372,21 @@
 }
 
 .non-selectable-day {
-  color: #000; /* Gray out non-selectable dates */
+  color: red !important; /* Gray out non-selectable dates */
   pointer-events: none; /* Prevent clicking */
   /* text-decoration: line-through;  */
 }
 
 .selectable-day {
-  color: #ccc; /* Default color for selectable dates */
+  color: green !important; /* Default color for selectable dates */
 }
 .non-selectable-time {
-  color: #000; /* Gray out non-selectable times */
+  color: red !important; /* Gray out non-selectable times */
   pointer-events: none; /* Prevent clicking */
   /* text-decoration: line-through; Optional */
 }
 
 /* For selectable times */
 .selectable-time {
-  color: #ccc; /* Default color for selectable times */
+  color: green !important; /* Default color for selectable times */
 }

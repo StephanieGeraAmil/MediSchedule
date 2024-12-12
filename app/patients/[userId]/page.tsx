@@ -37,25 +37,25 @@ const PatientPage = async ({ params: { userId } }: SearchParamProps) => {
         <section className="admin-stat">
           <StatCard
             type="completed"
-            count={appointments.completedCount}
+            count={appointments?.completedCount || 0}
             label="Completed appointments"
             icon={'/assets/icons/check.svg'}
           />
           <StatCard
             type="scheduled"
-            count={appointments.scheduledCount}
+            count={appointments?.scheduledCount || 0}
             label="Scheduled appointments"
             icon={'/assets/icons/appointments.svg'}
           />
           <StatCard
             type="no-show"
-            count={appointments.noShowCount}
+            count={appointments?.noShowCount || 0}
             label="No-Show appointments"
             icon={'/assets/icons/cancelled.svg'}
           />
         </section>
 
-        <DataTable columns={columnsPatient} data={appointments.documents} />
+        <DataTable columns={columnsPatient} data={appointments?.documents} />
       </main>
     </div>
   );
