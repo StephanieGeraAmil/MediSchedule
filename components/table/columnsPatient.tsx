@@ -55,10 +55,6 @@ export const columnsPatient: ColumnDef<Appointment>[] = [
     cell: ({ row }) => {
       const appointment = row.original;
 
-      // const doctor = Doctors.find(
-      //   doctor => doctor.name === appointment.physician
-      // );
-
       return (
         <div className="flex items-center gap-3">
           <Image
@@ -72,6 +68,19 @@ export const columnsPatient: ColumnDef<Appointment>[] = [
             Dr. {appointment.doctor?.name || ''}
           </p>
         </div>
+      );
+    },
+  },
+  {
+    accessorKey: 'doctor_speciality',
+    header: 'Speciality',
+    cell: ({ row }) => {
+      const appointment = row.original;
+
+      return (
+        <p className="whitespace-nowrap">
+          {appointment.doctor?.speciality || ''}
+        </p>
       );
     },
   },

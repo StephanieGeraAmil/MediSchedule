@@ -100,6 +100,19 @@ export const columns: ColumnDef<Appointment>[] = [
     },
   },
   {
+    accessorKey: 'doctor_speciality',
+    header: 'Speciality',
+    cell: ({ row }) => {
+      const appointment = row.original;
+
+      return (
+        <p className="whitespace-nowrap">
+          {appointment.doctor?.speciality || ''}
+        </p>
+      );
+    },
+  },
+  {
     id: 'actions',
     header: () => <div className="pl-4">Actions</div>,
     cell: ({ row }) => {
