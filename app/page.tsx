@@ -13,7 +13,7 @@ export default function Home({ searchParams }: SearchParamProps) {
       <section className="remove-scrollbar container my-auto">
         <div className="sub-container max-w-[496px]">
           <Image
-            src="/assets/icons/logo-full.svg"
+            src="/assets/icons/logo-icon.svg"
             height={1000}
             width={1000}
             alt="logo"
@@ -22,7 +22,7 @@ export default function Home({ searchParams }: SearchParamProps) {
           <UserForm />
           <div className="text-14-regular mt-20 flex justify-between">
             <p className="justify-items-end text-dark-600 xl:text-left">
-              © 2024 MediSchedule
+              © 2024 {process.env.NEXT_PUBLIC_PROJECT_NAME}
             </p>
             <Link href="/?admin=true" className="text-green-500">
               Admin
