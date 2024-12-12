@@ -96,213 +96,181 @@ const AppointmentForm = ({
   const maxDate = new Date(new Date().setMonth(new Date().getMonth() + 1));
   //day
   const filter = (date: Date): boolean => {
-    // if (!selectedDoctor || !doctorsList.length) return true;
+    if (!selectedDoctor || !doctorsList.length) return true;
 
-    // // Find the selected doctor's data
-    // const doctor = doctorsList.find(doctor => doctor.$id === selectedDoctor);
+    // Find the selected doctor's data
+    const doctor = doctorsList.find(doctor => doctor.$id === selectedDoctor);
 
-    // if (!doctor || !doctor.weeklyAvailability) return true;
+    if (!doctor || !doctor.weeklyAvailability) return true;
 
-    // // Parse the doctor's weekly availability
-    // const weeklyAvailability = JSON.parse(doctor.weeklyAvailability);
+    // Parse the doctor's weekly availability
+    const weeklyAvailability = JSON.parse(doctor.weeklyAvailability);
 
-    // // Get the day of the week for the selected date
-    // const dayOfWeek = date.toLocaleDateString('en-US', { weekday: 'long' });
+    // Get the day of the week for the selected date
+    const dayOfWeek = date.toLocaleDateString('en-US', { weekday: 'long' });
 
-    // // Find the availability for the selected day
-    // const availabilityForDay = weeklyAvailability.find(
-    //   (day: { day: string }) => day.day === dayOfWeek
-    // );
+    // Find the availability for the selected day
+    const availabilityForDay = weeklyAvailability.find(
+      (day: { day: string }) => day.day === dayOfWeek
+    );
 
-    // // If the day is not in the availability, disable it
-    // if (!availabilityForDay) return false;
+    // If the day is not in the availability, disable it
+    if (!availabilityForDay) return false;
 
-    // // Check if the date is already booked
-    // // const doctorAppointments = nextMonthAppintmentList.filter(
-    // //   appt => appt.doctor === selectedDoctor
-    // // );
-
-    // // const isDateTaken = doctorAppointments.some(
-    // //   appt => new Date(appt.schedule).toDateString() === date.toDateString()
-    // // );
-
-    // // if (isDateTaken || date > maxDate) {
-    // if (date > maxDate) {
-    //   return false;
-    // } else {
-    //   return true;
-    // }
-    return true;
+    if (date > maxDate) {
+      return false;
+    } else {
+      return true;
+    }
   };
 
   const dayClassName = (date: Date): string => {
-    // if (!selectedDoctor || !doctorsList.length) return 'selectable-day';
+    if (!selectedDoctor || !doctorsList.length) return 'selectable-day';
 
-    // // Find the selected doctor's data
-    // const doctor = doctorsList.find(doctor => doctor.$id === selectedDoctor);
-    // if (!doctor || !doctor.weeklyAvailability) return 'selectable-day';
+    // Find the selected doctor's data
+    const doctor = doctorsList.find(doctor => doctor.$id === selectedDoctor);
+    if (!doctor || !doctor.weeklyAvailability) return 'selectable-day';
 
-    // // Parse the doctor's weekly availability
-    // const weeklyAvailability = JSON.parse(doctor.weeklyAvailability);
+    // Parse the doctor's weekly availability
+    const weeklyAvailability = JSON.parse(doctor.weeklyAvailability);
 
-    // // Get the day of the week for the selected date
-    // const dayOfWeek = date.toLocaleDateString('en-US', { weekday: 'long' });
+    // Get the day of the week for the selected date
+    const dayOfWeek = date.toLocaleDateString('en-US', { weekday: 'long' });
 
-    // // Find the availability for the selected day
-    // const availabilityForDay = weeklyAvailability.find(
-    //   (day: { day: string }) => day.day === dayOfWeek
-    // );
+    // Find the availability for the selected day
+    const availabilityForDay = weeklyAvailability.find(
+      (day: { day: string }) => day.day === dayOfWeek
+    );
 
-    // // If the day is not in the availability, mark as unavailable
-    // if (!availabilityForDay) return 'non-selectable-day';
+    // If the day is not in the availability, mark as unavailable
+    if (!availabilityForDay) return 'non-selectable-day';
 
-    // // Check if the date is already booked
-    // // const doctorAppointments = nextMonthAppintmentList.filter(
-    // //   appt => appt.doctor === selectedDoctor
-    // // );
-    // // const isDateTaken = doctorAppointments.some(
-    // //   appt => new Date(appt.schedule).toDateString() === date.toDateString()
-    // // );
-
-    // // if (isDateTaken || date > maxDate) {
-    // if (date > maxDate) {
-    //   return 'non-selectable-day';
-    // } else {
-    //   return 'selectable-day';
-    // }
-    return 'selectable0day';
+    if (date > maxDate) {
+      return 'non-selectable-day';
+    } else {
+      return 'selectable-day';
+    }
   };
   /////time
 
   const isTimeSelectable = (time: Date): boolean => {
-    // console.log(time);
-    // // if (!field.value || !selectedDoctor || !doctorsList.length) return true;
-    // if (!selectedDate || !selectedDoctor || !doctorsList.length) return true;
+    console.log(time);
+    // if (!field.value || !selectedDoctor || !doctorsList.length) return true;
+    if (!selectedDate || !selectedDoctor || !doctorsList.length) return true;
 
-    // // Find the selected doctor's data
-    // const doctor = doctorsList.find(doctor => doctor.$id === selectedDoctor);
+    // Find the selected doctor's data
+    const doctor = doctorsList.find(doctor => doctor.$id === selectedDoctor);
 
-    // if (!doctor || !doctor.weeklyAvailability) return true;
+    if (!doctor || !doctor.weeklyAvailability) return true;
 
-    // // Parse the doctor's weekly availability
-    // const weeklyAvailability = JSON.parse(doctor.weeklyAvailability);
+    // Parse the doctor's weekly availability
+    const weeklyAvailability = JSON.parse(doctor.weeklyAvailability);
 
-    // // Get the day of the week for the selected date
-    // // const selectedDate = new Date(field.value);
-    // const dayOfWeek = selectedDate.toLocaleDateString('en-US', {
-    //   weekday: 'long',
-    // });
+    // Get the day of the week for the selected date
+    const dayOfWeek = selectedDate.toLocaleDateString('en-US', {
+      weekday: 'long',
+    });
 
-    // // Find the availability for the selected day
-    // const availabilityForDay = weeklyAvailability.find(
-    //   (day: { day: string }) => day.day === dayOfWeek
-    // );
+    // Find the availability for the selected day
+    const availabilityForDay = weeklyAvailability.find(
+      (day: { day: string }) => day.day === dayOfWeek
+    );
 
-    // // If the day is not in the availability, return false
-    // if (!availabilityForDay) return false;
+    // If the day is not in the availability, return false
+    if (!availabilityForDay) return false;
 
-    // // Convert start and end times to Date objects for comparison
-    // const startTime = new Date(
-    //   `${selectedDate.toDateString()} ${availabilityForDay.startTime}`
-    // );
-    // const endTime = new Date(
-    //   `${selectedDate.toDateString()} ${availabilityForDay.endTime}`
-    // );
+    // Convert start and end times to Date objects for comparison
+    const startTime = new Date(
+      `${selectedDate.toDateString()} ${availabilityForDay.startTime}`
+    );
+    const endTime = new Date(
+      `${selectedDate.toDateString()} ${availabilityForDay.endTime}`
+    );
 
-    // const doctorAppointments = nextMonthAppintmentList.filter(
-    //   appt => appt.doctorId === selectedDoctor
-    // );
-    // console.log('doctorAppointments', doctorAppointments);
-    // const isDateTimeTaken = doctorAppointments.some(
-    //   appt => new Date(appt.schedule) === time
-    // );
+    const doctorAppointments = nextMonthAppintmentList.filter(
+      appt => appt.doctorId === selectedDoctor
+    );
+    console.log('doctorAppointments', doctorAppointments);
 
-    // const isDateTimeTaken = nextMonthAppintmentList.filter(appt => {
-    //   // const date1 = new Date(time);
-    //   // const date2 = new Date(appt.schedule);
+    const isDateTimeTaken = nextMonthAppintmentList.filter(appt => {
+      const date1 = new Date(time);
+      const date2 = new Date(appt.schedule);
 
-    //   // if (isNaN(date1.getTime()) || isNaN(date2.getTime())) {
-    //   //   throw new Error('Invalid date format');
-    //   // }
+      if (isNaN(date1.getTime()) || isNaN(date2.getTime())) {
+        throw new Error('Invalid date format');
+      }
 
-    //   // const isSameDoctor = appt.doctorId === selectedDoctor;
-    //   // const isSameTime = date1.getTime() === date2.getTime();
+      const isSameDoctor = appt.doctorId === selectedDoctor;
+      const isSameTime = date1.getTime() === date2.getTime();
 
-    //   // return isSameDoctor && isSameTime;
-    //   return true;
-    // });
-    // console.log(isDateTimeTaken);
-    // if (isDateTimeTaken.length > 0) return false;
-    // Disable times outside of the availability range
-    // if (time >= startTime && time <= endTime) {
-    //   return true;
-    // } else {
-    //   return false;
-    // }
-    return true;
+      return isSameDoctor && isSameTime;
+      return true;
+    });
+    if (isDateTimeTaken.length > 0) return false;
+    //Disable times outside of the availability range
+    if (time >= startTime && time <= endTime) {
+      return true;
+    } else {
+      return false;
+    }
   };
 
   const timeClassName = (time: Date): string => {
-    // if (!selectedDate || !selectedDoctor || !doctorsList.length)
-    //   return 'selectable-time';
+    if (!selectedDate || !selectedDoctor || !doctorsList.length)
+      return 'selectable-time';
 
-    // // Find the selected doctor's data
-    // const doctor = doctorsList.find(doctor => doctor.$id === selectedDoctor);
+    // Find the selected doctor's data
+    const doctor = doctorsList.find(doctor => doctor.$id === selectedDoctor);
 
-    // if (!doctor || !doctor.weeklyAvailability) return 'selectable-time';
+    if (!doctor || !doctor.weeklyAvailability) return 'selectable-time';
 
-    // // Parse the doctor's weekly availability
-    // const weeklyAvailability = JSON.parse(doctor.weeklyAvailability);
+    // Parse the doctor's weekly availability
+    const weeklyAvailability = JSON.parse(doctor.weeklyAvailability);
 
-    // // Get the day of the week for the selected date
-    // // const selectedDate = new Date(field.value);
-    // const dayOfWeek = selectedDate.toLocaleDateString('en-US', {
-    //   weekday: 'long',
-    // });
+    // Get the day of the week for the selected date
+    const dayOfWeek = selectedDate.toLocaleDateString('en-US', {
+      weekday: 'long',
+    });
 
-    // // Find the availability for the selected day
-    // const availabilityForDay = weeklyAvailability.find(
-    //   (day: { day: string }) => day.day === dayOfWeek
-    // );
+    // Find the availability for the selected day
+    const availabilityForDay = weeklyAvailability.find(
+      (day: { day: string }) => day.day === dayOfWeek
+    );
 
-    // // If the day is not in the availability, return false
-    // if (!availabilityForDay) return 'non-selectable-time';
+    // If the day is not in the availability, return false
+    if (!availabilityForDay) return 'non-selectable-time';
 
-    // // Convert start and end times to Date objects for comparison
-    // const startTime = new Date(
-    //   `${selectedDate.toDateString()} ${availabilityForDay.startTime}`
-    // );
-    // const endTime = new Date(
-    //   `${selectedDate.toDateString()} ${availabilityForDay.endTime}`
-    // );
+    // Convert start and end times to Date objects for comparison
+    const startTime = new Date(
+      `${selectedDate.toDateString()} ${availabilityForDay.startTime}`
+    );
+    const endTime = new Date(
+      `${selectedDate.toDateString()} ${availabilityForDay.endTime}`
+    );
 
-    // const isDateTimeTaken = nextMonthAppintmentList.filter(appt => {
-    //   // const date1 = new Date(time);
-    //   // const date2 = new Date(appt.schedule);
+    const isDateTimeTaken = nextMonthAppintmentList.filter(appt => {
+      const date1 = new Date(time);
+      const date2 = new Date(appt.schedule);
 
-    //   // if (isNaN(date1.getTime()) || isNaN(date2.getTime())) {
-    //   //   throw new Error('Invalid date format');
-    //   // }
+      if (isNaN(date1.getTime()) || isNaN(date2.getTime())) {
+        throw new Error('Invalid date format');
+      }
 
-    //   // const isSameDoctor = appt.doctorId === selectedDoctor;
-    //   // const isSameTime = date1.getTime() === date2.getTime();
+      const isSameDoctor = appt.doctorId === selectedDoctor;
+      const isSameTime = date1.getTime() === date2.getTime();
 
-    //   // return isSameDoctor && isSameTime;
-    //   return true;
-    // });
-    // console.log(isDateTimeTaken);
-    // if (isDateTimeTaken.length > 0) {
-    //   console.log(isDateTimeTaken);
-    //   return 'non-selectable-time';
-    // }
+      return isSameDoctor && isSameTime;
+    });
+    if (isDateTimeTaken.length > 0) {
+      return 'non-selectable-time';
+    }
 
-    // Disable times outside of the availability range
-    // if (time >= startTime && time <= endTime) {
-    //   return 'selectable-time';
-    // } else {
-    //   return 'non-selectable-time';
-    // }
-    return 'selectable-time';
+    //Disable times outside of the availability range
+    if (time >= startTime && time <= endTime) {
+      return 'selectable-time';
+    } else {
+      return 'non-selectable-time';
+    }
   };
 
   const onSubmit = async (
@@ -333,19 +301,12 @@ const AppointmentForm = ({
         let patientData: Record<string, string> = {};
         if (patientId) {
           patientData.patient = patientId;
-          // patientData.userId = userId;
-          // } else if (userId) {
-          //   //i'm in the patient overview
-          //   patientData.userId = userId;
         } else if (values.identificationNumber) {
           patientData.identificationNumber = values.identificationNumber;
-          // patientData.userId = userId;
-          //i'm in the admin
         }
 
         const appointmentData = {
           ...patientData,
-          // physician: values.physician,
           doctor: values.doctor,
           schedule: new Date(values.schedule),
           reason: values.reason!,
@@ -365,10 +326,8 @@ const AppointmentForm = ({
       } else {
         // Update appointment logic
         const appointmentToUpdate = {
-          // userId,
           appointmentId: appointment?.$id!,
           appointment: {
-            // physician: values.physician,
             doctor: values.doctor,
             schedule: new Date(values.schedule),
             status: status,
