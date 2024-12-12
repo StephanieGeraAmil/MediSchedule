@@ -43,6 +43,10 @@ interface CustomProps {
   timeClassName?: (date: Date) => string;
   renderSkeleton?: (field: any) => React.ReactNode;
 }
+const toUTC = localDate => {
+  if (!localDate) return null;
+  return new Date(localDate.getTime() - localDate.getTimezoneOffset() * 60000);
+};
 
 const RenderField = ({ field, props }: { field: any; props: CustomProps }) => {
   const {
@@ -122,15 +126,7 @@ const RenderField = ({ field, props }: { field: any; props: CustomProps }) => {
               dateFormat={dateFormat ?? 'dd/MM/yyyy'}
               timeInputLabel="Time:"
               wrapperClassName="date-picker"
-              // filterDate={date => {
-              //   //checking that no date greater than 1 month is able to be selected
-              //   const isWithinMaxDate = maxDate ? date <= maxDate : true;
-              //   //add a control that the doctor selected has avaiability on that day of the week TODO
-              //   const isCustomDateValid = props.filterDate
-              //     ? props.filterDate(date)
-              //     : true;
-              //   return isWithinMaxDate && isCustomDateValid;
-              // }}
+              timeZone="UTC"
               filterDate={props.filterDate}
               dayClassName={props.dayClassName}
               isTimeSelectable={props.isTimeSelectable}
