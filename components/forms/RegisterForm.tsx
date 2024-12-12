@@ -101,6 +101,8 @@ const RegisterForm = ({ user }: { user: User }) => {
           ? formData
           : undefined,
         privacyConsent: values.privacyConsent,
+        disclosureConsent: values.disclosureConsent,
+        treatmentConsent: values.treatmentConsent,
       };
 
       const newPatient = await registerPatient(patientData);
@@ -290,7 +292,7 @@ const RegisterForm = ({ user }: { user: User }) => {
           <CustomFormField
             control={form.control}
             fieldType={FormFieldType.TEXTAREA}
-            name="pastMedicalHistpry"
+            name="pastMedicalHistory"
             label="Past Medical History"
             placeholder="Appendectomy"
           />
@@ -318,7 +320,7 @@ const RegisterForm = ({ user }: { user: User }) => {
         <CustomFormField
           control={form.control}
           fieldType={FormFieldType.INPUT}
-          name="identificationnumber"
+          name="identificationNumber"
           label="Identification Number"
           placeholder="123456789"
         />
