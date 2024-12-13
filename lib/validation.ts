@@ -11,6 +11,10 @@ export const UserFormValidation = z.object({
 
   password: z.string().min(8, 'Password must be at least 8 characters.'),
 });
+export const PassFormValidation = z.object({
+  oldPassword: z.string().min(8, 'Password must be at least 8 characters.'),
+  password: z.string().min(8, 'Password must be at least 8 characters.'),
+});
 export const LoginValidation = z.object({
   email: z.string().email('Invalid email address.'),
   password: z.string().min(8, 'Password must be at least 8 characters.'),
@@ -66,19 +70,22 @@ export const PatientFormValidation = z.object({
     .default(false)
     .refine(value => value === true, {
       message: 'You must consent to treatment in order to proceed',
-    }),
+    })
+    .optional(),
   disclosureConsent: z
     .boolean()
     .default(false)
     .refine(value => value === true, {
       message: 'You must consent to disclosure in order to proceed',
-    }),
+    })
+    .optional(),
   privacyConsent: z
     .boolean()
     .default(false)
     .refine(value => value === true, {
       message: 'You must consent to privacy in order to proceed',
-    }),
+    })
+    .optional(),
 });
 export const CreateAppointmentSchema = z.object({
   // physician: z.string().min(2, 'Select a doctor'),

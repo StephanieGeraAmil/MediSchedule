@@ -48,8 +48,12 @@ interface Availability {
 
 const DoctorForm = ({
   setOpen,
+  type,
+  user,
 }: {
   setOpen?: Dispatch<SetStateAction<boolean>>;
+  type?: string;
+  user?: User;
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
@@ -58,6 +62,9 @@ const DoctorForm = ({
     resolver: zodResolver(DoctorFormValidation),
     defaultValues: {
       ...DoctorFormDefaultValues,
+      name: user?.name || '',
+      email: user?.email || '',
+      phone: user?.phone || '',
     },
   });
 

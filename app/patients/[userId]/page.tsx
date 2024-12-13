@@ -5,6 +5,7 @@ import { StatCard } from '@/components/StatCard';
 import { DataTable } from '@/components/table/DataTable';
 import { getPatientAppointmentList } from '@/lib/actions/appointment.actions';
 import { CreationsModal } from '@/components/CreationsModal';
+import { UpdateModal } from '@/components/UpdateModal';
 import { columnsPatient } from '@/components/table/columnsPatient';
 
 const PatientPage = async ({ params: { userId } }: SearchParamProps) => {
@@ -29,8 +30,16 @@ const PatientPage = async ({ params: { userId } }: SearchParamProps) => {
           <div className="w-full md:w-1/2 flex flex-col gap-2">
             <h1 className="header">Welcome 👋</h1>
           </div>
-          <div className="w-full md:w-1/2 flex justify-end gap-2">
-            <CreationsModal type="newAppointment" userId={userId} />
+          <div className="overview-modal-buttons">
+            <div className="w-full md:w-1/2 flex justify-end gap-2">
+              <CreationsModal type="newAppointment" userId={userId} />
+            </div>
+            <div className="w-full md:w-1/2 flex justify-end gap-2">
+              <UpdateModal type="changePass" userId={userId} />
+            </div>
+            <div className="w-full md:w-1/2 flex justify-end gap-2">
+              <UpdateModal type="changePatient" userId={userId} />
+            </div>
           </div>
         </section>
 

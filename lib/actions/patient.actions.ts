@@ -131,6 +131,7 @@ export const registerPatient = async ({
 // GET PATIENT
 export const getPatient = async (userId: string) => {
   try {
+    console.log(userId);
     const patients = await databases.listDocuments(
       DATABASE_ID!,
       PATIENT_COLLECTION_ID!,
@@ -143,5 +144,42 @@ export const getPatient = async (userId: string) => {
       'An error occurred while retrieving the patient details:',
       error
     );
+  }
+};
+//UPDATE PATIENT
+export const updatePatient = async ({
+  patientId,
+  ...patientUpdates
+}: UpdatePatientParams) => {
+  try {
+    // Check if a new identification document is provided
+    // let file;
+    // if (identificationDocument) {
+    //   const inputFile = InputFile.fromBlob(
+    //     identificationDocument.get('blobFile') as Blob,
+    //     identificationDocument.get('fileName') as string
+    //   );
+
+    //   // Upload the new file
+    //   file = await storage.createFile(BUCKET_ID!, ID.unique(), inputFile);
+    // }
+
+    // Update the patient document
+    const updatedPatient = await databases.updateDocument(
+      DATABASE_ID!,
+      PATIENT_COLLECTION_ID!,
+      patientId,
+      {
+        // identificationDocumentId: file?.$id ? file.$id : undefined,
+        // identificationDocumentUrl: file?.$id
+        //   ? `${ENDPOINT}/storage/buckets/${BUCKET_ID}/files/${file.$id}/view?project=${PROJECT_ID}`
+        //   : undefined,
+        ...patientUpdates,
+      }
+    );
+
+    return parseStringify(updatedPatient);
+  } catch (error) {
+    console.error('An error occurred while updating the patient:', error);
   }
 };

@@ -55,6 +55,26 @@ export const login = async (userData: LoginParams) => {
     console.error('An error occurred while login in:', error);
   }
 };
+//change password
+export const changePassword = async (userData: PassChangeParams) => {
+  try {
+    // check if oldpassword is correct
+    console.log(userData);
+    const session = await account.createEmailPasswordSession(
+      userData.email,
+      userData.oldPassword
+    );
+    if (session) {
+      const result = await users.updatePassword(userData.id, userData.password);
+
+      return parseStringify(result);
+    } else {
+      throw new Error('Invalid credentials.');
+    }
+  } catch (error: any) {
+    console.error('An error occurred while updating the password:', error);
+  }
+};
 // CREATE APPWRITE USER
 export const createUser = async (user: CreateUserParams) => {
   try {

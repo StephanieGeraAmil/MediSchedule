@@ -23,6 +23,13 @@ declare interface CreateUserParams {
   name: string;
   password: string;
 }
+
+declare interface PassChangeParams {
+  id: string;
+  email: string;
+  oldPassword: string;
+  password: string;
+}
 declare interface User extends CreateUserParams {
   $id: string;
 }
@@ -45,7 +52,28 @@ declare interface RegisterUserParams {
   identificationType: string | undefined;
   identificationNumber: string | undefined;
   identificationDocument: FormData | undefined;
+  disclosureConsent: boolean;
+  treatmentConsent: boolean;
   privacyConsent: boolean;
+  phone: string;
+  name: string;
+  email: string;
+}
+declare interface UpdatePatiemtParams {
+  patientId: string;
+  birthDate: Date;
+  gender: Gender;
+  address: string;
+  occupation: string;
+  emergencyContactName: string;
+  emergencyContactNumber: string;
+  primaryPhysician: string;
+  insuranceProvider: string;
+  insurancePolicyNumber: string;
+  allergies: string | undefined;
+  currentMedication: string | undefined;
+  familyMedicalHistory: string | undefined;
+  pastMedicalHistory: string | undefined;
   phone: string;
   name: string;
   email: string;

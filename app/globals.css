@@ -390,3 +390,9 @@
 .selectable-time {
   color: green !important; /* Default color for selectable times */
 }
+.overview-modal-buttons{
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  gap:10px;
+}
