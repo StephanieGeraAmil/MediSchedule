@@ -37,9 +37,7 @@ export const UpdateModal = ({
   const [open, setOpen] = useState(false);
   const [user, setUser] = useState({});
   const fetchUser = async () => {
-    console.log(userId);
     const userFetched = await getUser(userId);
-    console.log(userFetched);
     setUser(userFetched);
   };
   useEffect(() => {

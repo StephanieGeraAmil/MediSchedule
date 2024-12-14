@@ -42,7 +42,6 @@ const PassForm = ({
   });
 
   const onSubmit = async (values: z.infer<typeof PassFormValidation>) => {
-    console.log('here');
     setIsLoading(true);
     try {
       const userData = {
@@ -51,9 +50,7 @@ const PassForm = ({
         oldPassword: values.oldPassword,
         password: values.password,
       };
-      console.log(userData);
       const user = await changePassword(userData);
-      console.log(user);
       if (user) {
         setOpen && setOpen(false);
         form.reset();

@@ -121,25 +121,21 @@ export const getDoctorList = async () => {
 
 //UPDATE DOCTOR
 export const updateDoctor = async ({
+  user,
   doctorId,
   ...doctorUpdates
 }: UpdateDoctorParams) => {
   try {
-    //check id email changed?
-    // const result = await users.updateEmail(
-    //   '<USER_ID>', // userId
-    //   'email@example.com' // email
-    // );
-    //changed name?
-    //const result = await users.updateName(
-    //     '<USER_ID>', // userId
-    //     '<NAME>' // name
-    // );
-    //changed phone
-    // const result = await users.updatePhone(
-    //   '<USER_ID>', // userId
-    //   '+12065550100' // number
-    // );
+    // const user = await users.get(userId);
+    if (user.email != doctorUpdates.email) {
+      await users.updateEmail(user.$id, doctorUpdates.email);
+    }
+    if (user.phone != doctorUpdates.phone) {
+      await users.updatePhone(user.$id, doctorUpdates.phone);
+    }
+    if (user.name != doctorUpdates.name) {
+      await users.updateName(user.$id, doctorUpdates.name);
+    }
 
     // Update the patient document
     const updatedDoctor = await databases.updateDocument(

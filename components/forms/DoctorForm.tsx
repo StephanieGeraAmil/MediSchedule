@@ -78,7 +78,6 @@ const DoctorForm = ({
       try {
         const savedDoctor = await getDoctor(user?.$id);
         setDoctor(savedDoctor);
-        console.log(savedDoctor);
       } catch (error) {
         console.error('Error fetching the doctor:', error);
       }
@@ -127,7 +126,6 @@ const DoctorForm = ({
         identificationNumber: values.identificationNumber,
         birthDate: new Date(values.birthDate),
         speciality: values.speciality,
-
         weeklyAvailability: availabilityString,
       };
       let doctorToSave;
@@ -146,6 +144,7 @@ const DoctorForm = ({
         if (doctor) {
           doctorToSave = {
             doctorId: doctor.$id || '',
+            user: user,
             ...doctorData,
           };
 
@@ -402,7 +401,7 @@ const DoctorForm = ({
             )}
           />
         )}
-        <SubmitButton isLoading={isLoading}>Get Started</SubmitButton>
+        <SubmitButton isLoading={isLoading}>Save</SubmitButton>
       </form>
     </Form>
   );
