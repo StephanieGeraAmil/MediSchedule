@@ -118,3 +118,41 @@ export const getDoctorList = async () => {
     console.error('An error occurred while retrieving the doctors:', error);
   }
 };
+
+//UPDATE DOCTOR
+export const updateDoctor = async ({
+  doctorId,
+  ...doctorUpdates
+}: UpdateDoctorParams) => {
+  try {
+    //check id email changed?
+    // const result = await users.updateEmail(
+    //   '<USER_ID>', // userId
+    //   'email@example.com' // email
+    // );
+    //changed name?
+    //const result = await users.updateName(
+    //     '<USER_ID>', // userId
+    //     '<NAME>' // name
+    // );
+    //changed phone
+    // const result = await users.updatePhone(
+    //   '<USER_ID>', // userId
+    //   '+12065550100' // number
+    // );
+
+    // Update the patient document
+    const updatedDoctor = await databases.updateDocument(
+      DATABASE_ID!,
+      DOCTOR_COLLECTION_ID!,
+      doctorId,
+      {
+        ...doctorUpdates,
+      }
+    );
+
+    return parseStringify(updatedDoctor);
+  } catch (error) {
+    console.error('An error occurred while updating the doctor:', error);
+  }
+};

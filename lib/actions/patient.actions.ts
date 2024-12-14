@@ -131,6 +131,7 @@ export const registerPatient = async ({
 // GET PATIENT
 export const getPatient = async (userId: string) => {
   try {
+    console.log(userId);
     const patients = await databases.listDocuments(
       DATABASE_ID!,
       PATIENT_COLLECTION_ID!,
@@ -143,5 +144,46 @@ export const getPatient = async (userId: string) => {
       'An error occurred while retrieving the patient details:',
       error
     );
+  }
+};
+//UPDATE PATIENT
+export const updatePatient = async ({
+  patientId,
+  ...patientUpdates
+}: UpdatePatientParams) => {
+  try {
+    //check id email changed?
+    // const result = await users.updateEmail(
+    //   '<USER_ID>', // userId
+    //   'email@example.com' // email
+    // );
+    //changed name?
+    //const result = await users.updateName(
+    //     '<USER_ID>', // userId
+    //     '<NAME>' // name
+    // );
+    //changed phone
+    // const result = await users.updatePhone(
+    //   '<USER_ID>', // userId
+    //   '+12065550100' // number
+    // );
+
+    // Update the patient document
+    const updatedPatient = await databases.updateDocument(
+      DATABASE_ID!,
+      PATIENT_COLLECTION_ID!,
+      patientId,
+      {
+        // identificationDocumentId: file?.$id ? file.$id : undefined,
+        // identificationDocumentUrl: file?.$id
+        //   ? `${ENDPOINT}/storage/buckets/${BUCKET_ID}/files/${file.$id}/view?project=${PROJECT_ID}`
+        //   : undefined,
+        ...patientUpdates,
+      }
+    );
+
+    return parseStringify(updatedPatient);
+  } catch (error) {
+    console.error('An error occurred while updating the patient:', error);
   }
 };

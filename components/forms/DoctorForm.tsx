@@ -1,6 +1,6 @@
 'use client';
 
-import React, { Dispatch, SetStateAction, useState } from 'react';
+import React, { Dispatch, SetStateAction, useState, useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 // import { Button } from '@/components/ui/button';
@@ -18,7 +18,11 @@ import CustomFormField from '../CustomFormField';
 import SubmitButton from '../SubmitButton';
 import { DoctorFormValidation, PatientFormValidation } from '@/lib/validation';
 // import { getUser, registerPatient } from '@/lib/actions/patient.actions';
-import { createDoctor } from '@/lib/actions/doctor.actions';
+import {
+  createDoctor,
+  getDoctor,
+  updateDoctor,
+} from '@/lib/actions/doctor.actions';
 import { useRouter } from 'next/navigation';
 // import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
 import {
@@ -48,23 +52,65 @@ interface Availability {
 
 const DoctorForm = ({
   setOpen,
+  type,
+  user,
 }: {
   setOpen?: Dispatch<SetStateAction<boolean>>;
+  type?: string;
+  user?: User;
 }) => {
   const [isLoading, setIsLoading] = useState(false);
+  const [doctor, setDoctor] = useState(null);
   const router = useRouter();
 
   const form = useForm<z.infer<typeof DoctorFormValidation>>({
     resolver: zodResolver(DoctorFormValidation),
     defaultValues: {
       ...DoctorFormDefaultValues,
+      name: user?.name || '',
+      email: user?.email || '',
+      phone: user?.phone || '',
     },
   });
+
+  useEffect(() => {
+    const fetchDoctor = async () => {
+      try {
+        const savedDoctor = await getDoctor(user?.$id);
+        setDoctor(savedDoctor);
+        console.log(savedDoctor);
+      } catch (error) {
+        console.error('Error fetching the doctor:', error);
+      }
+    };
+    if (type) {
+      fetchDoctor();
+    }
+  }, []);
+
+  useEffect(() => {
+    if (doctor) {
+      const parsedAvailability = doctor.weeklyAvailability
+        ? JSON.parse(doctor.weeklyAvailability)
+        : [];
+      form.reset({
+        name: doctor.name || user?.name || '',
+        email: doctor.email || user?.email || '',
+        phone: doctor.phone || user?.phone || '',
+        birthDate: doctor.birthDate || '',
+        speciality: doctor.speciality || '',
+        identificationNumber: doctor.identificationNumber || '',
+        weeklyAvailability: parsedAvailability,
+      });
+    } else {
+      form.reset(DoctorFormDefaultValues);
+    }
+  }, [doctor]);
 
   const onSubmit = async (values: z.infer<typeof DoctorFormValidation>) => {
     setIsLoading(true);
     let formData;
-    if (values.photoFile && values.photoFile?.length > 0) {
+    if (!type && values.photoFile && values.photoFile?.length > 0) {
       const blobFile = new Blob([values.photoFile[0]], {
         type: values.photoFile[0].type,
       });
@@ -81,14 +127,33 @@ const DoctorForm = ({
         identificationNumber: values.identificationNumber,
         birthDate: new Date(values.birthDate),
         speciality: values.speciality,
-        photoFile: values.photoFile ? formData : undefined,
+
         weeklyAvailability: availabilityString,
-        password: values.password,
       };
-      const newDoctor = await createDoctor(doctorData);
-      if (newDoctor) {
-        setOpen && setOpen(false);
-        form.reset();
+      let doctorToSave;
+      if (!type) {
+        doctorToSave = {
+          ...doctorData,
+          photoFile: values.photoFile ? formData : undefined,
+          password: values.password,
+        };
+        const newDoctor = await createDoctor(doctorToSave);
+        if (newDoctor) {
+          setOpen && setOpen(false);
+          form.reset();
+        }
+      } else {
+        if (doctor) {
+          doctorToSave = {
+            doctorId: doctor.$id || '',
+            ...doctorData,
+          };
+
+          const updatedDoctor = await updateDoctor(doctorToSave);
+          if (updatedDoctor) {
+            setOpen && setOpen(false);
+          }
+        }
       }
     } catch (error) {
       console.log(error);
@@ -307,33 +372,36 @@ const DoctorForm = ({
             </FormControl>
           )}
         />
-
-        <CustomFormField
-          control={form.control}
-          fieldType={FormFieldType.SKELETON}
-          name="photoFile"
-          label="Photo"
-          renderSkeleton={field => (
-            <FormControl>
-              <FileUploader files={field.value} onChange={field.onChange} />
-            </FormControl>
-          )}
-        />
-        <CustomFormField
-          control={form.control}
-          fieldType={FormFieldType.SKELETON}
-          name="password"
-          label="Initial Password"
-          renderSkeleton={field => (
-            <PasswordInput
-              id="password"
-              value={field.value}
-              onChange={field.onChange}
-              autoComplete="password"
-              className="shad-input border-2"
-            />
-          )}
-        />
+        {!type && (
+          <CustomFormField
+            control={form.control}
+            fieldType={FormFieldType.SKELETON}
+            name="photoFile"
+            label="Photo"
+            renderSkeleton={field => (
+              <FormControl>
+                <FileUploader files={field.value} onChange={field.onChange} />
+              </FormControl>
+            )}
+          />
+        )}
+        {!type && (
+          <CustomFormField
+            control={form.control}
+            fieldType={FormFieldType.SKELETON}
+            name="password"
+            label="Initial Password"
+            renderSkeleton={field => (
+              <PasswordInput
+                id="password"
+                value={field.value}
+                onChange={field.onChange}
+                autoComplete="password"
+                className="shad-input border-2"
+              />
+            )}
+          />
+        )}
         <SubmitButton isLoading={isLoading}>Get Started</SubmitButton>
       </form>
     </Form>

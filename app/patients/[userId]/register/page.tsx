@@ -19,6 +19,10 @@ const Register = async ({ params: { userId } }: SearchParamProps) => {
             alt="logo"
             className="mb-12 h-10 w-fit"
           />
+          <section className="mb-12 space-y-4">
+            <h1 className="header">Welcome 👋</h1>
+            <p className="text-dark-700">Let us know more about yourself.</p>
+          </section>
           <RegisterForm user={user} />
           <div className="text-14-regular mt-20 flex justify-between">
             <p className="copyright py-12">© 2024 MediSchedule</p>

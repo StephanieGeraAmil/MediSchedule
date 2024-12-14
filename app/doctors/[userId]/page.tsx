@@ -7,6 +7,7 @@ import { getDoctorAppointmentList } from '@/lib/actions/appointment.actions';
 import { CreationsModal } from '@/components/CreationsModal';
 import { columnsDoctor } from '@/components/table/columnsDoctor';
 import { useEffect } from 'react';
+import { UpdateModal } from '@/components/UpdateModal';
 
 const DoctorPage = async ({ params: { userId } }: SearchParamProps) => {
   const appointments = await getDoctorAppointmentList(userId);
@@ -29,6 +30,14 @@ const DoctorPage = async ({ params: { userId } }: SearchParamProps) => {
         <section className="w-full flex flex-col md:flex-row space-y-4 md:space-y-0 justify-between">
           <div className="w-full md:w-1/2 flex flex-col gap-2">
             <h1 className="header">Welcome 👋</h1>
+          </div>
+          <div className="overview-modal-buttons">
+            <div className="w-full md:w-1/2 flex justify-end gap-2">
+              <UpdateModal type="changePass" userId={userId} />
+            </div>
+            <div className="w-full md:w-1/2 flex justify-end gap-2">
+              <UpdateModal type="changeDoctor" userId={userId} />
+            </div>
           </div>
         </section>
 
