@@ -71,7 +71,7 @@ export const UpdateModal = ({
             />
           )}
           {type == 'changeDoctor' && (
-            <DoctorForm type="update" setOpen={setOpen} userId={userId} />
+            <DoctorForm type="update" setOpen={setOpen} user={user} />
           )}
           {type == 'changePatient' && (
             <RegisterForm

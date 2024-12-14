@@ -29,7 +29,7 @@ const PatientPage = async ({ params: { userId } }: SearchParamProps) => {
         <section className="w-full flex flex-col md:flex-row space-y-4 md:space-y-0 justify-between">
           <div className="w-full md:w-1/2 flex flex-col gap-2">
             <h1 className="header">Welcome 👋</h1>
-          </div>
+          </div> 
           <div className="overview-modal-buttons">
             <div className="w-full md:w-1/2 flex justify-end gap-2">
               <CreationsModal type="newAppointment" userId={userId} />

@@ -152,17 +152,21 @@ export const updatePatient = async ({
   ...patientUpdates
 }: UpdatePatientParams) => {
   try {
-    // Check if a new identification document is provided
-    // let file;
-    // if (identificationDocument) {
-    //   const inputFile = InputFile.fromBlob(
-    //     identificationDocument.get('blobFile') as Blob,
-    //     identificationDocument.get('fileName') as string
-    //   );
-
-    //   // Upload the new file
-    //   file = await storage.createFile(BUCKET_ID!, ID.unique(), inputFile);
-    // }
+    //check id email changed?
+    // const result = await users.updateEmail(
+    //   '<USER_ID>', // userId
+    //   'email@example.com' // email
+    // );
+    //changed name?
+    //const result = await users.updateName(
+    //     '<USER_ID>', // userId
+    //     '<NAME>' // name
+    // );
+    //changed phone
+    // const result = await users.updatePhone(
+    //   '<USER_ID>', // userId
+    //   '+12065550100' // number
+    // );
 
     // Update the patient document
     const updatedPatient = await databases.updateDocument(

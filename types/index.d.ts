@@ -59,7 +59,7 @@ declare interface RegisterUserParams {
   name: string;
   email: string;
 }
-declare interface UpdatePatiemtParams {
+declare interface UpdatePatientParams {
   patientId: string;
   birthDate: Date;
   gender: Gender;
@@ -87,6 +87,15 @@ declare interface RegisterDoctorParams {
   email: string;
   identificationNumber: string | undefined;
   password: string;
+}
+declare interface UpdateDoctorParams {
+  doctorId: string;
+  birthDate: Date;
+  speciality: string;
+  phone: string;
+  name: string;
+  email: string;
+  identificationNumber: string | undefined;
 }
 
 declare type CreateAppointmentParams = {

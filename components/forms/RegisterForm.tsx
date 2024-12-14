@@ -49,7 +49,7 @@ const RegisterForm = ({
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [doctorsList, setDoctorsList] = useState([]);
-  const [patient, setPatient] = useState({});
+  const [patient, setPatient] = useState(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -63,102 +63,7 @@ const RegisterForm = ({
     };
     const fetchPatient = async () => {
       try {
-        console.log(user);
         const savedPatient = await getPatient(user.$id);
-        console.log(savedPatient);
-
-        // {email: 'hannah.nguyen95@yahoo.com', phone: '+12135553471', userId: '675ae2f800038b733d06', name: 'Hannah Nguyen', privacyConsent: true, …}
-        // $collectionId
-        // :
-        // "672e1b45003901421ae2"
-        // $createdAt
-        // :
-        // "2024-12-12T13:40:09.142+00:00"
-        // $databaseId
-        // :
-        // "672e1af1003c23c1e8c0"
-        // $id
-        // :
-        // "675ae7b800338ac110a5"
-        // $permissions
-        // :
-        // []
-        // $updatedAt
-        // :
-        // "2024-12-12T13:45:08.147+00:00"
-        // address
-        // :
-        // "945 S Figueroa St, Los Angeles, CA 90015"
-        // allergies
-        // :
-        // ""
-        // birthDate
-        // :
-        // "1995-07-22T13:35:46.000Z"
-        // currentMedication
-        // :
-        // ""
-        // disclosureConsent
-        // :
-        // false
-        // email
-        // :
-        // "hannah.nguyen95@yahoo.com"
-        // emergencyContactName
-        // :
-        // "Lisa Nguyen"
-        // emergencyContactNumber
-        // :
-        // "+12135553472"
-        // familyMedicalHistory
-        // :
-        // "Mother has thyroid issues, father has no known conditions."
-        // gender
-        // :
-        // "Female"
-        // identificationDocumentId
-        // :
-        // null
-        // identificationDocumentUrl
-        // :
-        // null
-        // identificationNumber
-        // :
-        // "HN-827465"
-        // identificationType
-        // :
-        // "National Identity Card"
-        // insurancePolicyNumber
-        // :
-        // "CA-INS-23467"
-        // insuranceProvider
-        // :
-        // "Kaiser Permanente"
-        // name
-        // :
-        // "Hannah Nguyen"
-        // occupation
-        // :
-        // "Software Developer"
-        // pastMedicalHistory
-        // :
-        // ""
-        // phone
-        // :
-        // "+12135553471"
-        // primaryPhysician
-        // :
-        // "674ca24e0021156c63cd"
-        // privacyConsent
-        // :
-        // true
-        // treatmentConsent
-        // :
-        // false
-        // userId
-        // :
-        // "675ae2f800038b733d06"
-
         setPatient(savedPatient);
       } catch (error) {
         console.error('Error fetching the patient:', error);
@@ -166,35 +71,12 @@ const RegisterForm = ({
     };
 
     fetchDoctors();
-    fetchPatient();
+    if (type) {
+      fetchPatient();
+    }
   }, []);
-
-  const form = useForm<z.infer<typeof PatientFormValidation>>({
-    resolver: zodResolver(PatientFormValidation),
-    defaultValues: {
-      ...PatientFormDefaultValues,
-      name: user?.name || '',
-      email: user?.email || '',
-      phone: user?.phone || '',
-
-      // birthDate: patient?.birthDate || '',
-      // gender: patient?.gender || '',
-      // address: patient?.address || '',
-      // occupation: patient?.occupation || '',
-      // emergencyContactName: patient?.emergencyContactName || '',
-      // emergencyContactNumber: patient?.emergencyContactNumber || '',
-      // primaryPhysician: patient?.primaryPhysician || '',
-      // insuranceProvider: patient?.insuranceProvider || '',
-      // insurancePolicyNumber: patient?.insurancePolicyNumber || '',
-      // allergies: patient?.allergies || '',
-      // currentMedication: patient?.currentMedication || '',
-      // familyMedicalHistory: patient?.familyMedicalHistory || '',
-      // pastMedicalHistory: patient?.pastMedicalHistory || '',
-    },
-  });
-
   useEffect(() => {
-    if (patient) {
+    if (type && patient) {
       form.reset({
         name: patient.name || user?.name || '',
         email: patient.email || user?.email || '',
@@ -218,8 +100,17 @@ const RegisterForm = ({
     }
   }, [patient]);
 
+  const form = useForm<z.infer<typeof PatientFormValidation>>({
+    resolver: zodResolver(PatientFormValidation),
+    defaultValues: {
+      ...PatientFormDefaultValues,
+      name: user?.name || '',
+      email: user?.email || '',
+      phone: user?.phone || '',
+    },
+  });
+
   const onSubmit = async (values: z.infer<typeof PatientFormValidation>) => {
-    console.log('here');
     setIsLoading(true);
     let formData;
     if (

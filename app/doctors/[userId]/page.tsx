@@ -31,7 +31,7 @@ const DoctorPage = async ({ params: { userId } }: SearchParamProps) => {
           <div className="w-full md:w-1/2 flex flex-col gap-2">
             <h1 className="header">Welcome 👋</h1>
           </div>
-          <div>
+          <div className="overview-modal-buttons">
             <div className="w-full md:w-1/2 flex justify-end gap-2">
               <UpdateModal type="changePass" userId={userId} />
             </div>
