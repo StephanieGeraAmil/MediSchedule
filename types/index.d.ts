@@ -60,6 +60,7 @@ declare interface RegisterUserParams {
   email: string;
 }
 declare interface UpdatePatientParams {
+  user: User;
   patientId: string;
   birthDate: Date;
   gender: Gender;
@@ -89,6 +90,7 @@ declare interface RegisterDoctorParams {
   password: string;
 }
 declare interface UpdateDoctorParams {
+  user: User;
   doctorId: string;
   birthDate: Date;
   speciality: string;

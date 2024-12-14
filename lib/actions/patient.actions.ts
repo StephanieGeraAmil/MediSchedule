@@ -148,25 +148,20 @@ export const getPatient = async (userId: string) => {
 };
 //UPDATE PATIENT
 export const updatePatient = async ({
+  user,
   patientId,
   ...patientUpdates
 }: UpdatePatientParams) => {
   try {
-    //check id email changed?
-    // const result = await users.updateEmail(
-    //   '<USER_ID>', // userId
-    //   'email@example.com' // email
-    // );
-    //changed name?
-    //const result = await users.updateName(
-    //     '<USER_ID>', // userId
-    //     '<NAME>' // name
-    // );
-    //changed phone
-    // const result = await users.updatePhone(
-    //   '<USER_ID>', // userId
-    //   '+12065550100' // number
-    // );
+    if (user.email != patientUpdates.email) {
+      await users.updateEmail(user.$id, patientUpdates.email);
+    }
+    if (user.phone != patientUpdates.phone) {
+      await users.updatePhone(user.$id, patientUpdates.phone);
+    }
+    if (user.name != patientUpdates.name) {
+      await users.updateName(user.$id, patientUpdates.name);
+    }
 
     // Update the patient document
     const updatedPatient = await databases.updateDocument(
@@ -174,10 +169,6 @@ export const updatePatient = async ({
       PATIENT_COLLECTION_ID!,
       patientId,
       {
-        // identificationDocumentId: file?.$id ? file.$id : undefined,
-        // identificationDocumentUrl: file?.$id
-        //   ? `${ENDPOINT}/storage/buckets/${BUCKET_ID}/files/${file.$id}/view?project=${PROJECT_ID}`
-        //   : undefined,
         ...patientUpdates,
       }
     );

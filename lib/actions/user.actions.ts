@@ -59,7 +59,6 @@ export const login = async (userData: LoginParams) => {
 export const changePassword = async (userData: PassChangeParams) => {
   try {
     // check if oldpassword is correct
-    console.log(userData);
     const session = await account.createEmailPasswordSession(
       userData.email,
       userData.oldPassword

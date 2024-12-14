@@ -167,6 +167,7 @@ const RegisterForm = ({
         if (patient) {
           patientToSave = {
             patientId: patient.$id || '',
+            user: user,
             ...patientData,
           };
 
