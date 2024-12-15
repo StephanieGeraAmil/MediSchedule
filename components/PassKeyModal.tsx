@@ -20,6 +20,7 @@ import {
   InputOTPSlot,
 } from '@/components/ui/input-otp';
 import { decryptKey, encryptKey } from '@/lib/utils';
+import { useAuth } from '@/contexts/AuthContext';
 
 export const PassKeyModal = () => {
   const router = useRouter();
@@ -27,6 +28,7 @@ export const PassKeyModal = () => {
   const [open, setOpen] = useState(false);
   const [passkey, setPasskey] = useState('');
   const [error, setError] = useState('');
+  const { user, login: authLogin } = useAuth();
 
   const encryptedKey =
     typeof window !== 'undefined'
@@ -44,10 +46,12 @@ export const PassKeyModal = () => {
             password: process.env.NEXT_PUBLIC_PASSWORD || '',
           };
           try {
-            const user = await login(userData);
+            const session = await login(userData);
+            const user = session.user;
             if (user) {
               setOpen(false);
-              localStorage.setItem('userId', user);
+              // localStorage.setItem('userId', user);
+              authLogin(session.secret, user);
               router.push('/admin');
             }
           } catch (error) {
@@ -64,7 +68,7 @@ export const PassKeyModal = () => {
 
   const closeModal = () => {
     setOpen(false);
-    router.push('/');
+    // router.push('/');
   };
 
   const validatePasskey = (

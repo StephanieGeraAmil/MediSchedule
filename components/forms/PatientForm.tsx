@@ -1,6 +1,6 @@
 'use client';
 import { z } from 'zod';
-import React, { Dispatch, SetStateAction, useState } from 'react';
+import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
@@ -17,7 +17,7 @@ import { Input } from '@/components/ui/input';
 import CustomFormField from '../CustomFormField';
 import SubmitButton from '../SubmitButton';
 import { UserFormValidation } from '@/lib/validation';
-import { createUser } from '@/lib/actions/patient.actions';
+import { createUser } from '@/lib/actions/user.actions';
 import { useRouter } from 'next/navigation';
 import { FormFieldType } from '@/constants';
 import { PasswordInput } from '../PasswordInput';

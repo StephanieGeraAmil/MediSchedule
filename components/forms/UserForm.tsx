@@ -17,13 +17,16 @@ import { Input } from '@/components/ui/input';
 import CustomFormField from '../CustomFormField';
 import SubmitButton from '../SubmitButton';
 import { LoginValidation, UserFormValidation } from '@/lib/validation';
-import { getPatient, login } from '@/lib/actions/patient.actions';
+import { getPatient } from '@/lib/actions/patient.actions';
+import { login } from '@/lib/actions/user.actions';
 import { getDoctor } from '@/lib/actions/doctor.actions';
 import { useRouter } from 'next/navigation';
 import { PasswordInput } from '../PasswordInput';
 import { FormFieldType } from '@/constants';
+import { useAuth } from '@/contexts/AuthContext';
 
 const UserForm = () => {
+  const { user, login: authLogin } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const form = useForm<z.infer<typeof LoginValidation>>({
@@ -41,10 +44,14 @@ const UserForm = () => {
         email: values.email,
         password: values.password,
       };
-      const user = await login(userData);
+
+      const session = await login(userData);
+      const user = session?.user;
+
       if (!user) {
         throw new Error('Invalid credentials');
       } else {
+        authLogin(session.secret, user);
         const patient = await getPatient(user.$id);
         if (patient) {
           router.push(`/patients/${user.$id}`);

@@ -21,6 +21,7 @@ import RegisterForm from './forms/RegisterForm';
 import PassForm from './forms/PassForm';
 import DoctorForm from './forms/DoctorForm';
 import { getUser } from '@/lib/actions/user.actions';
+import { useAuth } from '@/contexts/AuthContext';
 
 export const UpdateModal = ({
   type,
@@ -29,25 +30,17 @@ export const UpdateModal = ({
   type: 'changePass' | 'changeDoctor' | 'changePatient';
   userId: string;
 }) => {
-  // const userLoggedId = userId
-  //   ? userId
-  //   : typeof window !== 'undefined'
-  //     ? window.localStorage.getItem('userId')
-  //     : null;
   const [open, setOpen] = useState(false);
-  const [user, setUser] = useState({});
-  const fetchUser = async () => {
-    const userFetched = await getUser(userId);
-    setUser(userFetched);
-  };
-  useEffect(() => {
-    fetchUser();
-  }, []);
+  const { user, login: authLogin } = useAuth();
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className={`capitalize bg-green-500`}>{type}</Button>
+        <Button className="capitalize bg-green-500">
+          {type === 'changePass' && 'Change Password'}
+          {type === 'changeDoctor' && 'Update Info'}
+          {type === 'changePatient' && 'Update Info'}
+        </Button>
       </DialogTrigger>
 
       <DialogContent className="shad-dialog sm:max-w-md">

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -18,20 +18,15 @@ import AppointmentForm from './forms/AppointmentForm';
 import 'react-datepicker/dist/react-datepicker.css';
 import PatientForm from './forms/PatientForm';
 import DoctorForm from './forms/DoctorForm';
+import { useAuth } from '@/contexts/AuthContext';
 
 export const CreationsModal = ({
   type,
-  userId,
 }: {
   type: 'newUser' | 'newDoctor' | 'newAppointment';
-  userId?: string;
 }) => {
-  const userLoggedId = userId
-    ? userId
-    : typeof window !== 'undefined'
-      ? window.localStorage.getItem('userId')
-      : null;
   const [open, setOpen] = useState(false);
+  const { user: authUser, login: authLogin } = useAuth();
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -55,7 +50,7 @@ export const CreationsModal = ({
           {type == 'newAppointment' && (
             <AppointmentForm
               type="create"
-              userId={userLoggedId}
+              userId={authUser?.$id}
               setOpen={setOpen}
             />
           )}

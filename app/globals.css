@@ -390,9 +390,18 @@
 .selectable-time {
   color: green !important; /* Default color for selectable times */
 }
-.overview-modal-buttons{
+.overview-modal-buttons {
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
-  gap:10px;
+  gap: 10px;
+}
+
+.horizontal_div {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  width: auto;
+  align-items: flex-end;
+  gap: 10px;
 }
