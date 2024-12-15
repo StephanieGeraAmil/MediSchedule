@@ -46,7 +46,7 @@ const UserForm = () => {
       };
 
       const session = await login(userData);
-      const user = session.user;
+      const user = session?.user;
 
       if (!user) {
         throw new Error('Invalid credentials');

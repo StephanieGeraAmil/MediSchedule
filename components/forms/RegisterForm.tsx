@@ -18,7 +18,7 @@ import CustomFormField from '../CustomFormField';
 import SubmitButton from '../SubmitButton';
 import { PatientFormValidation } from '@/lib/validation';
 import {
-  getUser,
+  // getUser,
   registerPatient,
   getPatient,
   updatePatient,
@@ -37,13 +37,14 @@ import Image from 'next/image';
 import FileUploader from '../FileUploader';
 import { z } from 'zod';
 import { FormFieldType } from '@/constants';
+import { useAuth } from '@/contexts/AuthContext';
 
 const RegisterForm = ({
-  user,
+  // user,
   type,
   setOpen,
 }: {
-  user: User;
+  // user: User;
   type?: string;
   setOpen?: Dispatch<SetStateAction<boolean>>;
 }) => {
@@ -51,6 +52,7 @@ const RegisterForm = ({
   const [doctorsList, setDoctorsList] = useState([]);
   const [patient, setPatient] = useState(null);
   const router = useRouter();
+  const { user } = useAuth();
 
   useEffect(() => {
     const fetchDoctors = async () => {
@@ -63,7 +65,7 @@ const RegisterForm = ({
     };
     const fetchPatient = async () => {
       try {
-        const savedPatient = await getPatient(user.$id);
+        const savedPatient = await getPatient(user?.$id);
         setPatient(savedPatient);
       } catch (error) {
         console.error('Error fetching the patient:', error);
@@ -95,9 +97,16 @@ const RegisterForm = ({
         familyMedicalHistory: patient.familyMedicalHistory || '',
         pastMedicalHistory: patient.pastMedicalHistory || '',
       });
-    } else {
-      form.reset(PatientFormDefaultValues);
     }
+    // else if (user) {
+    //   form.reset({
+    //     name: user?.name || '',
+    //     email: user?.email || '',
+    //     phone: user?.phone || '',
+    //   });
+    // } else {
+    //   form.reset(PatientFormDefaultValues);
+    // }
   }, [patient]);
 
   const form = useForm<z.infer<typeof PatientFormValidation>>({
