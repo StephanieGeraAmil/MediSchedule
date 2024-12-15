@@ -25,10 +25,10 @@ const Header: React.FC<HeaderProps> = ({ isAdmin }) => {
             alt="logo"
             className="h-8 w-fit"
           />
-          <p className="text-16-semibold">Logout</p>
+          <p className="text-17">Logout</p>
         </div>
       </div>
-      {isAdmin && <p className="text-16-semibold">Admin Dashboard</p>}
+      {isAdmin && <p className="text-18-bold">Admin Dashboard</p>}
     </header>
   );
 };

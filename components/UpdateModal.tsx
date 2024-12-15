@@ -55,7 +55,11 @@ export const UpdateModal = ({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className={`capitalize bg-green-500`}>{type}</Button>
+        <Button className="capitalize bg-green-500">
+          {type === 'changePass' && 'Change Password'}
+          {type === 'changeDoctor' && 'Update Info'}
+          {type === 'changePatient' && 'Update Info'}
+        </Button>
       </DialogTrigger>
 
       <DialogContent className="shad-dialog sm:max-w-md">
