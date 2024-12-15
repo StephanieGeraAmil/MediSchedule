@@ -21,6 +21,7 @@ import RegisterForm from './forms/RegisterForm';
 import PassForm from './forms/PassForm';
 import DoctorForm from './forms/DoctorForm';
 import { getUser } from '@/lib/actions/user.actions';
+import { useAuth } from '@/contexts/AuthContext';
 
 export const UpdateModal = ({
   type,
@@ -35,14 +36,21 @@ export const UpdateModal = ({
   //     ? window.localStorage.getItem('userId')
   //     : null;
   const [open, setOpen] = useState(false);
-  const [user, setUser] = useState({});
-  const fetchUser = async () => {
-    const userFetched = await getUser(userId);
-    setUser(userFetched);
-  };
-  useEffect(() => {
-    fetchUser();
-  }, []);
+  // const [user, setUser] = useState({});
+  const { user, login: authLogin } = useAuth();
+  // useEffect(() => {
+  //   console.log('in patient page, info from auth');
+  //   console.log(authUser);
+  //   console.log(authLogin);
+  //   console.log(logout);
+  // }, []);
+  // const fetchUser = async () => {
+  //   const userFetched = await getUser(userId);
+  //   setUser(userFetched);
+  // };
+  // useEffect(() => {
+  //   fetchUser();
+  // }, []);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

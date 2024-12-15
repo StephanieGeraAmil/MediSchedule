@@ -7,32 +7,23 @@ import { getPatientAppointmentList } from '@/lib/actions/appointment.actions';
 import { CreationsModal } from '@/components/CreationsModal';
 import { UpdateModal } from '@/components/UpdateModal';
 import { columnsPatient } from '@/components/table/columnsPatient';
+import Header from '@/components/Header';
 
 const PatientPage = async ({ params: { userId } }: SearchParamProps) => {
   const appointments = await getPatientAppointmentList(userId);
 
   return (
     <div className="mx-auto flex max-w-7xl flex-col space-y-14">
-      <header className="admin-header">
-        <Link href="/" className="cursor-pointer">
-          <Image
-            src="/assets/icons/logo-icon.svg"
-            height={32}
-            width={162}
-            alt="logo"
-            className="h-8 w-fit"
-          />
-        </Link>
-      </header>
+      <Header />
 
       <main className="admin-main">
         <section className="w-full flex flex-col md:flex-row space-y-4 md:space-y-0 justify-between">
           <div className="w-full md:w-1/2 flex flex-col gap-2">
             <h1 className="header">Welcome 👋</h1>
-          </div> 
+          </div>
           <div className="overview-modal-buttons">
             <div className="w-full md:w-1/2 flex justify-end gap-2">
-              <CreationsModal type="newAppointment" userId={userId} />
+              <CreationsModal type="newAppointment" />
             </div>
             <div className="w-full md:w-1/2 flex justify-end gap-2">
               <UpdateModal type="changePass" userId={userId} />

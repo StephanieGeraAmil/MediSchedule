@@ -7,26 +7,14 @@ import { DataTable } from '@/components/table/DataTable';
 import { getRecentAppointmentList } from '@/lib/actions/appointment.actions';
 import { Button } from '@/components/ui/button';
 import { CreationsModal } from '@/components/CreationsModal';
+import Header from '@/components/Header';
 
 const AdminPage = async () => {
   const appointments = await getRecentAppointmentList();
 
   return (
     <div className="mx-auto flex max-w-7xl flex-col space-y-14">
-      <header className="admin-header">
-        <Link href="/" className="cursor-pointer">
-          <Image
-            src="/assets/icons/logo-icon.svg"
-            height={32}
-            width={162}
-            alt="logo"
-            className="h-8 w-fit"
-          />
-        </Link>
-
-        <p className="text-16-semibold">Admin Dashboard</p>
-      </header>
-
+      <Header isAdmin={true} />
       <main className="admin-main">
         <section className="w-full flex flex-col md:flex-row space-y-4 md:space-y-0 justify-between">
           <div className="w-full md:w-1/2 flex flex-col gap-2">
@@ -36,9 +24,9 @@ const AdminPage = async () => {
             </p>
           </div>
           <div className="w-full md:w-1/2 flex justify-end gap-2">
-            <CreationsModal type="newUser" userId={''} />
-            <CreationsModal type="newDoctor" userId={''} />
-            <CreationsModal type="newAppointment" userId={''} />
+            <CreationsModal type="newUser" />
+            <CreationsModal type="newDoctor" />
+            <CreationsModal type="newAppointment" />
           </div>
         </section>
 

@@ -8,23 +8,14 @@ import { CreationsModal } from '@/components/CreationsModal';
 import { columnsDoctor } from '@/components/table/columnsDoctor';
 import { useEffect } from 'react';
 import { UpdateModal } from '@/components/UpdateModal';
+import Header from '@/components/Header';
 
 const DoctorPage = async ({ params: { userId } }: SearchParamProps) => {
   const appointments = await getDoctorAppointmentList(userId);
 
   return (
     <div className="mx-auto flex max-w-7xl flex-col space-y-14">
-      <header className="admin-header">
-        <Link href="/" className="cursor-pointer">
-          <Image
-            src="/assets/icons/logo-icon.svg"
-            height={32}
-            width={162}
-            alt="logo"
-            className="h-8 w-fit"
-          />
-        </Link>
-      </header>
+      <Header />
 
       <main className="admin-main">
         <section className="w-full flex flex-col md:flex-row space-y-4 md:space-y-0 justify-between">

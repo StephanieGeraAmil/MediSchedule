@@ -34,10 +34,11 @@ export const login = async (userData: LoginParams) => {
         );
         if (session) {
           // User successfully logged in
-          // user = existingUsers.users[0];
-          user = session.userId;
-
-          return user;
+          user = existingUsers.users[0];
+          // user = session.userId;
+          const result = { ...session, user: user };
+          // console.log(result);
+          return result;
         } else {
           return null;
         }

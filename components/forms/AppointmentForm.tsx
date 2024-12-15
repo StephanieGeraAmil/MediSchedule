@@ -43,6 +43,7 @@ const AppointmentForm = ({
   const [doctorsList, setDoctorsList] = useState([]);
   const [nextMonthAppintmentList, setNextMonthAppintmentList] = useState([]);
   const AppointmentFormValidation = getAppointmentSchema(type);
+  // const isAdmin = localStorage.getItem('accessKey') ? true : false;
 
   useEffect(() => {
     const fetchDoctors = async () => {
