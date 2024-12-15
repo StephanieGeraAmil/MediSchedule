@@ -54,7 +54,6 @@ const UserForm = () => {
         authLogin(session.secret, user);
         const patient = await getPatient(user.$id);
         if (patient) {
-          console.log('i have a patient, i will redirect');
           router.push(`/patients/${user.$id}`);
         } else {
           const doctor = await getDoctor(user.$id);

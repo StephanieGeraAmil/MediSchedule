@@ -28,13 +28,6 @@ export const CreationsModal = ({
   const [open, setOpen] = useState(false);
   const { user: authUser, login: authLogin } = useAuth();
 
-  // useEffect(() => {
-  //   console.log('in creation modal page, info from auth');
-  //   console.log(authUser);
-  //   console.log(authLogin);
-  //   console.log(logout);
-  // }, []);
-
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>

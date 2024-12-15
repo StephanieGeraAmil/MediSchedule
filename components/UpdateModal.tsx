@@ -30,27 +30,8 @@ export const UpdateModal = ({
   type: 'changePass' | 'changeDoctor' | 'changePatient';
   userId: string;
 }) => {
-  // const userLoggedId = userId
-  //   ? userId
-  //   : typeof window !== 'undefined'
-  //     ? window.localStorage.getItem('userId')
-  //     : null;
   const [open, setOpen] = useState(false);
-  // const [user, setUser] = useState({});
   const { user, login: authLogin } = useAuth();
-  // useEffect(() => {
-  //   console.log('in patient page, info from auth');
-  //   console.log(authUser);
-  //   console.log(authLogin);
-  //   console.log(logout);
-  // }, []);
-  // const fetchUser = async () => {
-  //   const userFetched = await getUser(userId);
-  //   setUser(userFetched);
-  // };
-  // useEffect(() => {
-  //   fetchUser();
-  // }, []);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

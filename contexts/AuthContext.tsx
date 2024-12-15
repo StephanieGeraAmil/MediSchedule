@@ -41,15 +41,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   // Login function
   const login = (token: string, user: User) => {
-    // console.log('logginn in');
-
     localStorage.setItem('authToken', token);
     setUser(user);
   };
 
   // Logout function
   const logout = () => {
-    // console.log('logging out');
     localStorage.removeItem('authToken');
     localStorage.removeItem('accessKey');
     setUser(null);
