@@ -7,6 +7,7 @@ import {
   ENDPOINT,
   PATIENT_COLLECTION_ID,
   DOCTOR_COLLECTION_ID,
+  PROFESSIONAL_COLLECTION_ID,
   PROJECT_ID,
   databases,
   account,
@@ -68,7 +69,8 @@ export const createDoctor = async ({
       // Create new doctor document -> https://appwrite.io/docs/references/cloud/server-nodejs/databases#createDocument
       const newDoctor = await databases.createDocument(
         DATABASE_ID!,
-        DOCTOR_COLLECTION_ID!,
+        // DOCTOR_COLLECTION_ID!,
+        PROFESSIONAL_COLLECTION_ID!,
         ID.unique(),
         {
           photoFileId: file?.$id ? file.$id : null,
@@ -92,7 +94,8 @@ export const getDoctor = async (userId: string) => {
   try {
     const doctors = await databases.listDocuments(
       DATABASE_ID!,
-      DOCTOR_COLLECTION_ID!,
+      // DOCTOR_COLLECTION_ID!,
+      PROFESSIONAL_COLLECTION_ID!,
       [Query.equal('userId', [userId])]
     );
 
@@ -110,7 +113,8 @@ export const getDoctorList = async () => {
   try {
     const doctors = await databases.listDocuments(
       DATABASE_ID!,
-      DOCTOR_COLLECTION_ID!,
+      // DOCTOR_COLLECTION_ID!,
+      PROFESSIONAL_COLLECTION_ID!,
       [Query.orderDesc('$createdAt')]
     );
     return parseStringify(doctors);
@@ -140,7 +144,8 @@ export const updateDoctor = async ({
     // Update the patient document
     const updatedDoctor = await databases.updateDocument(
       DATABASE_ID!,
-      DOCTOR_COLLECTION_ID!,
+      // DOCTOR_COLLECTION_ID!,
+      PROFESSIONAL_COLLECTION_ID!,
       doctorId,
       {
         ...doctorUpdates,
