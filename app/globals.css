@@ -372,23 +372,23 @@
 }
 
 .non-selectable-day {
-  color: red !important; /* Gray out non-selectable dates */
+  color: #000 !important; /* Gray out non-selectable dates */
   pointer-events: none; /* Prevent clicking */
   /* text-decoration: line-through;  */
 }
 
 .selectable-day {
-  color: green !important; /* Default color for selectable dates */
+  color: #fff !important; /* Default color for selectable dates */
 }
 .non-selectable-time {
-  color: red !important; /* Gray out non-selectable times */
+  color: #000 !important; /* Gray out non-selectable times */
   pointer-events: none; /* Prevent clicking */
   /* text-decoration: line-through; Optional */
 }
 
 /* For selectable times */
 .selectable-time {
-  color: green !important; /* Default color for selectable times */
+  color: #fff !important; /* Default color for selectable times */
 }
 .overview-modal-buttons {
   display: flex;
