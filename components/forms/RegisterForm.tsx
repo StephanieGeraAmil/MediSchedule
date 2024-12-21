@@ -59,7 +59,7 @@ const RegisterForm = ({
       try {
         const doctors = await getDoctorList();
         setDoctorsList(doctors.documents);
-        console.log(doctors);
+        // console.log(doctors);
       } catch (error) {
         console.error('Error fetching doctors list:', error);
       }
@@ -67,6 +67,7 @@ const RegisterForm = ({
     const fetchPatient = async () => {
       try {
         const savedPatient = await getPatient(user?.$id);
+        console.log('patient', savedPatient);
         setPatient(savedPatient);
       } catch (error) {
         console.error('Error fetching the patient:', error);
