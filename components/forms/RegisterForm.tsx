@@ -59,6 +59,7 @@ const RegisterForm = ({
       try {
         const doctors = await getDoctorList();
         setDoctorsList(doctors.documents);
+        console.log(doctors);
       } catch (error) {
         console.error('Error fetching doctors list:', error);
       }
@@ -120,7 +121,6 @@ const RegisterForm = ({
   });
 
   const onSubmit = async (values: z.infer<typeof PatientFormValidation>) => {
-    console.log('in register form');
     setIsLoading(true);
     let formData;
     if (
