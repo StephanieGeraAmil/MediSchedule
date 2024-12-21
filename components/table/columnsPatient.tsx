@@ -50,7 +50,7 @@ export const columnsPatient: ColumnDef<Appointment>[] = [
     },
   },
   {
-    accessorKey: 'doctor',
+    accessorKey: 'professional',
     header: 'Doctor',
     cell: ({ row }) => {
       const appointment = row.original;
@@ -58,28 +58,28 @@ export const columnsPatient: ColumnDef<Appointment>[] = [
       return (
         <div className="flex items-center gap-3">
           <Image
-            src={appointment.doctor?.photoFileUrl || ''}
+            src={appointment.professional?.photoFileUrl || ''}
             alt="doctor"
             width={100}
             height={100}
             className="size-8"
           />
           <p className="whitespace-nowrap">
-            Dr. {appointment.doctor?.name || ''}
+            Dr. {appointment.professional?.name || ''}
           </p>
         </div>
       );
     },
   },
   {
-    accessorKey: 'doctor_speciality',
+    accessorKey: 'professional_speciality',
     header: 'Speciality',
     cell: ({ row }) => {
       const appointment = row.original;
 
       return (
         <p className="whitespace-nowrap">
-          {appointment.doctor?.speciality || ''}
+          {appointment.professional?.speciality || ''}
         </p>
       );
     },

@@ -120,6 +120,7 @@ const RegisterForm = ({
   });
 
   const onSubmit = async (values: z.infer<typeof PatientFormValidation>) => {
+    console.log('in register form');
     setIsLoading(true);
     let formData;
     if (

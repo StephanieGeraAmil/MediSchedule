@@ -8,7 +8,9 @@ import { Appointment } from '@/types/appwrite.types';
 import {
   APPOINTMENT_COLLECTION_ID,
   PATIENT_COLLECTION_ID,
+  CLIENT_COLLECTION_ID,
   DOCTOR_COLLECTION_ID,
+  PROFESSIONAL_COLLECTION_ID,
   DATABASE_ID,
   databases,
   messaging,
@@ -37,7 +39,7 @@ export const createAppointment = async (
       APPOINTMENT_COLLECTION_ID!,
       [
         // Query.equal('physician', appointment.physician),
-        Query.equal('doctor', appointment.doctor),
+        Query.equal('professional', appointment.professional),
         Query.equal('schedule', appointment.schedule.toISOString()),
       ]
     );
@@ -51,7 +53,8 @@ export const createAppointment = async (
           //if i have an userId i get the patient that has that userId
           const patients = await databases.listDocuments(
             DATABASE_ID!,
-            PATIENT_COLLECTION_ID!,
+            // PATIENT_COLLECTION_ID!,
+            CLIENT_COLLECTION_ID!,
             [Query.equal('userId', [appointment.userId])]
           );
           if (!patients.documents.length) {
@@ -64,7 +67,8 @@ export const createAppointment = async (
           //i get the patient that has a certain identification number
           const patients = await databases.listDocuments(
             DATABASE_ID!,
-            PATIENT_COLLECTION_ID!,
+            // PATIENT_COLLECTION_ID!,
+            CLIENT_COLLECTION_ID!,
             [
               Query.equal('identificationNumber', [
                 appointment.identificationNumber,
@@ -84,7 +88,7 @@ export const createAppointment = async (
       const appointmentToCreate = {
         schedule: appointment.schedule,
         patient: appointment.patient,
-        doctor: appointment.doctor,
+        professional: appointment.professional,
         note: appointment.note,
         reason: appointment.reason,
         status: 'scheduled',
@@ -201,7 +205,7 @@ export const updateAppointment = async ({
     const smsMessage = `Greetings from MediSchedule. ${
       type === 'schedule'
         ? `Your appointment is confirmed for ${formatDateTime(appointment.schedule!).dateTime} 
-    with Dr. ${appointment.doctor}`
+    with Dr. ${appointment.professional}`
         : `We regret to inform that your appointment 
     for ${formatDateTime(appointment.schedule!).dateTime} is cancelled. 
     Reason:  ${appointment.cancellationReason}`
@@ -237,7 +241,8 @@ export const getPatientAppointmentList = async (userId: string) => {
   try {
     const patients = await databases.listDocuments(
       DATABASE_ID!,
-      PATIENT_COLLECTION_ID!,
+      // PATIENT_COLLECTION_ID!,
+      CLIENT_COLLECTION_ID!,
       [Query.equal('userId', [userId])]
     );
 
@@ -298,14 +303,15 @@ export const getDoctorAppointmentList = async (userId: string) => {
   try {
     const doctors = await databases.listDocuments(
       DATABASE_ID!,
-      DOCTOR_COLLECTION_ID!,
+      // DOCTOR_COLLECTION_ID!,
+      PROFESSIONAL_COLLECTION_ID!,
       [Query.equal('userId', [userId])]
     );
     const doctor = doctors.documents[0]?.$id || '';
     const appointments = await databases.listDocuments(
       DATABASE_ID!,
       APPOINTMENT_COLLECTION_ID!,
-      [Query.equal('doctor', doctor), Query.orderDesc('$createdAt')]
+      [Query.equal('professional', doctor), Query.orderDesc('$createdAt')]
     );
     // return parseStringify(appointments.documents);
     const initialCounts = {
@@ -369,9 +375,9 @@ export const getNextMonthsAppointments = async () => {
       ]
     );
 
-    const filteredAppointments = appointments.documents.map(doc => ({
-      schedule: doc.schedule,
-      doctorId: doc.doctor?.$id, // Extract only the doctor ID
+    const filteredAppointments = appointments.documents.map(app => ({
+      schedule: app.schedule,
+      doctorId: app.professional?.$id, // Extract only the doctor ID
     }));
     return parseStringify(filteredAppointments);
   } catch (error) {

@@ -7,6 +7,7 @@ import {
   DATABASE_ID,
   ENDPOINT,
   PATIENT_COLLECTION_ID,
+  CLIENT_COLLECTION_ID,
   PROJECT_ID,
   databases,
   account,

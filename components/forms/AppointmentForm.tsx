@@ -23,7 +23,8 @@ import 'react-datepicker/dist/react-datepicker.css';
 import CustomFormField from '../CustomFormField';
 import SubmitButton from '../SubmitButton';
 import { Form } from '../ui/form';
-import { FormFieldType } from '@/constants';
+import { FormFieldType, SpecialityList } from '@/constants';
+import { useAuth } from '@/contexts/AuthContext';
 
 const AppointmentForm = ({
   userId,
@@ -43,6 +44,7 @@ const AppointmentForm = ({
   const [doctorsList, setDoctorsList] = useState([]);
   const [nextMonthAppintmentList, setNextMonthAppintmentList] = useState([]);
   const AppointmentFormValidation = getAppointmentSchema(type);
+  const { user: authUser } = useAuth();
   // const isAdmin = localStorage.getItem('accessKey') ? true : false;
 
   useEffect(() => {
@@ -65,12 +67,20 @@ const AppointmentForm = ({
     };
     fetchDoctors();
     fetchNextMonthAppointments();
+    console.log('userId', userId);
+    if (!userId) {
+      userId = authUser?.$id;
+    }
+    console.log('authUser', authUser);
+    console.log(process.env.NEXT_PUBLIC_ADMIN_USER_ID);
   }, []);
 
   const form = useForm<z.infer<typeof AppointmentFormValidation>>({
     resolver: zodResolver(AppointmentFormValidation),
     defaultValues: {
-      doctor: appointment ? appointment?.doctor.$id : doctorsList[0]?.$id,
+      professional: appointment
+        ? appointment?.professional.$id
+        : doctorsList[0]?.$id,
       schedule: appointment
         ? new Date(appointment?.schedule!)
         : new Date(Date.now()),
@@ -83,13 +93,47 @@ const AppointmentForm = ({
 
   const selectedDoctor = useWatch({
     control: form.control,
-    name: 'doctor',
+    name: 'professional',
   });
+  const speciality = useWatch({ control: form.control, name: 'speciality' });
+  const asap = useWatch({ control: form.control, name: 'asap' });
+
   useEffect(() => {
     const doctorAppointments = nextMonthAppintmentList.filter(
       appt => appt.doctorId === selectedDoctor
     );
   }, [selectedDoctor]);
+  useEffect(() => {
+    if (asap && speciality) {
+      const { doctor: earliestDoctor, date: earliestDate } =
+        findEarliestAvailableDoctorAndDate(speciality);
+      if (earliestDoctor) {
+        form.setValue('professional', earliestDoctor.$id);
+        console.log(earliestDoctor);
+      }
+      if (earliestDate) {
+        form.setValue('schedule', earliestDate);
+        console.log(earliestDate);
+      }
+    }
+
+    //allow the user to change doctors or times deleting the asap checkbox
+  }, [asap, speciality]);
+  const isDateTimeTaken = (doctor, time) => {
+    return nextMonthAppintmentList.find(appt => {
+      const date1 = new Date(time);
+      const date2 = new Date(appt.schedule);
+
+      if (isNaN(date1.getTime()) || isNaN(date2.getTime())) {
+        throw new Error('Invalid date format');
+      }
+
+      const isSameDoctor = appt.doctorId === doctor;
+      const isSameTime = date1.getTime() === date2.getTime();
+
+      return isSameDoctor && isSameTime;
+    });
+  };
   const selectedDate = useWatch({ control: form.control, name: 'schedule' });
 
   const maxDate = new Date(new Date().setMonth(new Date().getMonth() + 1));
@@ -185,25 +229,25 @@ const AppointmentForm = ({
       `${selectedDate.toDateString()} ${availabilityForDay.endTime}`
     );
 
-    const doctorAppointments = nextMonthAppintmentList.filter(
-      appt => appt.doctorId === selectedDoctor
-    );
+    // const doctorAppointments = nextMonthAppintmentList.filter(
+    //   appt => appt.doctorId === selectedDoctor
+    // );
 
-    const isDateTimeTaken = nextMonthAppintmentList.filter(appt => {
-      const date1 = new Date(time);
-      const date2 = new Date(appt.schedule);
+    // const isDateTimeTaken = nextMonthAppintmentList.filter(appt => {
+    //   const date1 = new Date(time);
+    //   const date2 = new Date(appt.schedule);
 
-      if (isNaN(date1.getTime()) || isNaN(date2.getTime())) {
-        throw new Error('Invalid date format');
-      }
+    //   if (isNaN(date1.getTime()) || isNaN(date2.getTime())) {
+    //     throw new Error('Invalid date format');
+    //   }
 
-      const isSameDoctor = appt.doctorId === selectedDoctor;
-      const isSameTime = date1.getTime() === date2.getTime();
+    //   const isSameDoctor = appt.doctorId === selectedDoctor;
+    //   const isSameTime = date1.getTime() === date2.getTime();
 
-      return isSameDoctor && isSameTime;
-      return true;
-    });
-    if (isDateTimeTaken.length > 0) return false;
+    //   return isSameDoctor && isSameTime;
+    // });
+    const isTaken = isDateTimeTaken(selectedDoctor, time);
+    if (isTaken) return false;
     //Disable times outside of the availability range
     if (time >= startTime && time <= endTime) {
       return true;
@@ -245,22 +289,25 @@ const AppointmentForm = ({
       `${selectedDate.toDateString()} ${availabilityForDay.endTime}`
     );
 
-    const isDateTimeTaken = nextMonthAppintmentList.filter(appt => {
-      const date1 = new Date(time);
-      const date2 = new Date(appt.schedule);
+    // const isDateTimeTaken = nextMonthAppintmentList.filter(appt => {
+    //   const date1 = new Date(time);
+    //   const date2 = new Date(appt.schedule);
 
-      if (isNaN(date1.getTime()) || isNaN(date2.getTime())) {
-        throw new Error('Invalid date format');
-      }
+    //   if (isNaN(date1.getTime()) || isNaN(date2.getTime())) {
+    //     throw new Error('Invalid date format');
+    //   }
 
-      const isSameDoctor = appt.doctorId === selectedDoctor;
-      const isSameTime = date1.getTime() === date2.getTime();
+    //   const isSameDoctor = appt.doctorId === selectedDoctor;
+    //   const isSameTime = date1.getTime() === date2.getTime();
 
-      return isSameDoctor && isSameTime;
-    });
-    if (isDateTimeTaken.length > 0) {
-      return 'non-selectable-time';
-    }
+    //   return isSameDoctor && isSameTime;
+    // });
+
+    // if (isDateTimeTaken.length > 0) {
+    //   return 'non-selectable-time';
+    // }
+    const isTaken = isDateTimeTaken(selectedDoctor, time);
+    if (isTaken) return 'non-selectable-time';
 
     //Disable times outside of the availability range
     if (time >= startTime && time <= endTime) {
@@ -270,9 +317,107 @@ const AppointmentForm = ({
     }
   };
 
+  const findEarliestAvailableDoctorAndDate = speciality => {
+    // Filter doctors by the selected speciality
+    const filteredDoctors = doctorsList.filter(
+      doctor => doctor.speciality === speciality
+    );
+    console.log(filteredDoctors);
+
+    //get today date and time
+    //get today day of the week
+    //for each doctor get the next slot avaiable
+    const nextSlotsForDoctors = filteredDoctors.map(doctor => {
+      return {
+        doctor: doctor, // Return the doctor object
+        slot: nextSlotsForDoctor(doctor), // Get the next available slot
+      };
+    });
+
+    nextSlotsForDoctors.sort((a, b) => a.slot - b.slot);
+    console.log(nextSlotsForDoctors);
+
+    const selectedDoctor = nextSlotsForDoctors[0].doctor;
+    const date = nextSlotsForDoctors[0].slot;
+    return { doctor: selectedDoctor, date: date };
+  };
+  const nextSlotsForDoctor = doctor => {
+    const today = new Date();
+    const dayOfWeek = today.toLocaleDateString('en-US', { weekday: 'long' });
+
+    // Get the doctor's weekly availability
+    const weeklyAvailability = JSON.parse(doctor.weeklyAvailability);
+
+    // Find the availability for today and future days
+    const todayAvailability = weeklyAvailability.find(
+      day => day.day === dayOfWeek
+    );
+
+    // Check for the next available slot
+    let nextAvailableSlot = null;
+    if (todayAvailability) {
+      const todayStart = new Date(
+        today.toDateString() + ' ' + todayAvailability.startTime
+      );
+      const todayEnd = new Date(
+        today.toDateString() + ' ' + todayAvailability.endTime
+      );
+
+      // If it's today, we need to find the earliest available time after the current time
+      if (today > todayStart && today < todayEnd) {
+        nextAvailableSlot = todayStart;
+        while (nextAvailableSlot <= todayEnd) {
+          const isTaken = isDateTimeTaken(doctor, nextAvailableSlot);
+          if (!isTaken) break; // If the time is not taken, break the loop
+          nextAvailableSlot.setMinutes(nextAvailableSlot.getMinutes() + 30); // Try next slot
+        }
+      }
+    }
+
+    if (!nextAvailableSlot) {
+      // If no available slot today, find the next available day
+      for (let i = 1; i < 7; i++) {
+        const nextDay = new Date(today);
+        nextDay.setDate(today.getDate() + i);
+        const nextDayOfWeek = nextDay.toLocaleDateString('en-US', {
+          weekday: 'long',
+        });
+
+        const availabilityForNextDay = weeklyAvailability.find(
+          day => day.day === nextDayOfWeek
+        );
+        if (availabilityForNextDay) {
+          nextAvailableSlot = new Date(
+            nextDay.toDateString() + ' ' + availabilityForNextDay.startTime
+          );
+          break;
+        }
+      }
+    }
+
+    // Return the earliest available slot
+    return nextAvailableSlot;
+
+    // const tomorrow = new Date();
+    // tomorrow.setDate(tomorrow.getDate() + 1);
+    // if (doctor.$id == '674ca6d40025a95c0e7f') {
+    //   tomorrow.setHours(11, 0, 0, 0);
+    // } else {
+    //   tomorrow.setHours(8, 0, 0, 0);
+    // }
+    // return tomorrow;
+  };
+  // const checkIfTimeTaken = (doctor, time) => {
+  //   // Compare with appointments and return true if the time is already taken
+  //   const isDateTimeTaken = nextMonthAppintmentList.find(
+  //     appt => appt.schedule == time && appt.doctorId == doctor.$id
+  //   );
+  //   return isDateTimeTaken ? true : false;
+  // };
   const onSubmit = async (
     values: z.infer<typeof AppointmentFormValidation>
   ) => {
+    console.log('here');
     setIsLoading(true);
 
     let status: Status;
@@ -304,7 +449,7 @@ const AppointmentForm = ({
 
         const appointmentData = {
           ...patientData,
-          doctor: values.doctor,
+          professional: values.professional,
           schedule: new Date(values.schedule),
           reason: values.reason!,
           status: status,
@@ -324,7 +469,7 @@ const AppointmentForm = ({
         const appointmentToUpdate = {
           appointmentId: appointment?.$id!,
           appointment: {
-            doctor: values.doctor,
+            professional: values.professional,
             schedule: new Date(values.schedule),
             status: status,
             note: values.note,
@@ -380,67 +525,105 @@ const AppointmentForm = ({
                 placeholder="123456789"
               />
             )}
-
-            <CustomFormField
-              fieldType={FormFieldType.SELECT}
-              control={form.control}
-              name="doctor"
-              label="Doctor"
-              placeholder="Select a doctor"
-            >
-              {doctorsList &&
-                doctorsList.map((doctor, i) => (
-                  <SelectItem key={doctor.name + i} value={doctor.$id}>
-                    <div className="flex cursor-pointer items-center gap-2">
-                      <Image
-                        src={doctor.photoFileUrl}
-                        width={32}
-                        height={32}
-                        alt="doctor"
-                        className="rounded-full border border-dark-500"
-                      />
-                      <p>{doctor.name}</p>
-                      <p> - {doctor.speciality}</p>
-                    </div>
-                  </SelectItem>
-                ))}
-            </CustomFormField>
-
-            <CustomFormField
-              fieldType={FormFieldType.DATE_PICKER}
-              control={form.control}
-              name="schedule"
-              label="Expected appointment date"
-              showTimeSelect
-              dateFormat="MM/dd/yyyy  -  h:mm aa"
-              maxDate={maxDate}
-              isTimeSelectable={isTimeSelectable}
-              filterDate={filter}
-              dayClassName={dayClassName}
-              timeClassName={timeClassName}
-            />
-
-            <div
-              className={`flex flex-col gap-6  ${type === 'create' && 'xl:flex-row'}`}
-            >
+            {userId && (
               <CustomFormField
-                fieldType={FormFieldType.TEXTAREA}
+                fieldType={FormFieldType.SELECT}
                 control={form.control}
-                name="reason"
-                label="Appointment reason"
-                placeholder="Annual montly check-up"
-                disabled={type === 're-schedule'}
-              />
-
+                name="speciality"
+                label="Speciality"
+                placeholder="Select a speciality"
+                // onChange={handleSpecialityChange}
+              >
+                {SpecialityList &&
+                  SpecialityList.map((speciality, i) => (
+                    <SelectItem key={speciality + i} value={speciality}>
+                      <div className="flex cursor-pointer items-center gap-2">
+                        <p> {speciality}</p>
+                      </div>
+                    </SelectItem>
+                  ))}
+              </CustomFormField>
+            )}
+            {userId && (
               <CustomFormField
-                fieldType={FormFieldType.TEXTAREA}
                 control={form.control}
-                name="note"
-                label="Comments/notes"
-                placeholder="Prefer afternoon appointments, if possible"
-                disabled={type === 're-schedule'}
+                fieldType={FormFieldType.CHECKBOX}
+                name="asap"
+                label="Select earliest available doctor"
               />
-            </div>
+            )}
+            {userId && (
+              <CustomFormField
+                fieldType={FormFieldType.SELECT}
+                control={form.control}
+                name="professional"
+                label="Doctor"
+                placeholder="Select a doctor"
+              >
+                {doctorsList &&
+                  doctorsList.map((doctor, i) => {
+                    if (
+                      (speciality && speciality === doctor.speciality) ||
+                      !speciality
+                    ) {
+                      return (
+                        <SelectItem key={doctor.name + i} value={doctor.$id}>
+                          <div className="flex cursor-pointer items-center gap-2">
+                            <Image
+                              src={doctor.photoFileUrl}
+                              width={32}
+                              height={32}
+                              alt="doctor"
+                              className="rounded-full border border-dark-500"
+                            />
+                            <p>{doctor.name}</p>
+                            <p> - {doctor.speciality}</p>
+                          </div>
+                        </SelectItem>
+                      );
+                    }
+                    return null;
+                  })}
+              </CustomFormField>
+            )}
+            {userId && (
+              <CustomFormField
+                fieldType={FormFieldType.DATE_PICKER}
+                control={form.control}
+                name="schedule"
+                label="Expected appointment date"
+                showTimeSelect
+                dateFormat="MM/dd/yyyy  -  h:mm aa"
+                maxDate={maxDate}
+                isTimeSelectable={isTimeSelectable}
+                filterDate={filter}
+                dayClassName={dayClassName}
+                timeClassName={timeClassName}
+              />
+            )}
+            {userId && (
+              <div
+                className={`flex flex-col gap-6  ${type === 'create' && 'xl:flex-row'}`}
+              >
+                <CustomFormField
+                  fieldType={FormFieldType.TEXTAREA}
+                  control={form.control}
+                  name="reason"
+                  label="Appointment reason"
+                  placeholder="Annual montly check-up"
+                  disabled={type === 're-schedule'}
+                />
+
+                <CustomFormField
+                  fieldType={FormFieldType.TEXTAREA}
+                  control={form.control}
+                  name="note"
+                  label="Comments/notes"
+                  placeholder="Prefer afternoon appointments, if possible"
+                  disabled={type === 're-schedule'}
+                />
+              </div>
+            )}
           </>
         )}
 
