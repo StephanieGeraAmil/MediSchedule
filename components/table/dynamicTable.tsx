@@ -6,7 +6,10 @@ import { columns as columnsAdmin } from '@/components/table/columns';
 import { columns as columnsPatient } from '@/components/table/columnsForClientList';
 import { columns as columnsDoctor } from '@/components/table/columnsForProfessionalList';
 interface TableData {
-  appointments: any[];
+  appointments: {
+    documents: any[];
+    [key: string]: any;
+  };
   clients: any[];
   doctors: any[];
 }
@@ -18,13 +21,10 @@ export const DynamicTable = ({ data }: { data: TableData }) => {
   const [selectedTable, setSelectedTable] = useState<
     'appointments' | 'clients' | 'doctors'
   >('appointments');
-
-  // console.log(data);
   const handleTableChange = (type: 'appointments' | 'clients' | 'doctors') => {
     setSelectedTable(type);
     switch (type) {
       case 'appointments':
-        // console.log('dynamic table appointments');
         setTableData(data.appointments.documents || []); // Fallback to empty array if undefined
         setTableColumns(columnsAdmin);
         break;

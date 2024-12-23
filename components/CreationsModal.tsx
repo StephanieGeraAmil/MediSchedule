@@ -22,8 +22,10 @@ import { useAuth } from '@/contexts/AuthContext';
 
 export const CreationsModal = ({
   type,
+  onCreate,
 }: {
   type: 'newUser' | 'newDoctor' | 'newAppointment';
+  onCreate?: () => void;
 }) => {
   const [open, setOpen] = useState(false);
   const { user: authUser } = useAuth();
@@ -45,13 +47,18 @@ export const CreationsModal = ({
           </div>
         </section>
         <div className="max-h-[450px] overflow-y-auto">
-          {type == 'newUser' && <PatientForm setOpen={setOpen} />}
-          {type == 'newDoctor' && <DoctorForm setOpen={setOpen} />}
+          {type == 'newUser' && (
+            <PatientForm setOpen={setOpen} onCreate={onCreate} />
+          )}
+          {type == 'newDoctor' && (
+            <DoctorForm setOpen={setOpen} onCreate={onCreate} />
+          )}
           {type == 'newAppointment' && (
             <AppointmentForm
               type="create"
               userId={authUser?.$id}
               setOpen={setOpen}
+              onCreate={onCreate}
             />
           )}
         </div>

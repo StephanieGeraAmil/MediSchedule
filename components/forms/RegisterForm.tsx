@@ -59,7 +59,6 @@ const RegisterForm = ({
       try {
         const doctors = await getDoctorList();
         setDoctorsList(doctors.documents);
-        // console.log(doctors);
       } catch (error) {
         console.error('Error fetching doctors list:', error);
       }
@@ -67,7 +66,6 @@ const RegisterForm = ({
     const fetchPatient = async () => {
       try {
         const savedPatient = await getPatient(user?.$id);
-        // console.log('patient', savedPatient);
         setPatient(savedPatient);
       } catch (error) {
         console.error('Error fetching the patient:', error);
@@ -122,8 +120,6 @@ const RegisterForm = ({
   });
 
   const onSubmit = async (values: z.infer<typeof PatientFormValidation>) => {
-    // console.log('type', type);
-    // console.log('user', user);
     setIsLoading(true);
     let formData;
     if (
@@ -159,7 +155,6 @@ const RegisterForm = ({
         familyMedicalHistory: values.familyMedicalHistory,
         pastMedicalHistory: values.pastMedicalHistory,
       };
-      // console.log('patientData', patientData);
       let patientToSave;
       if (!type) {
         patientToSave = {
@@ -173,7 +168,6 @@ const RegisterForm = ({
           disclosureConsent: values.disclosureConsent,
           treatmentConsent: values.treatmentConsent,
         };
-        // console.log('patientToSave', patientToSave);
         const newPatient = await registerPatient(patientToSave);
         if (newPatient) {
           router.push(`/patients/${user.$id}`);

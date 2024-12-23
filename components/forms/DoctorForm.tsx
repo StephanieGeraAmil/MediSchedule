@@ -54,10 +54,12 @@ const DoctorForm = ({
   setOpen,
   type,
   user,
+  onCreate,
 }: {
   setOpen?: Dispatch<SetStateAction<boolean>>;
   type?: string;
   user?: User;
+  onCreate?: () => void;
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [doctor, setDoctor] = useState(null);
@@ -139,6 +141,7 @@ const DoctorForm = ({
         if (newDoctor) {
           setOpen && setOpen(false);
           form.reset();
+          onCreate && onCreate();
         }
       } else {
         if (doctor) {

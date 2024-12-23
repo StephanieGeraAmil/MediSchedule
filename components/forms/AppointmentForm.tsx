@@ -32,12 +32,14 @@ const AppointmentForm = ({
   type = 'create',
   appointment,
   setOpen,
+  onCreate,
 }: {
   userId?: string;
   patientId?: string;
   type: 'create' | 're-schedule' | 'cancel' | 'complete' | 'no-show';
   appointment?: Appointment;
   setOpen?: Dispatch<SetStateAction<boolean>>;
+  onCreate?: () => void;
 }) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
@@ -114,8 +116,6 @@ const AppointmentForm = ({
   };
 
   const handleAsapOrSpecialityChange = () => {
-    console.log('asap', 'speciality', asap, speciality);
-
     if (!asap && speciality) {
       const { doctor: earliestDoctor, date: earliestDate } =
         findEarliestAvailableDoctorAndDate(speciality);
@@ -421,6 +421,7 @@ const AppointmentForm = ({
         if (newAppointment) {
           form.reset();
           if (setOpen) setOpen(false);
+          onCreate && onCreate();
           // router.push(`/patients/${userId}/new-appointment/success?appointmentId=${newAppointment.$id}`);
         }
       } else {
@@ -492,7 +493,6 @@ const AppointmentForm = ({
                 label="Speciality"
                 placeholder="Select a speciality"
                 onChange={selectedValue => {
-                  console.log('Selected Speciality:', selectedValue);
                   handleAsapOrSpecialityChange();
                   // Fetch and update the next available slot here
                 }}
@@ -516,7 +516,6 @@ const AppointmentForm = ({
                 disabled={!speciality}
                 hidden={!speciality}
                 onChange={selectedValue => {
-                  console.log('Selected ASAP:', selectedValue);
                   handleAsapOrSpecialityChange();
                   // Fetch and update the next available slot here
                 }}
@@ -530,7 +529,6 @@ const AppointmentForm = ({
                 label="Doctor"
                 placeholder="Select a doctor"
                 onChange={selectedValue => {
-                  console.log('Selected Doctor:', selectedValue);
                   handleDoctorChange(selectedValue);
                   // Fetch and update the next available slot here
                 }}
