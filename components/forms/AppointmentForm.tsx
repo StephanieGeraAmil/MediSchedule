@@ -71,16 +71,26 @@ const AppointmentForm = ({
       userId = authUser?.$id;
     }
   }, []);
-
+  const roundedSchedule = (date: Date) => {
+    const minutes = date.getMinutes();
+    const roundedMinutes = Math.ceil(minutes / 30) * 30;
+    date.setMinutes(roundedMinutes);
+    date.setSeconds(0);
+    date.setMilliseconds(0);
+    return date;
+  };
   const form = useForm<z.infer<typeof AppointmentFormValidation>>({
     resolver: zodResolver(AppointmentFormValidation),
     defaultValues: {
       professional: appointment
         ? appointment?.professional.$id
         : doctorsList[0]?.$id,
+      // schedule: appointment
+      //   ? new Date(appointment?.schedule!)
+      //   : new Date(Date.now()),
       schedule: appointment
-        ? new Date(appointment?.schedule!)
-        : new Date(Date.now()),
+        ? roundedSchedule(new Date(appointment?.schedule!))
+        : roundedSchedule(new Date(Date.now())),
       reason: appointment ? appointment.reason : '',
       note: appointment?.note || '',
       cancellationReason: appointment?.cancellationReason || '',
@@ -96,14 +106,17 @@ const AppointmentForm = ({
   const speciality = useWatch({ control: form.control, name: 'speciality' });
   const asap = useWatch({ control: form.control, name: 'asap' });
 
-  useEffect(() => {
-    if (selectedDoctor) {
-      const dr = doctorsList.filter(doctor => doctor.$id === selectedDoctor);
-      form.setValue('schedule', nextSlotsForDoctor(dr[0]));
-    }
-  }, [selectedDoctor]);
-  useEffect(() => {
-    if (asap && speciality) {
+  const handleDoctorChange = selectedDoctor => {
+    form.setValue('asap', false);
+    const dr = doctorsList.filter(doctor => doctor.$id === selectedDoctor);
+
+    form.setValue('schedule', nextSlotsForDoctor(dr[0]));
+  };
+
+  const handleAsapOrSpecialityChange = () => {
+    console.log('asap', 'speciality', asap, speciality);
+
+    if (!asap && speciality) {
       const { doctor: earliestDoctor, date: earliestDate } =
         findEarliestAvailableDoctorAndDate(speciality);
       if (earliestDoctor) {
@@ -113,9 +126,7 @@ const AppointmentForm = ({
         form.setValue('schedule', earliestDate);
       }
     }
-
-    //allow the user to change doctors or times deleting the asap checkbox
-  }, [asap, speciality]);
+  };
 
   const isDateTimeTaken = (doctor, time) => {
     return nextMonthAppintmentList.find(appt => {
@@ -308,7 +319,7 @@ const AppointmentForm = ({
   const nextSlotsForDoctor = doctor => {
     const today = new Date();
     const dayOfWeek = today.toLocaleDateString('en-US', { weekday: 'long' });
-
+    if (!doctor || !doctor.weeklyAvailability) return today;
     // Get the doctor's weekly availability
     const weeklyAvailability = JSON.parse(doctor.weeklyAvailability);
 
@@ -330,8 +341,7 @@ const AppointmentForm = ({
       // If it's today, we need to find the earliest available time after the current time
 
       if (today > todayStart && today < todayEnd) {
-        nextAvailableSlot = new Date(today);
-
+        nextAvailableSlot = roundedSchedule(new Date(today));
         while (nextAvailableSlot <= todayEnd) {
           const isTaken = isDateTimeTaken(doctor, nextAvailableSlot);
           if (!isTaken) break; // If the time is not taken, break the loop
@@ -481,7 +491,11 @@ const AppointmentForm = ({
                 name="speciality"
                 label="Speciality"
                 placeholder="Select a speciality"
-                // onChange={handleSpecialityChange}
+                onChange={selectedValue => {
+                  console.log('Selected Speciality:', selectedValue);
+                  handleAsapOrSpecialityChange();
+                  // Fetch and update the next available slot here
+                }}
               >
                 {SpecialityList &&
                   SpecialityList.map((speciality, i) => (
@@ -499,6 +513,13 @@ const AppointmentForm = ({
                 fieldType={FormFieldType.CHECKBOX}
                 name="asap"
                 label="Select earliest available doctor"
+                disabled={!speciality}
+                hidden={!speciality}
+                onChange={selectedValue => {
+                  console.log('Selected ASAP:', selectedValue);
+                  handleAsapOrSpecialityChange();
+                  // Fetch and update the next available slot here
+                }}
               />
             )}
             {userId && (
@@ -508,6 +529,11 @@ const AppointmentForm = ({
                 name="professional"
                 label="Doctor"
                 placeholder="Select a doctor"
+                onChange={selectedValue => {
+                  console.log('Selected Doctor:', selectedValue);
+                  handleDoctorChange(selectedValue);
+                  // Fetch and update the next available slot here
+                }}
               >
                 {doctorsList &&
                   doctorsList.map((doctor, i) => {

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -16,6 +16,7 @@ import { Appointment } from '@/types/appwrite.types';
 import AppointmentForm from './forms/AppointmentForm';
 
 import 'react-datepicker/dist/react-datepicker.css';
+import { useAuth } from '@/contexts/AuthContext';
 
 export const AppointmentModal = ({
   patientId,
@@ -29,6 +30,7 @@ export const AppointmentModal = ({
   type: 're-schedule' | 'cancel' | 'complete' | 'no-show';
 }) => {
   const [open, setOpen] = useState(false);
+  const { user } = useAuth();
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -51,7 +53,7 @@ export const AppointmentModal = ({
         </DialogHeader>
 
         <AppointmentForm
-          userId={userId}
+          userId={user?.$id}
           patientId={patientId}
           type={type}
           appointment={appointment}
