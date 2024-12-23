@@ -19,12 +19,12 @@ export const DynamicTable = ({ data }: { data: TableData }) => {
     'appointments' | 'clients' | 'doctors'
   >('appointments');
 
-  console.log(data);
+  // console.log(data);
   const handleTableChange = (type: 'appointments' | 'clients' | 'doctors') => {
     setSelectedTable(type);
     switch (type) {
       case 'appointments':
-        console.log('dynamic table appointments');
+        // console.log('dynamic table appointments');
         setTableData(data.appointments.documents || []); // Fallback to empty array if undefined
         setTableColumns(columnsAdmin);
         break;

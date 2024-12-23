@@ -67,12 +67,12 @@ const AppointmentForm = ({
     };
     fetchDoctors();
     fetchNextMonthAppointments();
-    console.log('userId', userId);
+    // console.log('userId', userId);
     if (!userId) {
       userId = authUser?.$id;
     }
-    console.log('authUser', authUser);
-    console.log(process.env.NEXT_PUBLIC_ADMIN_USER_ID);
+    // console.log('authUser', authUser);
+    // console.log(process.env.NEXT_PUBLIC_ADMIN_USER_ID);
   }, []);
 
   const form = useForm<z.infer<typeof AppointmentFormValidation>>({
@@ -109,11 +109,11 @@ const AppointmentForm = ({
         findEarliestAvailableDoctorAndDate(speciality);
       if (earliestDoctor) {
         form.setValue('professional', earliestDoctor.$id);
-        console.log(earliestDoctor);
+        // console.log(earliestDoctor);
       }
       if (earliestDate) {
         form.setValue('schedule', earliestDate);
-        console.log(earliestDate);
+        // console.log(earliestDate);
       }
     }
 
@@ -322,7 +322,7 @@ const AppointmentForm = ({
     const filteredDoctors = doctorsList.filter(
       doctor => doctor.speciality === speciality
     );
-    console.log(filteredDoctors);
+    // console.log(filteredDoctors);
 
     //get today date and time
     //get today day of the week
@@ -335,7 +335,7 @@ const AppointmentForm = ({
     });
 
     nextSlotsForDoctors.sort((a, b) => a.slot - b.slot);
-    console.log(nextSlotsForDoctors);
+    // console.log(nextSlotsForDoctors);
 
     const selectedDoctor = nextSlotsForDoctors[0].doctor;
     const date = nextSlotsForDoctors[0].slot;

@@ -19,7 +19,7 @@ const AdminPage = async () => {
   const clients = await getAllPatients();
   const doctors = await getAllDoctors();
   const data = { appointments, clients, doctors };
-  console.log(data);
+  // console.log(data);
 
   return (
     <div className="mx-auto flex max-w-7xl flex-col space-y-14">
