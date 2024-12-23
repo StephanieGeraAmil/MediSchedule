@@ -67,12 +67,9 @@ const AppointmentForm = ({
     };
     fetchDoctors();
     fetchNextMonthAppointments();
-    // console.log('userId', userId);
     if (!userId) {
       userId = authUser?.$id;
     }
-    // console.log('authUser', authUser);
-    // console.log(process.env.NEXT_PUBLIC_ADMIN_USER_ID);
   }, []);
 
   const form = useForm<z.infer<typeof AppointmentFormValidation>>({
@@ -95,13 +92,15 @@ const AppointmentForm = ({
     control: form.control,
     name: 'professional',
   });
+  const selectedDate = useWatch({ control: form.control, name: 'schedule' });
   const speciality = useWatch({ control: form.control, name: 'speciality' });
   const asap = useWatch({ control: form.control, name: 'asap' });
 
   useEffect(() => {
-    const doctorAppointments = nextMonthAppintmentList.filter(
-      appt => appt.doctorId === selectedDoctor
-    );
+    if (selectedDoctor) {
+      const dr = doctorsList.filter(doctor => doctor.$id === selectedDoctor);
+      form.setValue('schedule', nextSlotsForDoctor(dr[0]));
+    }
   }, [selectedDoctor]);
   useEffect(() => {
     if (asap && speciality) {
@@ -109,16 +108,15 @@ const AppointmentForm = ({
         findEarliestAvailableDoctorAndDate(speciality);
       if (earliestDoctor) {
         form.setValue('professional', earliestDoctor.$id);
-        // console.log(earliestDoctor);
       }
       if (earliestDate) {
         form.setValue('schedule', earliestDate);
-        // console.log(earliestDate);
       }
     }
 
     //allow the user to change doctors or times deleting the asap checkbox
   }, [asap, speciality]);
+
   const isDateTimeTaken = (doctor, time) => {
     return nextMonthAppintmentList.find(appt => {
       const date1 = new Date(time);
@@ -134,10 +132,10 @@ const AppointmentForm = ({
       return isSameDoctor && isSameTime;
     });
   };
-  const selectedDate = useWatch({ control: form.control, name: 'schedule' });
 
   const maxDate = new Date(new Date().setMonth(new Date().getMonth() + 1));
-  //day
+  const now = new Date(new Date().setMonth(new Date().getMonth()));
+
   const filter = (date: Date): boolean => {
     if (!selectedDoctor || !doctorsList.length) return true;
 
@@ -160,13 +158,14 @@ const AppointmentForm = ({
     // If the day is not in the availability, disable it
     if (!availabilityForDay) return false;
 
-    if (date > maxDate) {
+    if (date > maxDate || date < now) {
       return false;
     } else {
       return true;
     }
   };
 
+  //day
   const dayClassName = (date: Date): string => {
     if (!selectedDoctor || !doctorsList.length) return 'selectable-day';
 
@@ -188,7 +187,7 @@ const AppointmentForm = ({
     // If the day is not in the availability, mark as unavailable
     if (!availabilityForDay) return 'non-selectable-day';
 
-    if (date > maxDate) {
+    if (date > maxDate || date < now) {
       return 'non-selectable-day';
     } else {
       return 'selectable-day';
@@ -229,27 +228,12 @@ const AppointmentForm = ({
       `${selectedDate.toDateString()} ${availabilityForDay.endTime}`
     );
 
-    // const doctorAppointments = nextMonthAppintmentList.filter(
-    //   appt => appt.doctorId === selectedDoctor
-    // );
-
-    // const isDateTimeTaken = nextMonthAppintmentList.filter(appt => {
-    //   const date1 = new Date(time);
-    //   const date2 = new Date(appt.schedule);
-
-    //   if (isNaN(date1.getTime()) || isNaN(date2.getTime())) {
-    //     throw new Error('Invalid date format');
-    //   }
-
-    //   const isSameDoctor = appt.doctorId === selectedDoctor;
-    //   const isSameTime = date1.getTime() === date2.getTime();
-
-    //   return isSameDoctor && isSameTime;
-    // });
     const isTaken = isDateTimeTaken(selectedDoctor, time);
     if (isTaken) return false;
     //Disable times outside of the availability range
-    if (time >= startTime && time <= endTime) {
+    const nowValue = now.getTime();
+    const timeValue = time.getTime();
+    if (timeValue > nowValue && time >= startTime && time <= endTime) {
       return true;
     } else {
       return false;
@@ -289,28 +273,13 @@ const AppointmentForm = ({
       `${selectedDate.toDateString()} ${availabilityForDay.endTime}`
     );
 
-    // const isDateTimeTaken = nextMonthAppintmentList.filter(appt => {
-    //   const date1 = new Date(time);
-    //   const date2 = new Date(appt.schedule);
-
-    //   if (isNaN(date1.getTime()) || isNaN(date2.getTime())) {
-    //     throw new Error('Invalid date format');
-    //   }
-
-    //   const isSameDoctor = appt.doctorId === selectedDoctor;
-    //   const isSameTime = date1.getTime() === date2.getTime();
-
-    //   return isSameDoctor && isSameTime;
-    // });
-
-    // if (isDateTimeTaken.length > 0) {
-    //   return 'non-selectable-time';
-    // }
     const isTaken = isDateTimeTaken(selectedDoctor, time);
     if (isTaken) return 'non-selectable-time';
 
     //Disable times outside of the availability range
-    if (time >= startTime && time <= endTime) {
+    const nowValue = now.getTime();
+    const timeValue = time.getTime();
+    if (timeValue > nowValue && time >= startTime && time <= endTime) {
       return 'selectable-time';
     } else {
       return 'non-selectable-time';
@@ -322,10 +291,6 @@ const AppointmentForm = ({
     const filteredDoctors = doctorsList.filter(
       doctor => doctor.speciality === speciality
     );
-    // console.log(filteredDoctors);
-
-    //get today date and time
-    //get today day of the week
     //for each doctor get the next slot avaiable
     const nextSlotsForDoctors = filteredDoctors.map(doctor => {
       return {
@@ -335,7 +300,6 @@ const AppointmentForm = ({
     });
 
     nextSlotsForDoctors.sort((a, b) => a.slot - b.slot);
-    // console.log(nextSlotsForDoctors);
 
     const selectedDoctor = nextSlotsForDoctors[0].doctor;
     const date = nextSlotsForDoctors[0].slot;
@@ -364,8 +328,10 @@ const AppointmentForm = ({
       );
 
       // If it's today, we need to find the earliest available time after the current time
+
       if (today > todayStart && today < todayEnd) {
-        nextAvailableSlot = todayStart;
+        nextAvailableSlot = new Date(today);
+
         while (nextAvailableSlot <= todayEnd) {
           const isTaken = isDateTimeTaken(doctor, nextAvailableSlot);
           if (!isTaken) break; // If the time is not taken, break the loop
@@ -397,23 +363,7 @@ const AppointmentForm = ({
 
     // Return the earliest available slot
     return nextAvailableSlot;
-
-    // const tomorrow = new Date();
-    // tomorrow.setDate(tomorrow.getDate() + 1);
-    // if (doctor.$id == '674ca6d40025a95c0e7f') {
-    //   tomorrow.setHours(11, 0, 0, 0);
-    // } else {
-    //   tomorrow.setHours(8, 0, 0, 0);
-    // }
-    // return tomorrow;
   };
-  // const checkIfTimeTaken = (doctor, time) => {
-  //   // Compare with appointments and return true if the time is already taken
-  //   const isDateTimeTaken = nextMonthAppintmentList.find(
-  //     appt => appt.schedule == time && appt.doctorId == doctor.$id
-  //   );
-  //   return isDateTimeTaken ? true : false;
-  // };
   const onSubmit = async (
     values: z.infer<typeof AppointmentFormValidation>
   ) => {
@@ -637,6 +587,7 @@ const AppointmentForm = ({
         )}
 
         <SubmitButton
+          disabled={!selectedDoctor || isLoading}
           isLoading={isLoading}
           className={`${['cancel', 'no-show'].includes(type) ? 'shad-danger-btn' : 'shad-primary-btn'} w-full`}
         >

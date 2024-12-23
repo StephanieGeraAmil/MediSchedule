@@ -134,7 +134,6 @@ export const registerPatient = async ({
 // GET PATIENT
 export const getPatient = async (userId: string) => {
   try {
-    console.log('userId', userId);
     const patients = await databases.listDocuments(
       DATABASE_ID!,
       // PATIENT_COLLECTION_ID!,
