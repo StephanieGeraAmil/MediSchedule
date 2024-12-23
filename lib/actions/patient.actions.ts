@@ -96,6 +96,7 @@ export const registerPatient = async ({
   ...patient
 }: RegisterUserParams) => {
   try {
+    console.log('patient', patient);
     // Upload file ->  // https://appwrite.io/docs/references/cloud/client-web/storage#createFile
     let file;
     if (identificationDocument) {
@@ -179,5 +180,17 @@ export const updatePatient = async ({
     return parseStringify(updatedPatient);
   } catch (error) {
     console.error('An error occurred while updating the patient:', error);
+  }
+};
+export const getAllPatients = async () => {
+  try {
+    const patients = await databases.listDocuments(
+      DATABASE_ID!,
+      CLIENT_COLLECTION_ID!
+    );
+
+    return parseStringify(patients.documents);
+  } catch (error) {
+    console.error('An error occurred while retrieving all patients:', error);
   }
 };

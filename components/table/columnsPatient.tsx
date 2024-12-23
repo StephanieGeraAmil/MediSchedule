@@ -129,13 +129,15 @@ export const columnsPatient: ColumnDef<Appointment>[] = [
             type="no-show"
           /> */}
           <AppointmentModal
-            patientId={appointment.patient.$id}
+            // patientId={appointment.patient.$id}
+            patientId={appointment.client.$id}
             // userId={appointment.userId}
             appointment={appointment}
             type="re-schedule"
           />
           <AppointmentModal
-            patientId={appointment.patient.$id}
+            // patientId={appointment.patient.$id}
+            patientId={appointment.client.$id}
             // userId={appointment.userId}
             appointment={appointment}
             type="cancel"

@@ -158,3 +158,16 @@ export const updateDoctor = async ({
     console.error('An error occurred while updating the doctor:', error);
   }
 };
+
+export const getAllDoctors = async () => {
+  try {
+    const doctors = await databases.listDocuments(
+      DATABASE_ID!,
+      PROFESSIONAL_COLLECTION_ID!
+    );
+
+    return parseStringify(doctors.documents);
+  } catch (error) {
+    console.error('An error occurred while retrieving all doctors:', error);
+  }
+};

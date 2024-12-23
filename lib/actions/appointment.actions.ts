@@ -44,7 +44,8 @@ export const createAppointment = async (
       ]
     );
     if (prevAppointment.documents.length === 0) {
-      if (!appointment.patient) {
+      // if (!appointment.patient) {
+      if (!appointment.client) {
         //if i dont  have a patient
         if (
           appointment.userId &&
@@ -60,7 +61,8 @@ export const createAppointment = async (
           if (!patients.documents.length) {
             throw new Error('No patient found for the given user ID.');
           } else {
-            appointment.patient = patients.documents[0].$id;
+            // appointment.patient = patients.documents[0].$id;
+            appointment.client = patients.documents[0].$id;
             //  appointment.userId = patients?.documents[0]?.userId || '';
           }
         } else if (appointment.identificationNumber) {
@@ -80,14 +82,16 @@ export const createAppointment = async (
               'No patient found for the given dentification number.'
             );
           } else {
-            appointment.patient = patients.documents[0].$id;
+            // appointment.patient = patients.documents[0].$id;
+            appointment.client = patients.documents[0].$id;
             // appointment.userId = patients?.documents[0]?.userId || '';
           }
         }
       }
       const appointmentToCreate = {
         schedule: appointment.schedule,
-        patient: appointment.patient,
+        // patient: appointment.patient,
+        client: appointment.client,
         professional: appointment.professional,
         note: appointment.note,
         reason: appointment.reason,
@@ -122,6 +126,7 @@ export const getRecentAppointmentList = async () => {
       APPOINTMENT_COLLECTION_ID!,
       [Query.orderDesc('$createdAt')]
     );
+
     const initialCounts = {
       scheduledCount: 0,
       pendingCount: 0,

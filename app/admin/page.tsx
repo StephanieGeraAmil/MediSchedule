@@ -2,15 +2,24 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import { StatCard } from '@/components/StatCard';
-import { columns } from '@/components/table/columns';
-import { DataTable } from '@/components/table/DataTable';
+// import { columns } from '@/components/table/columns';
+// import { DataTable } from '@/components/table/DataTable';
 import { getRecentAppointmentList } from '@/lib/actions/appointment.actions';
-import { Button } from '@/components/ui/button';
+// import { Button } from '@/components/ui/button';
 import { CreationsModal } from '@/components/CreationsModal';
 import Header from '@/components/Header';
+import { DynamicTable } from '@/components/table/dynamicTable';
+import { DataTable } from '@/components/table/DataTable';
+import { columns } from '@/components/table/columns';
+import { getAllPatients } from '@/lib/actions/patient.actions';
+import { getAllDoctors } from '@/lib/actions/doctor.actions';
 
 const AdminPage = async () => {
   const appointments = await getRecentAppointmentList();
+  const clients = await getAllPatients();
+  const doctors = await getAllDoctors();
+  const data = { appointments, clients, doctors };
+  console.log(data);
 
   return (
     <div className="mx-auto flex max-w-7xl flex-col space-y-14">
@@ -50,8 +59,10 @@ const AdminPage = async () => {
             icon={'/assets/icons/cancelled.svg'}
           />
         </section>
-
-        <DataTable columns={columns} data={appointments?.documents} />
+        <section className="w-full flex flex-col md:flex-row space-y-4 md:space-y-0 justify-between">
+          <DynamicTable data={data} />
+        </section>
+        {/* <DataTable columns={columns} data={appointments.documents} /> */}
       </main>
     </div>
   );

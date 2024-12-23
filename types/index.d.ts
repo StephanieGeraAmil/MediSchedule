@@ -52,9 +52,9 @@ declare interface RegisterUserParams {
   identificationType: string | undefined;
   identificationNumber: string | undefined;
   identificationDocument: FormData | undefined;
-  disclosureConsent: boolean;
-  treatmentConsent: boolean;
-  privacyConsent: boolean;
+  disclosureConsent: boolean | undefined;
+  treatmentConsent: boolean | undefined;
+  privacyConsent: boolean | undefined;
   phone: string;
   name: string;
   email: string;
@@ -102,10 +102,12 @@ declare interface UpdateDoctorParams {
 
 declare type CreateAppointmentParams = {
   userId?: string | undefined;
-  patient?: string | undefined;
+  // patient?: string | undefined;
+  client?: string | undefined;
   identificationNumber?: string | undefined;
   // physician: string;
-  doctor: string;
+  // doctor: string;
+  professional: string;
   reason: string;
   schedule: Date;
   status: Status;

@@ -122,6 +122,8 @@ const RegisterForm = ({
   });
 
   const onSubmit = async (values: z.infer<typeof PatientFormValidation>) => {
+    console.log('type', type);
+    console.log('user', user);
     setIsLoading(true);
     let formData;
     if (
@@ -139,7 +141,7 @@ const RegisterForm = ({
     }
     try {
       const patientData = {
-        userId: user.$id,
+        userId: user?.$id || '',
         name: values.name,
         email: values.email,
         phone: values.phone,
@@ -157,6 +159,7 @@ const RegisterForm = ({
         familyMedicalHistory: values.familyMedicalHistory,
         pastMedicalHistory: values.pastMedicalHistory,
       };
+      console.log('patientData', patientData);
       let patientToSave;
       if (!type) {
         patientToSave = {
@@ -170,6 +173,7 @@ const RegisterForm = ({
           disclosureConsent: values.disclosureConsent,
           treatmentConsent: values.treatmentConsent,
         };
+        console.log('patientToSave', patientToSave);
         const newPatient = await registerPatient(patientToSave);
         if (newPatient) {
           router.push(`/patients/${user.$id}`);

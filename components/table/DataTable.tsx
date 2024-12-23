@@ -35,7 +35,7 @@ export function DataTable<TData, TValue>({
     typeof window !== 'undefined'
       ? window.localStorage.getItem('accessKey')
       : null;
-
+  console.log(data);
   useEffect(() => {
     const accessKey = encryptedKey && decryptKey(encryptedKey);
 
