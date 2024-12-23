@@ -244,18 +244,18 @@ export const getAppointment = async (appointmentId: string) => {
 //GET APPOINTMENTS OF PATIENT
 export const getPatientAppointmentList = async (userId: string) => {
   try {
-    const patients = await databases.listDocuments(
+    const clients = await databases.listDocuments(
       DATABASE_ID!,
       // PATIENT_COLLECTION_ID!,
       CLIENT_COLLECTION_ID!,
       [Query.equal('userId', [userId])]
     );
 
-    const patient = patients.documents[0].$id;
+    const client = clients.documents[0].$id;
     const appointments = await databases.listDocuments(
       DATABASE_ID!,
       APPOINTMENT_COLLECTION_ID!,
-      [Query.equal('patient', patient), Query.orderDesc('$createdAt')]
+      [Query.equal('client', client), Query.orderDesc('$createdAt')]
     );
     // return parseStringify(appointment);
     const initialCounts = {
