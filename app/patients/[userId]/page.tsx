@@ -13,7 +13,6 @@ import { useGlobalDispatch, useGlobalState } from '@/contexts/GlobalState';
 import { useEffect } from 'react';
 
 const PatientPage = ({ params: { userId } }: SearchParamProps) => {
-  // const appointments = await getPatientAppointmentList(userId);
   const { appointments } = useGlobalState();
   const dispatch = useGlobalDispatch();
   const completedCount = appointments.filter(

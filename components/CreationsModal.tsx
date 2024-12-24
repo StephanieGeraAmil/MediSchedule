@@ -22,10 +22,8 @@ import { useAuth } from '@/contexts/AuthContext';
 
 export const CreationsModal = ({
   type,
-  // onCreate,
 }: {
   type: 'newUser' | 'newDoctor' | 'newAppointment';
-  // onCreate?: () => void;
 }) => {
   const [open, setOpen] = useState(false);
   const { user: authUser } = useAuth();

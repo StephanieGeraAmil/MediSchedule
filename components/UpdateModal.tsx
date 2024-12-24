@@ -65,12 +65,7 @@ export const UpdateModal = ({
             <DoctorForm type="update" setOpen={setOpen} user={user} />
           )}
           {type == 'changePatient' && (
-            <RegisterForm
-              type="update"
-              // userId={userLoggedId}
-              setOpen={setOpen}
-              user={user}
-            />
+            <RegisterForm type="update" setOpen={setOpen} user={user} />
           )}
         </div>
       </DialogContent>

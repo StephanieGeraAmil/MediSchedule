@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { StatCard } from '@/components/StatCard';
 import { DataTable } from '@/components/table/DataTable';
 import { getDoctorAppointmentList } from '@/lib/actions/appointment.actions';
-// import { CreationsModal } from '@/components/CreationsModal';
 import { columnsDoctor } from '@/components/table/columnsDoctor';
 import { useEffect } from 'react';
 import { UpdateModal } from '@/components/UpdateModal';
@@ -13,7 +12,6 @@ import Header from '@/components/Header';
 import { useGlobalDispatch, useGlobalState } from '@/contexts/GlobalState';
 
 const DoctorPage = ({ params: { userId } }: SearchParamProps) => {
-  // const appointments = await getDoctorAppointmentList(userId);
   const { appointments } = useGlobalState();
   const dispatch = useGlobalDispatch();
   const completedCount = appointments.filter(

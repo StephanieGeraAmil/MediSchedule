@@ -20,7 +20,6 @@ import ReactDatePicker from 'react-datepicker';
 import { Select, SelectContent, SelectValue, SelectTrigger } from './ui/select';
 import { Textarea } from './ui/textarea';
 import { Checkbox } from './ui/checkbox';
-// import { PasswordInput } from './PasswordInput';
 import { FormFieldType } from '@/constants';
 
 interface CustomProps {
@@ -146,7 +145,6 @@ const RenderField = ({ field, props }: { field: any; props: CustomProps }) => {
               <Checkbox
                 id={name}
                 checked={field.value}
-                // onCheckedChange={field.onChange}
                 disabled={props.disabled}
                 onCheckedChange={value => {
                   field.onChange(value); // Update the form state
@@ -178,7 +176,6 @@ const RenderField = ({ field, props }: { field: any; props: CustomProps }) => {
       return (
         <FormControl>
           <Select
-            // onValueChange={field.onChange}
             onValueChange={value => {
               field.onChange(value); // Update the form state
               if (props.onChange) {

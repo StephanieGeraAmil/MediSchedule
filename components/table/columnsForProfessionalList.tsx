@@ -22,7 +22,6 @@ export const columns: ColumnDef<Appointment>[] = [
     header: 'Patient',
     cell: ({ row }) => {
       const professional = row.original;
-      // return <p className="text-14-medium ">{appointment.patient.name}</p>;
       return <p className="text-14-medium ">{professional.name}</p>;
     },
   },
@@ -31,11 +30,7 @@ export const columns: ColumnDef<Appointment>[] = [
     header: 'Email',
     cell: ({ row }) => {
       const professional = row.original;
-      // return (
-      //   <div className="min-w-[115px]">
-      //     <StatusBadge status={professional.email} />
-      //   </div>
-      // );
+
       return <p className="text-14-medium ">{professional.email}</p>;
     },
   },
@@ -44,11 +39,7 @@ export const columns: ColumnDef<Appointment>[] = [
     header: 'Phone',
     cell: ({ row }) => {
       const professional = row.original;
-      // return (
-      //   <div className="min-w-[115px]">
-      //     <StatusBadge status={professional.phone} />
-      //   </div>
-      // );
+
       return <p className="text-14-medium ">{professional.phone}</p>;
     },
   },
@@ -63,46 +54,4 @@ export const columns: ColumnDef<Appointment>[] = [
       );
     },
   },
-
-  // {
-  //   id: 'actions',
-  //   header: () => <div className="pl-4">Actions</div>,
-  //   cell: ({ row }) => {
-  //     const professional = row.original;
-
-  //     return (
-  //       <div className="flex gap-1">
-  //         {/* <AppointmentModal
-  //           // patientId={appointment.patient.$id}
-  //           patientId={appointment.client.$id}
-  //           // userId={appointment.userId}
-  //           appointment={appointment}
-  //           type="complete"
-  //         />
-  //         <AppointmentModal
-  //           // patientId={appointment.patient.$id}
-  //           patientId={appointment.client.$id}
-  //           // userId={appointment.userId}
-  //           appointment={appointment}
-  //           type="no-show"
-  //         />
-  //         <AppointmentModal
-  //           // patientId={appointment.patient.$id}
-  //           patientId={appointment.client.$id}
-  //           // userId={appointment.userId}
-  //           appointment={appointment}
-  //           type="re-schedule"
-  //         />
-  //         <AppointmentModal
-  //           // patientId={appointment.patient.$id}
-  //           patientId={appointment.client.$id}
-  //           // userId={appointment.userId}
-  //           appointment={appointment}
-  //           type="cancel"
-  //         /> */}
-  //         See more..
-  //       </div>
-  //     );
-  //   },
-  // },
 ];

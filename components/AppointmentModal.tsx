@@ -23,13 +23,11 @@ export const AppointmentModal = ({
   userId,
   appointment,
   type,
-  // onUpdate,
 }: {
   patientId: string;
   userId?: string;
   appointment?: Appointment;
   type: 're-schedule' | 'cancel' | 'complete' | 'no-show';
-  // onUpdate?: () => void;
 }) => {
   const [open, setOpen] = useState(false);
   const { user } = useAuth();
@@ -60,7 +58,6 @@ export const AppointmentModal = ({
           type={type}
           appointment={appointment}
           setOpen={setOpen}
-          // onUpdate={onUpdate}
         />
       </DialogContent>
     </Dialog>
