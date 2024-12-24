@@ -7,6 +7,7 @@ import React, {
   ReactNode,
 } from 'react';
 import { useRouter } from 'next/navigation';
+import { jwtDecode } from 'jwt-decode';
 
 interface AuthContextType {
   user: User | null;
@@ -31,17 +32,23 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   // Check for existing token in localStorage
   useEffect(() => {
-    const token = localStorage.getItem('authToken');
-    if (token) {
-      setUser(user);
-    } else {
-      router.push('/');
+    if (!user) {
+      const token = localStorage.getItem('authToken');
+
+      const userData = localStorage.getItem('user');
+      if (token && userData) {
+        setUser(JSON.parse(userData));
+      } else {
+        router.push('/');
+      }
     }
   }, [user]);
 
   // Login function
   const login = (token: string, user: User) => {
     localStorage.setItem('authToken', token);
+    localStorage.setItem('user', JSON.stringify(user));
+
     setUser(user);
   };
 
@@ -49,6 +56,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const logout = () => {
     localStorage.removeItem('authToken');
     localStorage.removeItem('accessKey');
+    localStorage.removeItem('user');
+
     setUser(null);
     router.push('/');
   };
