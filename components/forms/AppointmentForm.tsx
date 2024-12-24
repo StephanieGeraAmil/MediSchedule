@@ -111,9 +111,15 @@ const AppointmentForm = ({
 
     form.setValue('schedule', nextSlotsForDoctor(dr[0]));
   };
+  const handleSpecialityChange = selectedSpeciality => {
+    form.setValue('speciality', selectedSpeciality);
+  };
+  const handleAsapChange = selectedAsap => {
+    form.setValue('asap', selectedAsap);
+  };
 
   const handleAsapOrSpecialityChange = () => {
-    if (!asap && speciality) {
+    if (asap && speciality) {
       const { doctor: earliestDoctor, date: earliestDate } =
         findEarliestAvailableDoctorAndDate(speciality);
       if (earliestDoctor) {
@@ -124,6 +130,9 @@ const AppointmentForm = ({
       }
     }
   };
+  useEffect(() => {
+    handleAsapOrSpecialityChange();
+  }, [asap, speciality]);
 
   const isDateTimeTaken = (doctor, time) => {
     return nextMonthAppintmentList.find(appt => {
@@ -500,7 +509,9 @@ const AppointmentForm = ({
                 label="Speciality"
                 placeholder="Select a speciality"
                 onChange={selectedValue => {
-                  handleAsapOrSpecialityChange();
+                  // form.setValue('speciality', selectedValue);
+                  // handleAsapOrSpecialityChange();
+                  handleSpecialityChange(selectedValue);
                 }}
               >
                 {SpecialityList &&
@@ -522,7 +533,9 @@ const AppointmentForm = ({
                 disabled={!speciality}
                 hidden={!speciality}
                 onChange={selectedValue => {
-                  handleAsapOrSpecialityChange();
+                  // form.setValue('asap', selectedValue);
+                  // handleAsapOrSpecialityChange();
+                  handleAsapChange(selectedValue);
                 }}
               />
             )}
