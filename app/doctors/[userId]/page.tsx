@@ -1,17 +1,46 @@
+'use client';
 import Image from 'next/image';
 import Link from 'next/link';
 
 import { StatCard } from '@/components/StatCard';
 import { DataTable } from '@/components/table/DataTable';
 import { getDoctorAppointmentList } from '@/lib/actions/appointment.actions';
-import { CreationsModal } from '@/components/CreationsModal';
+// import { CreationsModal } from '@/components/CreationsModal';
 import { columnsDoctor } from '@/components/table/columnsDoctor';
 import { useEffect } from 'react';
 import { UpdateModal } from '@/components/UpdateModal';
 import Header from '@/components/Header';
+import { useGlobalDispatch, useGlobalState } from '@/contexts/GlobalState';
 
-const DoctorPage = async ({ params: { userId } }: SearchParamProps) => {
-  const appointments = await getDoctorAppointmentList(userId);
+const DoctorPage = ({ params: { userId } }: SearchParamProps) => {
+  // const appointments = await getDoctorAppointmentList(userId);
+  const { appointments } = useGlobalState();
+  const dispatch = useGlobalDispatch();
+  const completedCount = appointments.filter(
+    appointment => appointment.status === 'completed'
+  ).length;
+  const scheduledCount = appointments.filter(
+    appointment => appointment.status === 'scheduled'
+  ).length;
+  const noShowCount = appointments.filter(
+    appointment => appointment.status === 'no-show'
+  ).length;
+  useEffect(() => {
+    const fetchAppointments = async () => {
+      try {
+        const appointmentsData = await getDoctorAppointmentList(userId);
+        console.log('appointmentsData', appointmentsData);
+        dispatch({
+          type: 'SET_APPOINTMENTS',
+          payload: appointmentsData,
+        });
+      } catch (error) {
+        console.error('Failed to fetch appointments:', error);
+      }
+    };
+
+    fetchAppointments();
+  }, []);
 
   return (
     <div className="mx-auto flex max-w-7xl flex-col space-y-14">
@@ -35,28 +64,25 @@ const DoctorPage = async ({ params: { userId } }: SearchParamProps) => {
         <section className="admin-stat">
           <StatCard
             type="completed"
-            count={appointments?.completedCount || 0}
+            count={completedCount}
             label="Completed appointments"
             icon={'/assets/icons/check.svg'}
           />
           <StatCard
             type="scheduled"
-            count={appointments?.scheduledCount || 0}
+            count={scheduledCount}
             label="Scheduled appointments"
             icon={'/assets/icons/appointments.svg'}
           />
           <StatCard
             type="no-show"
-            count={appointments?.noShowCount || 0}
+            count={noShowCount}
             label="No-Show appointments"
             icon={'/assets/icons/cancelled.svg'}
           />
         </section>
 
-        <DataTable
-          columns={columnsDoctor}
-          data={appointments?.documents || []}
-        />
+        <DataTable columns={columnsDoctor} data={appointments} />
       </main>
     </div>
   );
