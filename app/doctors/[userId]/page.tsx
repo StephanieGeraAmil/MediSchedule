@@ -29,7 +29,6 @@ const DoctorPage = ({ params: { userId } }: SearchParamProps) => {
     const fetchAppointments = async () => {
       try {
         const appointmentsData = await getDoctorAppointmentList(userId);
-        console.log('appointmentsData', appointmentsData);
         dispatch({
           type: 'SET_APPOINTMENTS',
           payload: appointmentsData,
