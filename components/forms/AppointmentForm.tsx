@@ -25,6 +25,7 @@ import SubmitButton from '../SubmitButton';
 import { Form } from '../ui/form';
 import { FormFieldType, SpecialityList } from '@/constants';
 import { useAuth } from '@/contexts/AuthContext';
+import { ActionTypes, useGlobalDispatch } from '@/contexts/GlobalState';
 
 const AppointmentForm = ({
   userId,
@@ -32,14 +33,12 @@ const AppointmentForm = ({
   type = 'create',
   appointment,
   setOpen,
-  onCreate,
 }: {
   userId?: string;
   patientId?: string;
   type: 'create' | 're-schedule' | 'cancel' | 'complete' | 'no-show';
   appointment?: Appointment;
   setOpen?: Dispatch<SetStateAction<boolean>>;
-  onCreate?: () => void;
 }) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
@@ -48,6 +47,7 @@ const AppointmentForm = ({
   const AppointmentFormValidation = getAppointmentSchema(type);
   const { user: authUser } = useAuth();
   // const isAdmin = localStorage.getItem('accessKey') ? true : false;
+  const dispatch = useGlobalDispatch();
 
   useEffect(() => {
     const fetchDoctors = async () => {
@@ -87,9 +87,6 @@ const AppointmentForm = ({
       professional: appointment
         ? appointment?.professional.$id
         : doctorsList[0]?.$id,
-      // schedule: appointment
-      //   ? new Date(appointment?.schedule!)
-      //   : new Date(Date.now()),
       schedule: appointment
         ? roundedSchedule(new Date(appointment?.schedule!))
         : roundedSchedule(new Date(Date.now())),
@@ -419,9 +416,13 @@ const AppointmentForm = ({
         const newAppointment = await createAppointment(appointmentData);
 
         if (newAppointment) {
+          dispatch({
+            type: ActionTypes.CREATE_APPOINTMENT,
+            payload: newAppointment,
+          });
           form.reset();
           if (setOpen) setOpen(false);
-          onCreate && onCreate();
+
           // router.push(`/patients/${userId}/new-appointment/success?appointmentId=${newAppointment.$id}`);
         }
       } else {
@@ -442,6 +443,10 @@ const AppointmentForm = ({
         const updatedAppointment = await updateAppointment(appointmentToUpdate);
 
         if (updatedAppointment) {
+          dispatch({
+            type: ActionTypes.UPDATE_APPOINTMENT,
+            payload: updatedAppointment,
+          });
           setOpen && setOpen(false);
           form.reset();
         }
@@ -476,15 +481,17 @@ const AppointmentForm = ({
       <form onSubmit={form.handleSubmit(onSubmit)} className="flex-1 space-y-6">
         {!['cancel', 'complete', 'no-show'].includes(type) && (
           <>
-            {userId && userId === process.env.NEXT_PUBLIC_ADMIN_USER_ID && (
-              <CustomFormField
-                control={form.control}
-                fieldType={FormFieldType.INPUT}
-                name="identificationNumber"
-                label="Patient Identification Number"
-                placeholder="123456789"
-              />
-            )}
+            {userId &&
+              userId === process.env.NEXT_PUBLIC_ADMIN_USER_ID &&
+              type === 'create' && (
+                <CustomFormField
+                  control={form.control}
+                  fieldType={FormFieldType.INPUT}
+                  name="identificationNumber"
+                  label="Patient Identification Number"
+                  placeholder="123456789"
+                />
+              )}
             {userId && (
               <CustomFormField
                 fieldType={FormFieldType.SELECT}
@@ -494,7 +501,6 @@ const AppointmentForm = ({
                 placeholder="Select a speciality"
                 onChange={selectedValue => {
                   handleAsapOrSpecialityChange();
-                  // Fetch and update the next available slot here
                 }}
               >
                 {SpecialityList &&
@@ -517,7 +523,6 @@ const AppointmentForm = ({
                 hidden={!speciality}
                 onChange={selectedValue => {
                   handleAsapOrSpecialityChange();
-                  // Fetch and update the next available slot here
                 }}
               />
             )}
@@ -530,7 +535,6 @@ const AppointmentForm = ({
                 placeholder="Select a doctor"
                 onChange={selectedValue => {
                   handleDoctorChange(selectedValue);
-                  // Fetch and update the next available slot here
                 }}
               >
                 {doctorsList &&

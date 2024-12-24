@@ -24,10 +24,10 @@ import { PasswordInput } from '../PasswordInput';
 
 const PatientForm = ({
   setOpen,
-  onCreate,
+  // onCreate,
 }: {
   setOpen?: Dispatch<SetStateAction<boolean>>;
-  onCreate?: () => void;
+  // onCreate?: () => void;
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
@@ -53,7 +53,7 @@ const PatientForm = ({
       if (user) {
         setOpen && setOpen(false);
         form.reset();
-        onCreate && onCreate();
+        // onCreate && onCreate();
       }
     } catch (error) {
       console.log(error);

@@ -2,12 +2,10 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
-// import useSWR from 'swr';
 import { StatCard } from '@/components/StatCard';
-// import { columns } from '@/components/table/columns';
-// import { DataTable } from '@/components/table/DataTable';
+
 import { getRecentAppointmentList } from '@/lib/actions/appointment.actions';
-// import { Button } from '@/components/ui/button';
+
 import { CreationsModal } from '@/components/CreationsModal';
 import Header from '@/components/Header';
 import { DynamicTable } from '@/components/table/dynamicTable';
@@ -16,65 +14,87 @@ import { columns } from '@/components/table/columns';
 import { getAllPatients } from '@/lib/actions/patient.actions';
 import { getAllDoctors } from '@/lib/actions/doctor.actions';
 import { useEffect, useState } from 'react';
+import { useGlobalDispatch, useGlobalState } from '@/contexts/GlobalState';
 
 const AdminPage = () => {
-  const [appointments, setAppointments] = useState([]);
-  const [clients, setClients] = useState([]);
-  const [doctors, setDoctors] = useState([]);
-  const [appointmentChanged, setAppointmentChanged] = useState(true);
-  const [clientChanged, setClientChanged] = useState(true);
-  const [doctorChanged, setDoctorChanged] = useState(true);
+  // const [appointments, setAppointments] = useState([]);
+  // const [clients, setClients] = useState([]);
+  // const [doctors, setDoctors] = useState([]);
+  const { appointments } = useGlobalState();
+  const dispatch = useGlobalDispatch();
+  // const [appointmentChanged, setAppointmentChanged] = useState(true);
+  // const [clientChanged, setClientChanged] = useState(true);
+  // const [doctorChanged, setDoctorChanged] = useState(true);
+  const completedCount = appointments.filter(
+    appointment => appointment.status === 'completed'
+  ).length;
+  const scheduledCount = appointments.filter(
+    appointment => appointment.status === 'scheduled'
+  ).length;
+  const noShowCount = appointments.filter(
+    appointment => appointment.status === 'no-show'
+  ).length;
 
+  // useEffect(() => {
+  //   const fetchAppointments = async () => {
+  //     const appointmentsData = await getRecentAppointmentList(); // Fetch the latest appointments
+  //     setAppointments(appointmentsData); // Update state
+  //     console.log(appointmentsData);
+  //     // setAppointmentChanged(false);
+  //     console.log('making appointments false');
+  //   };
+  //   const fetchClients = async () => {
+  //     const clientsData = await getAllPatients(); // Fetch the latest appointments
+  //     setClients(clientsData); // Update state
+  //     // setClientChanged(false);
+  //     console.log('making cliemt false');
+  //   };
+  //   const fetchDoctors = async () => {
+  //     const doctorsData = await getAllDoctors(); // Fetch the latest appointments
+  //     setDoctors(doctorsData); // Update state
+  //     // setDoctorChanged(false);
+  //     console.log('making doctor false');
+  //   };
+  //   // if (appointmentChanged) fetchAppointments();
+  //   // if (clientChanged) fetchClients();
+  //   // if (doctorChanged) fetchDoctors();
+  //   // }, [appointmentChanged, clientChanged, doctorChanged]);
+  // }, []);
   useEffect(() => {
     const fetchAppointments = async () => {
-      const appointmentsData = await getRecentAppointmentList(); // Fetch the latest appointments
-      setAppointments(appointmentsData); // Update state
-      console.log(appointmentsData);
-      setAppointmentChanged(false);
+      try {
+        const appointmentsData = await getRecentAppointmentList();
+        console.log('appointmentsData', appointmentsData);
+        dispatch({
+          type: 'SET_APPOINTMENTS',
+          payload: appointmentsData,
+        });
+      } catch (error) {
+        console.error('Failed to fetch appointments:', error);
+      }
     };
+
     const fetchClients = async () => {
-      const clientsData = await getAllPatients(); // Fetch the latest appointments
-      setClients(clientsData); // Update state
-      setClientChanged(false);
+      try {
+        const clientsData = await getAllPatients();
+        dispatch({ type: 'SET_CLIENTS', payload: clientsData });
+      } catch (error) {
+        console.error('Failed to fetch clients:', error);
+      }
     };
+
     const fetchDoctors = async () => {
-      const doctorsData = await getAllDoctors(); // Fetch the latest appointments
-      setDoctors(doctorsData); // Update state
-      setDoctorChanged(false);
+      try {
+        const doctorsData = await getAllDoctors();
+        dispatch({ type: 'SET_DOCTORS', payload: doctorsData });
+      } catch (error) {
+        console.error('Failed to fetch doctors:', error);
+      }
     };
-    if (appointmentChanged) fetchAppointments();
-    if (clientChanged) fetchClients();
-    if (doctorChanged) fetchDoctors();
+    fetchAppointments();
+    fetchClients();
+    fetchDoctors();
   }, []);
-
-  // const appointments = await getRecentAppointmentList();
-  // const clients = await getAllPatients();
-  // const doctors = await getAllDoctors();
-  // const data = { appointments, clients, doctors };
-  // Use SWR for fetching data
-  // const { data: appointmentsData, mutate: mutateAppointments } = useSWR(
-  //   'appointments',
-  //   fetchAppointments
-  // );
-  // const { data: clientsData, mutate: mutateClients } = useSWR(
-  //   'clients',
-  //   fetchClients
-  // );
-  // const { data: doctorsData, mutate: mutateDoctors } = useSWR(
-  //   'doctors',
-  //   fetchDoctors
-  // );
-
-  // Data object to pass to DynamicTable
-  // const data = {
-  //   appointments: appointmentsData,
-  //   clients: clientsData,
-  //   doctors: doctorsData,
-  // };
-  // const refreshAppointments = () => mutateAppointments();
-  // const refreshClients = () => mutateClients();
-  // const refreshDoctors = () => mutateDoctors();
-
 
   return (
     <div className="mx-auto flex max-w-7xl flex-col space-y-14">
@@ -88,23 +108,17 @@ const AdminPage = () => {
             </p>
           </div>
           <div className="w-full md:w-1/2 flex justify-end gap-2">
-            {/* <CreationsModal type="newUser" onCreate={refreshClients} />
-            <CreationsModal type="newDoctor" onCreate={refreshDoctors} />
-            <CreationsModal
-              type="newAppointment"
-              onCreate={refreshAppointments}
-            /> */}
             <CreationsModal
               type="newUser"
-              onCreate={() => setAppointmentChanged(true)}
+              // onCreate={() => setClientChanged(true)}
             />
             <CreationsModal
               type="newDoctor"
-              onCreate={() => setClientChanged(true)}
+              // onCreate={() => setDoctorChanged(true)}
             />
             <CreationsModal
               type="newAppointment"
-              onCreate={() => setDoctorChanged(true)}
+              // onCreate={() => setAppointmentChanged(true)}
             />
           </div>
         </section>
@@ -112,30 +126,31 @@ const AdminPage = () => {
         <section className="admin-stat">
           <StatCard
             type="completed"
-            count={appointments?.completedCount || 0}
+            count={completedCount}
             label="Completed appointments"
             icon={'/assets/icons/check.svg'}
           />
           <StatCard
             type="scheduled"
-            count={appointments?.scheduledCount || 0}
+            count={scheduledCount}
             label="Scheduled appointments"
             icon={'/assets/icons/appointments.svg'}
           />
           <StatCard
             type="no-show"
-            count={appointments?.noShowCount || 0}
+            count={noShowCount}
             label="No-Show appointments"
             icon={'/assets/icons/cancelled.svg'}
           />
         </section>
         <section className="w-full flex flex-col md:flex-row space-y-4 md:space-y-0 justify-between">
           <DynamicTable
-            data={{
-              appointments,
-              clients,
-              doctors,
-            }}
+          // data={{
+          //   appointments: appointments.documents,
+          //   clients,
+          //   doctors,
+          // }}
+          // onUpdate={() => setAppointmentChanged(true)}
           />
         </section>
         {/* <DataTable columns={columns} data={appointments.documents} /> */}

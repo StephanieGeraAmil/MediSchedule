@@ -3,28 +3,16 @@
 import React, { Dispatch, SetStateAction, useState, useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-// import { Button } from '@/components/ui/button';
-import {
-  Form,
-  FormControl,
-  // FormDescription,
-  // FormField,
-  // FormItem,
-  // FormLabel,
-  // FormMessage,
-} from '@/components/ui/form';
-// import { Input } from '@/components/ui/input';
+import { Form, FormControl } from '@/components/ui/form';
 import CustomFormField from '../CustomFormField';
 import SubmitButton from '../SubmitButton';
 import { DoctorFormValidation, PatientFormValidation } from '@/lib/validation';
-// import { getUser, registerPatient } from '@/lib/actions/patient.actions';
 import {
   createDoctor,
   getDoctor,
   updateDoctor,
 } from '@/lib/actions/doctor.actions';
 import { useRouter } from 'next/navigation';
-// import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
 import {
   Doctors,
   GenderOptions,
@@ -36,13 +24,12 @@ import {
   SpecialityList,
 } from '@/constants';
 import { Label } from '../ui/label';
-// import { SelectItem } from '../ui/select';
-// import Image from 'next/image';
 import FileUploader from '../FileUploader';
 import { z } from 'zod';
 import { Checkbox } from '../ui/checkbox';
 import { SelectItem } from '../ui/select';
 import { PasswordInput } from '../PasswordInput';
+import { ActionTypes, useGlobalDispatch } from '@/contexts/GlobalState';
 
 interface Availability {
   day: string;
@@ -54,17 +41,15 @@ const DoctorForm = ({
   setOpen,
   type,
   user,
-  onCreate,
 }: {
   setOpen?: Dispatch<SetStateAction<boolean>>;
   type?: string;
   user?: User;
-  onCreate?: () => void;
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [doctor, setDoctor] = useState(null);
   const router = useRouter();
-
+  const dispatch = useGlobalDispatch();
   const form = useForm<z.infer<typeof DoctorFormValidation>>({
     resolver: zodResolver(DoctorFormValidation),
     defaultValues: {
@@ -141,7 +126,11 @@ const DoctorForm = ({
         if (newDoctor) {
           setOpen && setOpen(false);
           form.reset();
-          onCreate && onCreate();
+          // onCreate && onCreate();
+          dispatch({
+            type: ActionTypes.CREATE_DOCTOR,
+            payload: newDoctor,
+          });
         }
       } else {
         if (doctor) {
@@ -154,6 +143,10 @@ const DoctorForm = ({
           const updatedDoctor = await updateDoctor(doctorToSave);
           if (updatedDoctor) {
             setOpen && setOpen(false);
+            dispatch({
+              type: ActionTypes.UPDATE_DOCTOR,
+              payload: updatedDoctor,
+            });
           }
         }
       }
