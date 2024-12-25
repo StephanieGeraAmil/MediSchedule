@@ -1,16 +1,69 @@
+'use client';
 import Image from 'next/image';
 import Link from 'next/link';
 
 import { StatCard } from '@/components/StatCard';
-import { columns } from '@/components/table/columns';
-import { DataTable } from '@/components/table/DataTable';
+
 import { getRecentAppointmentList } from '@/lib/actions/appointment.actions';
-import { Button } from '@/components/ui/button';
+
 import { CreationsModal } from '@/components/CreationsModal';
 import Header from '@/components/Header';
+import { DynamicTable } from '@/components/table/dynamicTable';
+import { DataTable } from '@/components/table/DataTable';
+import { columns } from '@/components/table/columns';
+import { getAllPatients } from '@/lib/actions/patient.actions';
+import { getAllDoctors } from '@/lib/actions/doctor.actions';
+import { useEffect, useState } from 'react';
+import { useGlobalDispatch, useGlobalState } from '@/contexts/GlobalState';
 
-const AdminPage = async () => {
-  const appointments = await getRecentAppointmentList();
+const AdminPage = () => {
+  const { appointments } = useGlobalState();
+  const dispatch = useGlobalDispatch();
+
+  const completedCount = appointments.filter(
+    appointment => appointment.status === 'completed'
+  ).length;
+  const scheduledCount = appointments.filter(
+    appointment => appointment.status === 'scheduled'
+  ).length;
+  const noShowCount = appointments.filter(
+    appointment => appointment.status === 'no-show'
+  ).length;
+
+  useEffect(() => {
+    const fetchAppointments = async () => {
+      try {
+        const appointmentsData = await getRecentAppointmentList();
+        dispatch({
+          type: 'SET_APPOINTMENTS',
+          payload: appointmentsData,
+        });
+      } catch (error) {
+        console.error('Failed to fetch appointments:', error);
+      }
+    };
+
+    const fetchClients = async () => {
+      try {
+        const clientsData = await getAllPatients();
+        dispatch({ type: 'SET_CLIENTS', payload: clientsData });
+      } catch (error) {
+        console.error('Failed to fetch clients:', error);
+      }
+    };
+
+    const fetchDoctors = async () => {
+      try {
+        const doctorsData = await getAllDoctors();
+        dispatch({ type: 'SET_DOCTORS', payload: doctorsData });
+      } catch (error) {
+        console.error('Failed to fetch doctors:', error);
+      }
+    };
+    fetchAppointments();
+    fetchClients();
+    fetchDoctors();
+  }, []);
 
   return (
     <div className="mx-auto flex max-w-7xl flex-col space-y-14">
@@ -33,25 +86,26 @@ const AdminPage = async () => {
         <section className="admin-stat">
           <StatCard
             type="completed"
-            count={appointments?.completedCount || 0}
+            count={completedCount}
             label="Completed appointments"
             icon={'/assets/icons/check.svg'}
           />
           <StatCard
             type="scheduled"
-            count={appointments?.scheduledCount || 0}
+            count={scheduledCount}
             label="Scheduled appointments"
             icon={'/assets/icons/appointments.svg'}
           />
           <StatCard
             type="no-show"
-            count={appointments?.noShowCount || 0}
+            count={noShowCount}
             label="No-Show appointments"
             icon={'/assets/icons/cancelled.svg'}
           />
         </section>
-
-        <DataTable columns={columns} data={appointments?.documents} />
+        <section className="w-full flex flex-col md:flex-row space-y-4 md:space-y-0 justify-between">
+          <DynamicTable />
+        </section>
       </main>
     </div>
   );

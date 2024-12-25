@@ -50,7 +50,6 @@ export const PassKeyModal = () => {
             const user = session.user;
             if (user) {
               setOpen(false);
-              // localStorage.setItem('userId', user);
               authLogin(session.secret, user);
               router.push('/admin');
             }
@@ -68,7 +67,6 @@ export const PassKeyModal = () => {
 
   const closeModal = () => {
     setOpen(false);
-    // router.push('/');
   };
 
   const validatePasskey = (

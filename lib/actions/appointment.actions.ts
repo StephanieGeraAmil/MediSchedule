@@ -8,7 +8,9 @@ import { Appointment } from '@/types/appwrite.types';
 import {
   APPOINTMENT_COLLECTION_ID,
   PATIENT_COLLECTION_ID,
+  CLIENT_COLLECTION_ID,
   DOCTOR_COLLECTION_ID,
+  PROFESSIONAL_COLLECTION_ID,
   DATABASE_ID,
   databases,
   messaging,
@@ -36,13 +38,12 @@ export const createAppointment = async (
       DATABASE_ID!,
       APPOINTMENT_COLLECTION_ID!,
       [
-        // Query.equal('physician', appointment.physician),
-        Query.equal('doctor', appointment.doctor),
+        Query.equal('professional', appointment.professional),
         Query.equal('schedule', appointment.schedule.toISOString()),
       ]
     );
     if (prevAppointment.documents.length === 0) {
-      if (!appointment.patient) {
+      if (!appointment.client) {
         //if i dont  have a patient
         if (
           appointment.userId &&
@@ -51,20 +52,21 @@ export const createAppointment = async (
           //if i have an userId i get the patient that has that userId
           const patients = await databases.listDocuments(
             DATABASE_ID!,
-            PATIENT_COLLECTION_ID!,
+            // PATIENT_COLLECTION_ID!,
+            CLIENT_COLLECTION_ID!,
             [Query.equal('userId', [appointment.userId])]
           );
           if (!patients.documents.length) {
             throw new Error('No patient found for the given user ID.');
           } else {
-            appointment.patient = patients.documents[0].$id;
-            //  appointment.userId = patients?.documents[0]?.userId || '';
+            appointment.client = patients.documents[0].$id;
           }
         } else if (appointment.identificationNumber) {
           //i get the patient that has a certain identification number
           const patients = await databases.listDocuments(
             DATABASE_ID!,
-            PATIENT_COLLECTION_ID!,
+            // PATIENT_COLLECTION_ID!,
+            CLIENT_COLLECTION_ID!,
             [
               Query.equal('identificationNumber', [
                 appointment.identificationNumber,
@@ -76,15 +78,14 @@ export const createAppointment = async (
               'No patient found for the given dentification number.'
             );
           } else {
-            appointment.patient = patients.documents[0].$id;
-            // appointment.userId = patients?.documents[0]?.userId || '';
+            appointment.client = patients.documents[0].$id;
           }
         }
       }
       const appointmentToCreate = {
         schedule: appointment.schedule,
-        patient: appointment.patient,
-        doctor: appointment.doctor,
+        client: appointment.client,
+        professional: appointment.professional,
         note: appointment.note,
         reason: appointment.reason,
         status: 'scheduled',
@@ -118,43 +119,8 @@ export const getRecentAppointmentList = async () => {
       APPOINTMENT_COLLECTION_ID!,
       [Query.orderDesc('$createdAt')]
     );
-    const initialCounts = {
-      scheduledCount: 0,
-      pendingCount: 0,
-      cancelledCount: 0,
-      completedCount: 0,
-      noShowCount: 0,
-    };
 
-    const counts = (appointments.documents as Appointment[]).reduce(
-      (acc, appointment) => {
-        switch (appointment.status) {
-          case 'scheduled':
-            acc.scheduledCount++;
-            break;
-          case 'completed':
-            acc.completedCount++;
-            break;
-          case 'no-show':
-            acc.noShowCount++;
-            break;
-          case 'pending':
-            acc.pendingCount++;
-            break;
-          case 'cancelled':
-            acc.cancelledCount++;
-            break;
-        }
-        return acc;
-      },
-      initialCounts
-    );
-    const data = {
-      totalCount: appointments.total,
-      ...counts,
-      documents: appointments.documents,
-    };
-
+    const data = appointments.documents;
     return parseStringify(data);
   } catch (error) {
     console.error(
@@ -201,7 +167,7 @@ export const updateAppointment = async ({
     const smsMessage = `Greetings from MediSchedule. ${
       type === 'schedule'
         ? `Your appointment is confirmed for ${formatDateTime(appointment.schedule!).dateTime} 
-    with Dr. ${appointment.doctor}`
+    with Dr. ${appointment.professional}`
         : `We regret to inform that your appointment 
     for ${formatDateTime(appointment.schedule!).dateTime} is cancelled. 
     Reason:  ${appointment.cancellationReason}`
@@ -235,56 +201,21 @@ export const getAppointment = async (appointmentId: string) => {
 //GET APPOINTMENTS OF PATIENT
 export const getPatientAppointmentList = async (userId: string) => {
   try {
-    const patients = await databases.listDocuments(
+    const clients = await databases.listDocuments(
       DATABASE_ID!,
-      PATIENT_COLLECTION_ID!,
+      // PATIENT_COLLECTION_ID!,
+      CLIENT_COLLECTION_ID!,
       [Query.equal('userId', [userId])]
     );
 
-    const patient = patients.documents[0].$id;
+    const client = clients.documents[0].$id;
     const appointments = await databases.listDocuments(
       DATABASE_ID!,
       APPOINTMENT_COLLECTION_ID!,
-      [Query.equal('patient', patient), Query.orderDesc('$createdAt')]
+      [Query.equal('client', client), Query.orderDesc('$createdAt')]
     );
-    // return parseStringify(appointment);
-    const initialCounts = {
-      scheduledCount: 0,
-      pendingCount: 0,
-      cancelledCount: 0,
-      completedCount: 0,
-      noShowCount: 0,
-    };
 
-    const counts = (appointments.documents as Appointment[]).reduce(
-      (acc, appointment) => {
-        switch (appointment.status) {
-          case 'scheduled':
-            acc.scheduledCount++;
-            break;
-          case 'completed':
-            acc.completedCount++;
-            break;
-          case 'no-show':
-            acc.noShowCount++;
-            break;
-          case 'pending':
-            acc.pendingCount++;
-            break;
-          case 'cancelled':
-            acc.cancelledCount++;
-            break;
-        }
-        return acc;
-      },
-      initialCounts
-    );
-    const data = {
-      totalCount: appointments.total,
-      ...counts,
-      documents: appointments.documents,
-    };
-
+    const data = appointments.documents;
     return parseStringify(data);
   } catch (error) {
     console.error(
@@ -298,53 +229,18 @@ export const getDoctorAppointmentList = async (userId: string) => {
   try {
     const doctors = await databases.listDocuments(
       DATABASE_ID!,
-      DOCTOR_COLLECTION_ID!,
+      // DOCTOR_COLLECTION_ID!,
+      PROFESSIONAL_COLLECTION_ID!,
       [Query.equal('userId', [userId])]
     );
     const doctor = doctors.documents[0]?.$id || '';
     const appointments = await databases.listDocuments(
       DATABASE_ID!,
       APPOINTMENT_COLLECTION_ID!,
-      [Query.equal('doctor', doctor), Query.orderDesc('$createdAt')]
+      [Query.equal('professional', doctor), Query.orderDesc('$createdAt')]
     );
-    // return parseStringify(appointments.documents);
-    const initialCounts = {
-      scheduledCount: 0,
-      pendingCount: 0,
-      cancelledCount: 0,
-      completedCount: 0,
-      noShowCount: 0,
-    };
 
-    const counts = (appointments.documents as Appointment[]).reduce(
-      (acc, appointment) => {
-        switch (appointment.status) {
-          case 'scheduled':
-            acc.scheduledCount++;
-            break;
-          case 'completed':
-            acc.completedCount++;
-            break;
-          case 'no-show':
-            acc.noShowCount++;
-            break;
-          case 'pending':
-            acc.pendingCount++;
-            break;
-          case 'cancelled':
-            acc.cancelledCount++;
-            break;
-        }
-        return acc;
-      },
-      initialCounts
-    );
-    const data = {
-      totalCount: appointments.total,
-      ...counts,
-      documents: appointments.documents,
-    };
-
+    const data = appointments.documents;
     return parseStringify(data);
   } catch (error) {
     console.error(
@@ -369,9 +265,9 @@ export const getNextMonthsAppointments = async () => {
       ]
     );
 
-    const filteredAppointments = appointments.documents.map(doc => ({
-      schedule: doc.schedule,
-      doctorId: doc.doctor?.$id, // Extract only the doctor ID
+    const filteredAppointments = appointments.documents.map(app => ({
+      schedule: app.schedule,
+      doctorId: app.professional?.$id, // Extract only the doctor ID
     }));
     return parseStringify(filteredAppointments);
   } catch (error) {

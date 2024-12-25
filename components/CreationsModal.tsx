@@ -26,7 +26,7 @@ export const CreationsModal = ({
   type: 'newUser' | 'newDoctor' | 'newAppointment';
 }) => {
   const [open, setOpen] = useState(false);
-  const { user: authUser, login: authLogin } = useAuth();
+  const { user: authUser } = useAuth();
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

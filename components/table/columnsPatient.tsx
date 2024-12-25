@@ -17,14 +17,7 @@ export const columnsPatient: ColumnDef<Appointment>[] = [
       return <p className="text-14-medium ">{row.index + 1}</p>;
     },
   },
-  // {
-  //   accessorKey: 'patient',
-  //   header: 'Patient',
-  //   cell: ({ row }) => {
-  //     const appointment = row.original;
-  //     return <p className="text-14-medium ">{appointment.patient.name}</p>;
-  //   },
-  // },
+
   {
     accessorKey: 'status',
     header: 'Status',
@@ -50,7 +43,7 @@ export const columnsPatient: ColumnDef<Appointment>[] = [
     },
   },
   {
-    accessorKey: 'doctor',
+    accessorKey: 'professional',
     header: 'Doctor',
     cell: ({ row }) => {
       const appointment = row.original;
@@ -58,56 +51,33 @@ export const columnsPatient: ColumnDef<Appointment>[] = [
       return (
         <div className="flex items-center gap-3">
           <Image
-            src={appointment.doctor?.photoFileUrl || ''}
+            src={appointment.professional?.photoFileUrl || ''}
             alt="doctor"
             width={100}
             height={100}
             className="size-8"
           />
           <p className="whitespace-nowrap">
-            Dr. {appointment.doctor?.name || ''}
+            Dr. {appointment.professional?.name || ''}
           </p>
         </div>
       );
     },
   },
   {
-    accessorKey: 'doctor_speciality',
+    accessorKey: 'professional_speciality',
     header: 'Speciality',
     cell: ({ row }) => {
       const appointment = row.original;
 
       return (
         <p className="whitespace-nowrap">
-          {appointment.doctor?.speciality || ''}
+          {appointment.professional?.speciality || ''}
         </p>
       );
     },
   },
-  // {
-  //   accessorKey: 'physician',
-  //   header: 'Doctor',
-  //   cell: ({ row }) => {
-  //     const appointment = row.original;
-
-  //     const doctor = Doctors.find(
-  //       doctor => doctor.name === appointment.physician
-  //     );
-
-  //     return (
-  //       <div className="flex items-center gap-3">
-  //         <Image
-  //           src={doctor?.image!}
-  //           alt="doctor"
-  //           width={100}
-  //           height={100}
-  //           className="size-8"
-  //         />
-  //         <p className="whitespace-nowrap">Dr. {doctor?.name}</p>
-  //       </div>
-  //     );
-  //   },
-  // },
+ 
   {
     id: 'actions',
     header: () => <div className="pl-4">Actions</div>,
@@ -116,27 +86,14 @@ export const columnsPatient: ColumnDef<Appointment>[] = [
 
       return (
         <div className="flex gap-1">
-          {/* <AppointmentModal
-            patientId={appointment.patient.$id}
-            userId={appointment.userId}
-            appointment={appointment}
-            type="complete"
-          />
+        
           <AppointmentModal
-            patientId={appointment.patient.$id}
-            userId={appointment.userId}
-            appointment={appointment}
-            type="no-show"
-          /> */}
-          <AppointmentModal
-            patientId={appointment.patient.$id}
-            // userId={appointment.userId}
+            patientId={appointment.client.$id}
             appointment={appointment}
             type="re-schedule"
           />
           <AppointmentModal
-            patientId={appointment.patient.$id}
-            // userId={appointment.userId}
+            patientId={appointment.client.$id}
             appointment={appointment}
             type="cancel"
           />

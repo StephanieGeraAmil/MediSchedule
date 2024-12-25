@@ -137,7 +137,7 @@ const RegisterForm = ({
     }
     try {
       const patientData = {
-        userId: user.$id,
+        userId: user?.$id || '',
         name: values.name,
         email: values.email,
         phone: values.phone,

@@ -20,7 +20,6 @@ import ReactDatePicker from 'react-datepicker';
 import { Select, SelectContent, SelectValue, SelectTrigger } from './ui/select';
 import { Textarea } from './ui/textarea';
 import { Checkbox } from './ui/checkbox';
-// import { PasswordInput } from './PasswordInput';
 import { FormFieldType } from '@/constants';
 
 interface CustomProps {
@@ -33,6 +32,7 @@ interface CustomProps {
   iconSrc?: string;
   iconAlt?: string;
   disabled?: boolean;
+  hidden?: boolean;
   dateFormat?: string;
   showTimeSelect?: boolean;
   children?: React.ReactNode;
@@ -42,6 +42,7 @@ interface CustomProps {
   isTimeSelectable?: (date: Date) => boolean;
   timeClassName?: (date: Date) => string;
   renderSkeleton?: (field: any) => React.ReactNode;
+  onChange?: (value: any) => void;
 }
 const toUTC = localDate => {
   if (!localDate) return null;
@@ -139,16 +140,24 @@ const RenderField = ({ field, props }: { field: any; props: CustomProps }) => {
     case FormFieldType.CHECKBOX:
       return (
         <FormControl>
-          <div className="flex items-center gap-4">
-            <Checkbox
-              id={name}
-              checked={field.value}
-              onCheckedChange={field.onChange}
-            />
-            <label htmlFor={props.name} className="checkbox-label">
-              {props.label}
-            </label>
-          </div>
+          {!props.hidden && (
+            <div className="flex items-center gap-4">
+              <Checkbox
+                id={name}
+                checked={field.value}
+                disabled={props.disabled}
+                onCheckedChange={value => {
+                  field.onChange(value); // Update the form state
+                  if (props.onChange) {
+                    props.onChange(value); // Call the custom onChange handler if provided
+                  }
+                }}
+              />
+              <label htmlFor={props.name} className="checkbox-label">
+                {props.label}
+              </label>
+            </div>
+          )}
         </FormControl>
       );
 
@@ -166,7 +175,15 @@ const RenderField = ({ field, props }: { field: any; props: CustomProps }) => {
     case FormFieldType.SELECT:
       return (
         <FormControl>
-          <Select onValueChange={field.onChange} value={field.value}>
+          <Select
+            onValueChange={value => {
+              field.onChange(value); // Update the form state
+              if (props.onChange) {
+                props.onChange(value); // Call the custom onChange handler if provided
+              }
+            }}
+            value={field.value}
+          >
             <FormControl>
               <SelectTrigger className="shad-select-trigger">
                 <SelectValue placeholder={props.placeholder} />

@@ -22,7 +22,7 @@ export const columnsDoctor: ColumnDef<Appointment>[] = [
     header: 'Patient',
     cell: ({ row }) => {
       const appointment = row.original;
-      return <p className="text-14-medium ">{appointment.patient.name}</p>;
+      return <p className="text-14-medium ">{appointment.client.name}</p>;
     },
   },
   {
@@ -49,30 +49,7 @@ export const columnsDoctor: ColumnDef<Appointment>[] = [
       );
     },
   },
-  // {
-  //   accessorKey: 'physician',
-  //   header: 'Doctor',
-  //   cell: ({ row }) => {
-  //     const appointment = row.original;
 
-  //     const doctor = Doctors.find(
-  //       doctor => doctor.name === appointment.physician
-  //     );
-
-  //     return (
-  //       <div className="flex items-center gap-3">
-  //         <Image
-  //           src={doctor?.image!}
-  //           alt="doctor"
-  //           width={100}
-  //           height={100}
-  //           className="size-8"
-  //         />
-  //         <p className="whitespace-nowrap">Dr. {doctor?.name}</p>
-  //       </div>
-  //     );
-  //   },
-  // },
   {
     id: 'actions',
     header: () => <div className="pl-4">Actions</div>,
@@ -82,29 +59,15 @@ export const columnsDoctor: ColumnDef<Appointment>[] = [
       return (
         <div className="flex gap-1">
           <AppointmentModal
-            patientId={appointment.patient.$id}
-            // userId={appointment.userId}
+            patientId={appointment.client.$id}
             appointment={appointment}
             type="complete"
           />
           <AppointmentModal
-            patientId={appointment.patient.$id}
-            // userId={appointment.userId}
+            patientId={appointment.client.$id}
             appointment={appointment}
             type="no-show"
           />
-          {/* <AppointmentModal
-            patientId={appointment.patient.$id}
-            userId={appointment.userId}
-            appointment={appointment}
-            type="re-schedule"
-          />
-          <AppointmentModal
-            patientId={appointment.patient.$id}
-            userId={appointment.userId}
-            appointment={appointment}
-            type="cancel"
-          /> */}
         </div>
       );
     },

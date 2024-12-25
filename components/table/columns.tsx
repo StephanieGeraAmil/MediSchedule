@@ -22,7 +22,8 @@ export const columns: ColumnDef<Appointment>[] = [
     header: 'Patient',
     cell: ({ row }) => {
       const appointment = row.original;
-      return <p className="text-14-medium ">{appointment.patient.name}</p>;
+      // return <p className="text-14-medium ">{appointment.patient.name}</p>;
+      return <p className="text-14-medium ">{appointment.client.name}</p>;
     },
   },
   {
@@ -49,65 +50,38 @@ export const columns: ColumnDef<Appointment>[] = [
       );
     },
   },
-  // {
-  //   accessorKey: 'physician',
-  //   header: 'Doctor',
-  //   cell: ({ row }) => {
-  //     const appointment = row.original;
 
-  //     const doctor = Doctors.find(
-  //       doctor => doctor.name === appointment.physician
-  //     );
-
-  //     return (
-  //       <div className="flex items-center gap-3">
-  //         <Image
-  //           src={doctor?.image!}
-  //           alt="doctor"
-  //           width={100}
-  //           height={100}
-  //           className="size-8"
-  //         />
-  //         <p className="whitespace-nowrap">Dr. {doctor?.name}</p>
-  //       </div>
-  //     );
-  //   },
-  // },
   {
-    accessorKey: 'doctor',
+    accessorKey: 'professional',
     header: 'Doctor',
     cell: ({ row }) => {
       const appointment = row.original;
 
-      // const doctor = Doctors.find(
-      //   doctor => doctor.name === appointment.physician
-      // );
-
       return (
         <div className="flex items-center gap-3">
           <Image
-            src={appointment.doctor?.photoFileUrl || ''}
-            alt="doctor"
+            src={appointment.professional?.photoFileUrl || ''}
+            alt="professional"
             width={100}
             height={100}
             className="size-8"
           />
           <p className="whitespace-nowrap">
-            Dr. {appointment.doctor?.name || ''}
+            Dr. {appointment.professional?.name || ''}
           </p>
         </div>
       );
     },
   },
   {
-    accessorKey: 'doctor_speciality',
+    accessorKey: 'proffesional_speciality',
     header: 'Speciality',
     cell: ({ row }) => {
       const appointment = row.original;
 
       return (
         <p className="whitespace-nowrap">
-          {appointment.doctor?.speciality || ''}
+          {appointment.professional?.speciality || ''}
         </p>
       );
     },
@@ -121,26 +95,22 @@ export const columns: ColumnDef<Appointment>[] = [
       return (
         <div className="flex gap-1">
           <AppointmentModal
-            patientId={appointment.patient.$id}
-            // userId={appointment.userId}
+            patientId={appointment.client.$id}
             appointment={appointment}
             type="complete"
           />
           <AppointmentModal
-            patientId={appointment.patient.$id}
-            // userId={appointment.userId}
+            patientId={appointment.client.$id}
             appointment={appointment}
             type="no-show"
           />
           <AppointmentModal
-            patientId={appointment.patient.$id}
-            // userId={appointment.userId}
+            patientId={appointment.client.$id}
             appointment={appointment}
             type="re-schedule"
           />
           <AppointmentModal
-            patientId={appointment.patient.$id}
-            // userId={appointment.userId}
+            patientId={appointment.client.$id}
             appointment={appointment}
             type="cancel"
           />

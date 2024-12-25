@@ -8,7 +8,7 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   images: {
-    domains: ['cloud.appwrite.io'], // Add the Appwrite image domain here
+    domains: ['cloud.appwrite.io'],
   },
 };
 export default nextConfig;
