@@ -46,18 +46,31 @@ const AppointmentForm = ({
 }) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  // const [doctorsList, setDoctorsList] = useState([]);
+  const [doctorsList, setDoctorsList] = useState([]);
+  const [SpecialitysAvaiable, setSpecialityAvaiable] = useState([]);
   const [nextMonthAppintmentList, setNextMonthAppintmentList] = useState([]);
   const AppointmentFormValidation = getAppointmentSchema(type);
   const { user: authUser } = useAuth();
   // const isAdmin = localStorage.getItem('accessKey') ? true : false;
   const dispatch = useGlobalDispatch();
-  const { doctors } = useGlobalState();
+  // const { doctors } = useGlobalState();
+
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
         const doctors = await getDoctorList();
-        dispatch({ type: ActionTypes.SET_DOCTORS, payload: doctors });
+        setDoctorsList(doctors.documents);
+        const doctorSpecialties = doctors.documents.reduce(
+          (uniqueSpecialties, doctor) => {
+            if (!uniqueSpecialties.includes(doctor.speciality)) {
+              uniqueSpecialties.push(doctor.speciality);
+            }
+            return uniqueSpecialties;
+          },
+          []
+        );
+
+        setSpecialityAvaiable(doctorSpecialties);
       } catch (error) {
         console.error('Error fetching doctors list:', error);
       }
@@ -71,14 +84,22 @@ const AppointmentForm = ({
         console.error('Error fetching nex month appintment list:', error);
       }
     };
+    fetchDoctors();
     fetchNextMonthAppointments();
     if (!userId) {
       userId = authUser?.$id;
     }
-    if (doctors.length == 0) {
-      fetchDoctors();
-    }
   }, []);
+  // useEffect(() => {
+  //   console.log('doctors', doctors);
+  // }, [doctors]);
+
+  function normalizeDate(date) {
+    const normalizedDate = new Date(date);
+    normalizedDate.setHours(0, 0, 0, 0);
+    return normalizedDate;
+  }
+
   const roundedSchedule = (date: Date) => {
     const minutes = date.getMinutes();
     const roundedMinutes = Math.ceil(minutes / 30) * 30;
@@ -87,18 +108,12 @@ const AppointmentForm = ({
     date.setMilliseconds(0);
     return date;
   };
-  function normalizeDate(date) {
-    const normalizedDate = new Date(date);
-    normalizedDate.setHours(0, 0, 0, 0);
-    return normalizedDate;
-  }
   const form = useForm<z.infer<typeof AppointmentFormValidation>>({
     resolver: zodResolver(AppointmentFormValidation),
     defaultValues: {
       professional: appointment
         ? appointment?.professional.$id
-        : // : doctorsList[0]?.$id,
-          doctors[0]?.$id,
+        : doctorsList[0]?.$id,
       schedule: appointment
         ? roundedSchedule(new Date(appointment?.schedule!))
         : roundedSchedule(new Date(Date.now())),
@@ -119,8 +134,8 @@ const AppointmentForm = ({
 
   const handleDoctorChange = selectedDoctor => {
     form.setValue('asap', false);
-    // const dr = doctorsList.filter(doctor => doctor.$id === selectedDoctor);
-    const dr = doctors.filter(doctor => doctor.$id === selectedDoctor);
+    const dr = doctorsList.filter(doctor => doctor.$id === selectedDoctor);
+
     form.setValue('schedule', nextSlotsForDoctor(dr[0]));
   };
   const handleSpecialityChange = selectedSpeciality => {
@@ -165,14 +180,11 @@ const AppointmentForm = ({
   const maxDate = new Date(new Date().setMonth(new Date().getMonth() + 1));
   const now = new Date(new Date().setMonth(new Date().getMonth()));
 
-  //day
   const filter = (date: Date): boolean => {
-    // if (!selectedDoctor || !doctorsList.length) return true;
-    if (!selectedDoctor || !doctors.length) return true;
+    if (!selectedDoctor || !doctorsList.length) return true;
 
     // Find the selected doctor's data
-    // const doctor = doctorsList.find(doctor => doctor.$id === selectedDoctor);
-    const doctor = doctors.find(doctor => doctor.$id === selectedDoctor);
+    const doctor = doctorsList.find(doctor => doctor.$id === selectedDoctor);
 
     if (!doctor || !doctor.weeklyAvailability) return true;
 
@@ -190,7 +202,6 @@ const AppointmentForm = ({
     // If the day is not in the availability, disable it
     if (!availabilityForDay) return false;
 
-    // if (date > maxDate || date < now) {
     if (
       normalizeDate(date) > normalizeDate(maxDate) ||
       normalizeDate(date) < normalizeDate(now)
@@ -203,11 +214,10 @@ const AppointmentForm = ({
 
   //day
   const dayClassName = (date: Date): string => {
-    // if (!selectedDoctor || !doctorsList.length) return 'selectable-day';
-    if (!selectedDoctor || !doctors.length) return 'selectable-day';
+    if (!selectedDoctor || !doctorsList.length) return 'selectable-day';
+
     // Find the selected doctor's data
-    // const doctor = doctorsList.find(doctor => doctor.$id === selectedDoctor);
-    const doctor = doctors.find(doctor => doctor.$id === selectedDoctor);
+    const doctor = doctorsList.find(doctor => doctor.$id === selectedDoctor);
     if (!doctor || !doctor.weeklyAvailability) return 'selectable-day';
 
     // Parse the doctor's weekly availability
@@ -237,12 +247,10 @@ const AppointmentForm = ({
 
   const isTimeSelectable = (time: Date): boolean => {
     // if (!field.value || !selectedDoctor || !doctorsList.length) return true;
-    // if (!selectedDate || !selectedDoctor || !doctorsList.length) return true;
-    if (!selectedDate || !selectedDoctor || !doctors.length) return true;
+    if (!selectedDate || !selectedDoctor || !doctorsList.length) return true;
 
     // Find the selected doctor's data
-    // const doctor = doctorsList.find(doctor => doctor.$id === selectedDoctor);
-    const doctor = doctors.find(doctor => doctor.$id === selectedDoctor);
+    const doctor = doctorsList.find(doctor => doctor.$id === selectedDoctor);
 
     if (!doctor || !doctor.weeklyAvailability) return true;
 
@@ -283,13 +291,11 @@ const AppointmentForm = ({
   };
 
   const timeClassName = (time: Date): string => {
-    // if (!selectedDate || !selectedDoctor || !doctorsList.length)
-    if (!selectedDate || !selectedDoctor || !doctors.length)
+    if (!selectedDate || !selectedDoctor || !doctorsList.length)
       return 'selectable-time';
 
     // Find the selected doctor's data
-    // const doctor = doctorsList.find(doctor => doctor.$id === selectedDoctor);
-    const doctor = doctors.find(doctor => doctor.$id === selectedDoctor);
+    const doctor = doctorsList.find(doctor => doctor.$id === selectedDoctor);
 
     if (!doctor || !doctor.weeklyAvailability) return 'selectable-time';
 
@@ -332,8 +338,7 @@ const AppointmentForm = ({
 
   const findEarliestAvailableDoctorAndDate = speciality => {
     // Filter doctors by the selected speciality
-    // const filteredDoctors = doctorsList.filter(
-    const filteredDoctors = doctors.filter(
+    const filteredDoctors = doctorsList.filter(
       doctor => doctor.speciality === speciality
     );
     //for each doctor get the next slot avaiable
@@ -542,8 +547,8 @@ const AppointmentForm = ({
                   handleSpecialityChange(selectedValue);
                 }}
               >
-                {SpecialityList &&
-                  SpecialityList.map((speciality, i) => (
+                {SpecialitysAvaiable &&
+                  SpecialitysAvaiable.map((speciality, i) => (
                     <SelectItem key={speciality + i} value={speciality}>
                       <div className="flex cursor-pointer items-center gap-2">
                         <p> {speciality}</p>
@@ -578,10 +583,8 @@ const AppointmentForm = ({
                   handleDoctorChange(selectedValue);
                 }}
               >
-                {/* {doctorsList &&
-                  doctorsList.map((doctor, i) => { */}
-                {doctors &&
-                  doctors.map((doctor, i) => {
+                {doctorsList &&
+                  doctorsList.map((doctor, i) => {
                     if (
                       (speciality && speciality === doctor.speciality) ||
                       !speciality
