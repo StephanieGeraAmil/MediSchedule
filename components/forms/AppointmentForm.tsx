@@ -25,7 +25,11 @@ import SubmitButton from '../SubmitButton';
 import { Form } from '../ui/form';
 import { FormFieldType, SpecialityList } from '@/constants';
 import { useAuth } from '@/contexts/AuthContext';
-import { ActionTypes, useGlobalDispatch } from '@/contexts/GlobalState';
+import {
+  ActionTypes,
+  useGlobalDispatch,
+  useGlobalState,
+} from '@/contexts/GlobalState';
 
 const AppointmentForm = ({
   userId,
@@ -43,17 +47,30 @@ const AppointmentForm = ({
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [doctorsList, setDoctorsList] = useState([]);
+  const [SpecialitysAvaiable, setSpecialityAvaiable] = useState([]);
   const [nextMonthAppintmentList, setNextMonthAppintmentList] = useState([]);
   const AppointmentFormValidation = getAppointmentSchema(type);
   const { user: authUser } = useAuth();
   // const isAdmin = localStorage.getItem('accessKey') ? true : false;
   const dispatch = useGlobalDispatch();
+  // const { doctors } = useGlobalState();
 
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
         const doctors = await getDoctorList();
         setDoctorsList(doctors.documents);
+        const doctorSpecialties = doctors.documents.reduce(
+          (uniqueSpecialties, doctor) => {
+            if (!uniqueSpecialties.includes(doctor.speciality)) {
+              uniqueSpecialties.push(doctor.speciality);
+            }
+            return uniqueSpecialties;
+          },
+          []
+        );
+
+        setSpecialityAvaiable(doctorSpecialties);
       } catch (error) {
         console.error('Error fetching doctors list:', error);
       }
@@ -73,6 +90,16 @@ const AppointmentForm = ({
       userId = authUser?.$id;
     }
   }, []);
+  // useEffect(() => {
+  //   console.log('doctors', doctors);
+  // }, [doctors]);
+
+  function normalizeDate(date) {
+    const normalizedDate = new Date(date);
+    normalizedDate.setHours(0, 0, 0, 0);
+    return normalizedDate;
+  }
+
   const roundedSchedule = (date: Date) => {
     const minutes = date.getMinutes();
     const roundedMinutes = Math.ceil(minutes / 30) * 30;
@@ -175,7 +202,10 @@ const AppointmentForm = ({
     // If the day is not in the availability, disable it
     if (!availabilityForDay) return false;
 
-    if (date > maxDate || date < now) {
+    if (
+      normalizeDate(date) > normalizeDate(maxDate) ||
+      normalizeDate(date) < normalizeDate(now)
+    ) {
       return false;
     } else {
       return true;
@@ -204,7 +234,10 @@ const AppointmentForm = ({
     // If the day is not in the availability, mark as unavailable
     if (!availabilityForDay) return 'non-selectable-day';
 
-    if (date > maxDate || date < now) {
+    if (
+      normalizeDate(date) > normalizeDate(maxDate) ||
+      normalizeDate(date) < normalizeDate(now)
+    ) {
       return 'non-selectable-day';
     } else {
       return 'selectable-day';
@@ -514,8 +547,8 @@ const AppointmentForm = ({
                   handleSpecialityChange(selectedValue);
                 }}
               >
-                {SpecialityList &&
-                  SpecialityList.map((speciality, i) => (
+                {SpecialitysAvaiable &&
+                  SpecialitysAvaiable.map((speciality, i) => (
                     <SelectItem key={speciality + i} value={speciality}>
                       <div className="flex cursor-pointer items-center gap-2">
                         <p> {speciality}</p>

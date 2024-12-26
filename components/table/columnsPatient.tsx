@@ -3,7 +3,7 @@
 import { ColumnDef } from '@tanstack/react-table';
 import Image from 'next/image';
 
-import { Doctors } from '@/constants';
+// import { Doctors } from '@/constants';
 import { formatDateTime } from '@/lib/utils';
 import { Appointment } from '@/types/appwrite.types';
 
@@ -77,7 +77,7 @@ export const columnsPatient: ColumnDef<Appointment>[] = [
       );
     },
   },
- 
+
   {
     id: 'actions',
     header: () => <div className="pl-4">Actions</div>,
@@ -86,7 +86,6 @@ export const columnsPatient: ColumnDef<Appointment>[] = [
 
       return (
         <div className="flex gap-1">
-        
           <AppointmentModal
             patientId={appointment.client.$id}
             appointment={appointment}
