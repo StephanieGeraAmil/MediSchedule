@@ -54,14 +54,14 @@ const AppointmentForm = ({
   const dispatch = useGlobalDispatch();
   const { doctors } = useGlobalState();
   useEffect(() => {
-    // const fetchDoctors = async () => {
-    //   try {
-    //     const doctors = await getDoctorList();
-    //     setDoctorsList(doctors.documents);
-    //   } catch (error) {
-    //     console.error('Error fetching doctors list:', error);
-    //   }
-    // };
+    const fetchDoctors = async () => {
+      try {
+        const doctors = await getDoctorList();
+        dispatch({ type: ActionTypes.SET_DOCTORS, payload: doctors });
+      } catch (error) {
+        console.error('Error fetching doctors list:', error);
+      }
+    };
 
     const fetchNextMonthAppointments = async () => {
       try {
@@ -71,10 +71,12 @@ const AppointmentForm = ({
         console.error('Error fetching nex month appintment list:', error);
       }
     };
-    // fetchDoctors();
     fetchNextMonthAppointments();
     if (!userId) {
       userId = authUser?.$id;
+    }
+    if (doctors.length == 0) {
+      fetchDoctors();
     }
   }, []);
   const roundedSchedule = (date: Date) => {
