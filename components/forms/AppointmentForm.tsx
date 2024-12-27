@@ -46,6 +46,7 @@ const AppointmentForm = ({
 }) => {
   // const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [isFetchingData, setIsFetchingData] = useState(true);
   // const [doctorsList, setDoctorsList] = useState([]);
   const [SpecialitysAvaiable, setSpecialityAvaiable] = useState([]);
   const [nextMonthAppintmentList, setNextMonthAppintmentList] = useState([]);
@@ -59,19 +60,7 @@ const AppointmentForm = ({
     const fetchDoctors = async () => {
       try {
         const doctors = await getDoctorList();
-        setDoctorsList(doctors.documents);
         dispatch({ type: ActionTypes.SET_DOCTORS, payload: doctors.documents });
-        // const doctorSpecialties = doctors.documents.reduce(
-        //   (uniqueSpecialties, doctor) => {
-        //     if (!uniqueSpecialties.includes(doctor.speciality)) {
-        //       uniqueSpecialties.push(doctor.speciality);
-        //     }
-        //     return uniqueSpecialties;
-        //   },
-        //   []
-        // );
-
-        // setSpecialityAvaiable(doctorSpecialties);
       } catch (error) {
         console.error('Error fetching doctors list:', error);
       }
@@ -85,10 +74,23 @@ const AppointmentForm = ({
         console.error('Error fetching nex month appintment list:', error);
       }
     };
-    if (!doctors.length) {
-      fetchDoctors();
-    }
-    fetchNextMonthAppointments();
+
+    const fetchData = async () => {
+      // Execute fetches conditionally
+      const fetchPromises = [];
+      if (!doctors.length) {
+        fetchPromises.push(fetchDoctors());
+      }
+      fetchPromises.push(fetchNextMonthAppointments());
+
+      // Wait for all necessary fetches to complete
+      await Promise.all(fetchPromises);
+
+      setIsFetchingData(false);
+    };
+
+    fetchData();
+
     if (!userId) {
       userId = authUser?.$id;
     }
@@ -182,7 +184,6 @@ const AppointmentForm = ({
 
       const isSameDoctor = appt.doctorId === doctor;
       const isSameTime = date1.getTime() === date2.getTime();
-
       return isSameDoctor && isSameTime;
     });
   };
@@ -373,63 +374,136 @@ const AppointmentForm = ({
     const date = nextSlotsForDoctors[0].slot;
     return { doctor: selectedDoctor, date: date };
   };
+  // const nextSlotsForDoctor = doctor => {
+  //   const today = new Date();
+  //   const dayOfWeek = today.toLocaleDateString('en-US', { weekday: 'long' });
+  //   if (!doctor || !doctor.weeklyAvailability) return today;
+  //   // Get the doctor's weekly availability
+  //   const weeklyAvailability = JSON.parse(doctor.weeklyAvailability);
+  //   // Find the availability for today and future days
+  //   const todayAvailability = weeklyAvailability.find(
+  //     day => day.day === dayOfWeek
+  //   );
+
+  //   // Check for the next available slot
+  //   let nextAvailableSlot = null;
+  //   if (todayAvailability) {
+  //     const todayStart = new Date(
+  //       today.toDateString() + ' ' + todayAvailability.startTime
+  //     );
+  //     const todayEnd = new Date(
+  //       today.toDateString() + ' ' + todayAvailability.endTime
+  //     );
+
+  //     // If it's today, we need to find the earliest available time after the current time
+  //     if (today < todayEnd) {
+  //       if (today < todayStart) {
+  //         nextAvailableSlot = roundedSchedule(new Date(todayStart));
+  //       } else {
+  //         nextAvailableSlot = roundedSchedule(new Date(today));
+  //       }
+  //       while (nextAvailableSlot <= todayEnd) {
+  //         const isTaken = isDateTimeTaken(doctor, nextAvailableSlot);
+  //         if (!isTaken) break; // If the time is not taken, break the loop
+  //         nextAvailableSlot.setMinutes(nextAvailableSlot.getMinutes() + 30); // Try next slot
+  //       }
+  //     }
+  //   }
+
+  //   if (!nextAvailableSlot) {
+  //     // If no available slot today, find the next available day
+  //     for (let i = 1; i < 7; i++) {
+  //       const nextDay = new Date(today);
+  //       nextDay.setDate(today.getDate() + i);
+  //       const nextDayOfWeek = nextDay.toLocaleDateString('en-US', {
+  //         weekday: 'long',
+  //       });
+
+  //       const availabilityForNextDay = weeklyAvailability.find(
+  //         day => day.day === nextDayOfWeek
+  //       );
+  //       if (availabilityForNextDay) {
+  //         nextAvailableSlot = new Date(
+  //           nextDay.toDateString() + ' ' + availabilityForNextDay.startTime
+  //         );
+  //         //check avaiability for that day
+  //         //if i have avaiability return it
+  //         //if i dont have avaiability for that day check the next day
+  //         break;
+  //       }
+  //     }
+  //   }
+
+  //   // Return the earliest available slot
+  //   return nextAvailableSlot;
+  // };
+
   const nextSlotsForDoctor = doctor => {
     const today = new Date();
-    const dayOfWeek = today.toLocaleDateString('en-US', { weekday: 'long' });
-    if (!doctor || !doctor.weeklyAvailability) return today;
-    // Get the doctor's weekly availability
+    if (!doctor || !doctor.weeklyAvailability) return null;
+
+    // Parse the doctor's weekly availability
     const weeklyAvailability = JSON.parse(doctor.weeklyAvailability);
 
-    // Find the availability for today and future days
-    const todayAvailability = weeklyAvailability.find(
-      day => day.day === dayOfWeek
-    );
-
-    // Check for the next available slot
-    let nextAvailableSlot = null;
-    if (todayAvailability) {
-      const todayStart = new Date(
-        today.toDateString() + ' ' + todayAvailability.startTime
+    const findNextAvailableSlot = (startDate, availability) => {
+      const start = new Date(
+        startDate.toDateString() + ' ' + availability.startTime
       );
-      const todayEnd = new Date(
-        today.toDateString() + ' ' + todayAvailability.endTime
+      const end = new Date(
+        startDate.toDateString() + ' ' + availability.endTime
       );
-
-      // If it's today, we need to find the earliest available time after the current time
-
-      if (today > todayStart && today < todayEnd) {
-        nextAvailableSlot = roundedSchedule(new Date(today));
-        while (nextAvailableSlot <= todayEnd) {
-          const isTaken = isDateTimeTaken(doctor, nextAvailableSlot);
-          if (!isTaken) break; // If the time is not taken, break the loop
-          nextAvailableSlot.setMinutes(nextAvailableSlot.getMinutes() + 30); // Try next slot
-        }
+      const roundedStartDate = roundedSchedule(startDate);
+      let nextSlot;
+      if (roundedStartDate < start) {
+        nextSlot = start;
+      } else {
+        nextSlot = roundedStartDate;
       }
-    }
 
-    if (!nextAvailableSlot) {
-      // If no available slot today, find the next available day
-      for (let i = 1; i < 7; i++) {
-        const nextDay = new Date(today);
-        nextDay.setDate(today.getDate() + i);
-        const nextDayOfWeek = nextDay.toLocaleDateString('en-US', {
+      while (nextSlot <= end) {
+        if (!isDateTimeTaken(doctor, nextSlot)) {
+          return nextSlot; // Return the first available slot
+        }
+        nextSlot.setMinutes(nextSlot.getMinutes() + 30); // Try the next slot
+      }
+      return null; // No slot found for this availability
+    };
+
+    const getNextAvailableDay = (startDate, offsetDays) => {
+      const date = new Date(startDate);
+      date.setDate(startDate.getDate() + offsetDays);
+      return date;
+    };
+
+    // Check for availability starting today and loop over future weeks
+    const MAX_WEEKS_TO_SEARCH = 4; // Limit the search to 6 weeks in the future
+    const DAYS_IN_WEEK = 7;
+
+    for (let week = 0; week < MAX_WEEKS_TO_SEARCH; week++) {
+      for (let day = 0; day < DAYS_IN_WEEK; day++) {
+        const searchDate = getNextAvailableDay(
+          today,
+          week * DAYS_IN_WEEK + day
+        );
+        const dayOfWeek = searchDate.toLocaleDateString('en-US', {
           weekday: 'long',
         });
 
-        const availabilityForNextDay = weeklyAvailability.find(
-          day => day.day === nextDayOfWeek
+        const availabilityForDay = weeklyAvailability.find(
+          day => day.day === dayOfWeek
         );
-        if (availabilityForNextDay) {
-          nextAvailableSlot = new Date(
-            nextDay.toDateString() + ' ' + availabilityForNextDay.startTime
+        if (availabilityForDay) {
+          const nextSlot = findNextAvailableSlot(
+            searchDate,
+            availabilityForDay
           );
-          break;
+          if (nextSlot) return nextSlot;
         }
       }
     }
 
-    // Return the earliest available slot
-    return nextAvailableSlot;
+    // No available slots found within the maximum search window
+    return null;
   };
   const onSubmit = async (
     values: z.infer<typeof AppointmentFormValidation>
@@ -535,6 +609,18 @@ const AppointmentForm = ({
     default:
       buttonLabel = 'Schedule Apppointment';
   }
+  if (isFetchingData)
+    return (
+      <div className="flex justify-center items-center p-4">
+        <Image
+          src="/assets/icons/loader.svg"
+          alt="loader"
+          width={24}
+          height={24}
+          className="animate-spin"
+        />
+      </div>
+    );
 
   return (
     <Form {...form}>
