@@ -53,24 +53,25 @@ const AppointmentForm = ({
   const { user: authUser } = useAuth();
   // const isAdmin = localStorage.getItem('accessKey') ? true : false;
   const dispatch = useGlobalDispatch();
-  // const { doctors } = useGlobalState();
+  const { doctors } = useGlobalState();
 
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
         const doctors = await getDoctorList();
         setDoctorsList(doctors.documents);
-        const doctorSpecialties = doctors.documents.reduce(
-          (uniqueSpecialties, doctor) => {
-            if (!uniqueSpecialties.includes(doctor.speciality)) {
-              uniqueSpecialties.push(doctor.speciality);
-            }
-            return uniqueSpecialties;
-          },
-          []
-        );
+        dispatch({ type: ActionTypes.SET_DOCTORS, payload: doctors.documents });
+        // const doctorSpecialties = doctors.documents.reduce(
+        //   (uniqueSpecialties, doctor) => {
+        //     if (!uniqueSpecialties.includes(doctor.speciality)) {
+        //       uniqueSpecialties.push(doctor.speciality);
+        //     }
+        //     return uniqueSpecialties;
+        //   },
+        //   []
+        // );
 
-        setSpecialityAvaiable(doctorSpecialties);
+        // setSpecialityAvaiable(doctorSpecialties);
       } catch (error) {
         console.error('Error fetching doctors list:', error);
       }
@@ -84,15 +85,25 @@ const AppointmentForm = ({
         console.error('Error fetching nex month appintment list:', error);
       }
     };
-    fetchDoctors();
+    if (!doctors.length) {
+      fetchDoctors();
+    }
     fetchNextMonthAppointments();
     if (!userId) {
       userId = authUser?.$id;
     }
   }, []);
-  // useEffect(() => {
-  //   console.log('doctors', doctors);
-  // }, [doctors]);
+  useEffect(() => {
+    if (SpecialitysAvaiable.length == 0 && doctors.length > 0) {
+      const doctorSpecialties = doctors.reduce((uniqueSpecialties, doctor) => {
+        if (!uniqueSpecialties.includes(doctor.speciality)) {
+          uniqueSpecialties.push(doctor.speciality);
+        }
+        return uniqueSpecialties;
+      }, []);
+      setSpecialityAvaiable(doctorSpecialties);
+    }
+  }, [doctors]);
 
   function normalizeDate(date) {
     const normalizedDate = new Date(date);
@@ -111,9 +122,7 @@ const AppointmentForm = ({
   const form = useForm<z.infer<typeof AppointmentFormValidation>>({
     resolver: zodResolver(AppointmentFormValidation),
     defaultValues: {
-      professional: appointment
-        ? appointment?.professional.$id
-        : doctorsList[0]?.$id,
+      professional: appointment ? appointment?.professional.$id : '',
       schedule: appointment
         ? roundedSchedule(new Date(appointment?.schedule!))
         : roundedSchedule(new Date(Date.now())),
@@ -134,7 +143,8 @@ const AppointmentForm = ({
 
   const handleDoctorChange = selectedDoctor => {
     form.setValue('asap', false);
-    const dr = doctorsList.filter(doctor => doctor.$id === selectedDoctor);
+    // const dr = doctorsList.filter(doctor => doctor.$id === selectedDoctor);
+    const dr = doctors.filter(doctor => doctor.$id === selectedDoctor);
 
     form.setValue('schedule', nextSlotsForDoctor(dr[0]));
   };
@@ -181,10 +191,12 @@ const AppointmentForm = ({
   const now = new Date(new Date().setMonth(new Date().getMonth()));
 
   const filter = (date: Date): boolean => {
-    if (!selectedDoctor || !doctorsList.length) return true;
+    // if (!selectedDoctor || !doctorsList.length) return true;
+    if (!selectedDoctor || !doctors.length) return true;
 
     // Find the selected doctor's data
-    const doctor = doctorsList.find(doctor => doctor.$id === selectedDoctor);
+    // const doctor = doctorsList.find(doctor => doctor.$id === selectedDoctor);
+    const doctor = doctors.find(doctor => doctor.$id === selectedDoctor);
 
     if (!doctor || !doctor.weeklyAvailability) return true;
 
@@ -214,10 +226,12 @@ const AppointmentForm = ({
 
   //day
   const dayClassName = (date: Date): string => {
-    if (!selectedDoctor || !doctorsList.length) return 'selectable-day';
+    // if (!selectedDoctor || !doctorsList.length) return 'selectable-day';
+    if (!selectedDoctor || !doctors.length) return 'selectable-day';
 
     // Find the selected doctor's data
-    const doctor = doctorsList.find(doctor => doctor.$id === selectedDoctor);
+    // const doctor = doctorsList.find(doctor => doctor.$id === selectedDoctor);
+    const doctor = doctors.find(doctor => doctor.$id === selectedDoctor);
     if (!doctor || !doctor.weeklyAvailability) return 'selectable-day';
 
     // Parse the doctor's weekly availability
@@ -247,10 +261,11 @@ const AppointmentForm = ({
 
   const isTimeSelectable = (time: Date): boolean => {
     // if (!field.value || !selectedDoctor || !doctorsList.length) return true;
-    if (!selectedDate || !selectedDoctor || !doctorsList.length) return true;
+    if (!selectedDate || !selectedDoctor || !doctors.length) return true;
 
     // Find the selected doctor's data
-    const doctor = doctorsList.find(doctor => doctor.$id === selectedDoctor);
+    // const doctor = doctorsList.find(doctor => doctor.$id === selectedDoctor);
+    const doctor = doctors.find(doctor => doctor.$id === selectedDoctor);
 
     if (!doctor || !doctor.weeklyAvailability) return true;
 
@@ -291,11 +306,13 @@ const AppointmentForm = ({
   };
 
   const timeClassName = (time: Date): string => {
-    if (!selectedDate || !selectedDoctor || !doctorsList.length)
+    // if (!selectedDate || !selectedDoctor || !doctorsList.length)
+    if (!selectedDate || !selectedDoctor || !doctors.length)
       return 'selectable-time';
 
     // Find the selected doctor's data
-    const doctor = doctorsList.find(doctor => doctor.$id === selectedDoctor);
+    // const doctor = doctorsList.find(doctor => doctor.$id === selectedDoctor);
+    const doctor = doctors.find(doctor => doctor.$id === selectedDoctor);
 
     if (!doctor || !doctor.weeklyAvailability) return 'selectable-time';
 
@@ -338,7 +355,8 @@ const AppointmentForm = ({
 
   const findEarliestAvailableDoctorAndDate = speciality => {
     // Filter doctors by the selected speciality
-    const filteredDoctors = doctorsList.filter(
+    // const filteredDoctors = doctorsList.filter(
+    const filteredDoctors = doctors.filter(
       doctor => doctor.speciality === speciality
     );
     //for each doctor get the next slot avaiable
@@ -583,8 +601,32 @@ const AppointmentForm = ({
                   handleDoctorChange(selectedValue);
                 }}
               >
-                {doctorsList &&
+                {/* {doctorsList &&
                   doctorsList.map((doctor, i) => {
+                    if (
+                      (speciality && speciality === doctor.speciality) ||
+                      !speciality
+                    ) {
+                      return (
+                        <SelectItem key={doctor.name + i} value={doctor.$id}>
+                          <div className="flex cursor-pointer items-center gap-2">
+                            <Image
+                              src={doctor.photoFileUrl}
+                              width={32}
+                              height={32}
+                              alt="doctor"
+                              className="rounded-full border border-dark-500"
+                            />
+                            <p>{doctor.name}</p>
+                            <p> - {doctor.speciality}</p>
+                          </div>
+                        </SelectItem>
+                      );
+                    }
+                    return null;
+                  })} */}
+                {doctors &&
+                  doctors.map((doctor, i) => {
                     if (
                       (speciality && speciality === doctor.speciality) ||
                       !speciality
