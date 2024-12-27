@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+// import { useRouter } from 'next/navigation';
 import { Dispatch, SetStateAction, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { effect, z } from 'zod';
@@ -44,9 +44,9 @@ const AppointmentForm = ({
   appointment?: Appointment;
   setOpen?: Dispatch<SetStateAction<boolean>>;
 }) => {
-  const router = useRouter();
+  // const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const [doctorsList, setDoctorsList] = useState([]);
+  // const [doctorsList, setDoctorsList] = useState([]);
   const [SpecialitysAvaiable, setSpecialityAvaiable] = useState([]);
   const [nextMonthAppintmentList, setNextMonthAppintmentList] = useState([]);
   const AppointmentFormValidation = getAppointmentSchema(type);
