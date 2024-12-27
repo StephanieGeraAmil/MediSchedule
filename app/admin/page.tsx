@@ -17,6 +17,7 @@ import { useEffect, useState } from 'react';
 import { useGlobalDispatch, useGlobalState } from '@/contexts/GlobalState';
 
 const AdminPage = () => {
+  const [isFetchingData, setIsFetchingData] = useState(true);
   const { appointments } = useGlobalState();
   const dispatch = useGlobalDispatch();
 
@@ -60,11 +61,29 @@ const AdminPage = () => {
         console.error('Failed to fetch doctors:', error);
       }
     };
-    fetchAppointments();
-    fetchClients();
-    fetchDoctors();
+    const fetchingData = async () => {
+      const fetchPromises = [];
+      fetchPromises.push(fetchAppointments());
+      fetchPromises.push(fetchClients());
+      fetchPromises.push(fetchDoctors());
+      await Promise.all(fetchPromises);
+      setIsFetchingData(false);
+    };
+    fetchingData();
   }, []);
 
+  if (isFetchingData)
+    return (
+      <div className="flex justify-center items-center h-screen w-full p-5">
+        <Image
+          src="/assets/icons/loader.svg"
+          alt="loader"
+          width={24}
+          height={24}
+          className="animate-spin"
+        />
+      </div>
+    );
   return (
     <div className="mx-auto flex max-w-7xl flex-col space-y-14">
       <Header isAdmin={true} />
