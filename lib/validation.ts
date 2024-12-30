@@ -151,10 +151,7 @@ export const CompleteAppointmentSchema = z.object({
   schedule: z.coerce.date(),
   reason: z.string().optional(),
   note: z.string().optional(),
-  result: z
-    .string()
-    .min(2, 'Comment must be at least 2 characters')
-    .max(500, 'Comment must be at most 500 characters'),
+  result: z.string().optional(),
 });
 
 export function getAppointmentSchema(type: string) {
