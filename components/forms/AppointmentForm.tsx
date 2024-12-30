@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+// import { useRouter } from 'next/navigation';
 import { Dispatch, SetStateAction, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { effect, z } from 'zod';
@@ -44,33 +44,36 @@ const AppointmentForm = ({
   appointment?: Appointment;
   setOpen?: Dispatch<SetStateAction<boolean>>;
 }) => {
-  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const [doctorsList, setDoctorsList] = useState([]);
+
+  const [isFetchingData, setIsFetchingData] = useState(true);
   const [SpecialitysAvaiable, setSpecialityAvaiable] = useState([]);
   const [nextMonthAppintmentList, setNextMonthAppintmentList] = useState([]);
+
+  const nextMonthScheduleAppointmentsOfDoctor = doctor => {
+    return nextMonthAppintmentList
+      .filter(
+        appointment =>
+          appointment.doctorId === doctor && appointment.status === 'scheduled'
+      )
+      .map(appointment => {
+        const formattedDate = formatDateTime(appointment.schedule);
+        return {
+          ...appointment,
+          schedule: new Date(formattedDate.dateTime),
+        };
+      });
+  };
   const AppointmentFormValidation = getAppointmentSchema(type);
   const { user: authUser } = useAuth();
   // const isAdmin = localStorage.getItem('accessKey') ? true : false;
   const dispatch = useGlobalDispatch();
-  // const { doctors } = useGlobalState();
-
+  const { doctors } = useGlobalState();
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
         const doctors = await getDoctorList();
-        setDoctorsList(doctors.documents);
-        const doctorSpecialties = doctors.documents.reduce(
-          (uniqueSpecialties, doctor) => {
-            if (!uniqueSpecialties.includes(doctor.speciality)) {
-              uniqueSpecialties.push(doctor.speciality);
-            }
-            return uniqueSpecialties;
-          },
-          []
-        );
-
-        setSpecialityAvaiable(doctorSpecialties);
+        dispatch({ type: ActionTypes.SET_DOCTORS, payload: doctors.documents });
       } catch (error) {
         console.error('Error fetching doctors list:', error);
       }
@@ -84,17 +87,99 @@ const AppointmentForm = ({
         console.error('Error fetching nex month appintment list:', error);
       }
     };
-    fetchDoctors();
-    fetchNextMonthAppointments();
+
+    const fetchData = async () => {
+      // Execute fetches conditionally
+      const fetchPromises = [];
+      if (!doctors.length) {
+        fetchPromises.push(fetchDoctors());
+      }
+      fetchPromises.push(fetchNextMonthAppointments());
+
+      // Wait for all necessary fetches to complete
+      await Promise.all(fetchPromises);
+
+      setIsFetchingData(false);
+    };
+    if (!type || type == 'create' || type == 're-schedule') {
+      fetchData();
+    } else {
+      setIsFetchingData(false);
+    }
+
     if (!userId) {
       userId = authUser?.$id;
     }
   }, []);
-  // useEffect(() => {
-  //   console.log('doctors', doctors);
-  // }, [doctors]);
+  useEffect(() => {
+    if (SpecialitysAvaiable.length == 0 && doctors.length > 0) {
+      const doctorSpecialties = doctors.reduce((uniqueSpecialties, doctor) => {
+        if (!uniqueSpecialties.includes(doctor.speciality)) {
+          uniqueSpecialties.push(doctor.speciality);
+        }
+        return uniqueSpecialties;
+      }, []);
+      setSpecialityAvaiable(doctorSpecialties);
+    }
+  }, [doctors]);
+  const formatDateTime = (dateString: Date | string) => {
+    const dateTimeOptions: Intl.DateTimeFormatOptions = {
+      // weekday: "short", // abbreviated weekday name (e.g., 'Mon')
+      month: 'short', // abbreviated month name (e.g., 'Oct')
+      day: 'numeric', // numeric day of the month (e.g., '25')
+      year: 'numeric', // numeric year (e.g., '2023')
+      hour: 'numeric', // numeric hour (e.g., '8')
+      minute: 'numeric', // numeric minute (e.g., '30')
+      hour12: true, // use 12-hour clock (true) or 24-hour clock (false)
+    };
 
-  function normalizeDate(date) {
+    const dateDayOptions: Intl.DateTimeFormatOptions = {
+      weekday: 'short', // abbreviated weekday name (e.g., 'Mon')
+      year: 'numeric', // numeric year (e.g., '2023')
+      month: '2-digit', // abbreviated month name (e.g., 'Oct')
+      day: '2-digit', // numeric day of the month (e.g., '25')
+    };
+
+    const dateOptions: Intl.DateTimeFormatOptions = {
+      month: 'short', // abbreviated month name (e.g., 'Oct')
+      year: 'numeric', // numeric year (e.g., '2023')
+      day: 'numeric', // numeric day of the month (e.g., '25')
+    };
+
+    const timeOptions: Intl.DateTimeFormatOptions = {
+      hour: 'numeric', // numeric hour (e.g., '8')
+      minute: 'numeric', // numeric minute (e.g., '30')
+      hour12: true, // use 12-hour clock (true) or 24-hour clock (false)
+    };
+
+    const formattedDateTime: string = new Date(dateString).toLocaleString(
+      'en-US',
+      dateTimeOptions
+    );
+
+    const formattedDateDay: string = new Date(dateString).toLocaleString(
+      'en-US',
+      dateDayOptions
+    );
+
+    const formattedDate: string = new Date(dateString).toLocaleString(
+      'en-US',
+      dateOptions
+    );
+
+    const formattedTime: string = new Date(dateString).toLocaleString(
+      'en-US',
+      timeOptions
+    );
+
+    return {
+      dateTime: formattedDateTime,
+      dateDay: formattedDateDay,
+      dateOnly: formattedDate,
+      timeOnly: formattedTime,
+    };
+  };
+  function normalizeDate(date: Date) {
     const normalizedDate = new Date(date);
     normalizedDate.setHours(0, 0, 0, 0);
     return normalizedDate;
@@ -111,15 +196,14 @@ const AppointmentForm = ({
   const form = useForm<z.infer<typeof AppointmentFormValidation>>({
     resolver: zodResolver(AppointmentFormValidation),
     defaultValues: {
-      professional: appointment
-        ? appointment?.professional.$id
-        : doctorsList[0]?.$id,
+      professional: appointment ? appointment?.professional.$id : '',
       schedule: appointment
         ? roundedSchedule(new Date(appointment?.schedule!))
         : roundedSchedule(new Date(Date.now())),
       reason: appointment ? appointment.reason : '',
       note: appointment?.note || '',
       cancellationReason: appointment?.cancellationReason || '',
+      result: appointment?.result || '',
       identificationNumber: '',
     },
   });
@@ -134,7 +218,7 @@ const AppointmentForm = ({
 
   const handleDoctorChange = selectedDoctor => {
     form.setValue('asap', false);
-    const dr = doctorsList.filter(doctor => doctor.$id === selectedDoctor);
+    const dr = doctors.filter(doctor => doctor.$id === selectedDoctor);
 
     form.setValue('schedule', nextSlotsForDoctor(dr[0]));
   };
@@ -161,35 +245,59 @@ const AppointmentForm = ({
     handleAsapOrSpecialityChange();
   }, [asap, speciality]);
 
-  const isDateTimeTaken = (doctor, time) => {
-    return nextMonthAppintmentList.find(appt => {
-      const date1 = new Date(time);
-      const date2 = new Date(appt.schedule);
+  const isDateTimeTaken = time => {
+    try {
+      const dateToCheck = time;
 
-      if (isNaN(date1.getTime()) || isNaN(date2.getTime())) {
-        throw new Error('Invalid date format');
+      if (isNaN(dateToCheck.getTime())) {
+        console.error('Invalid date format for time:', time);
+        return false; // Return false if the input is invalid
       }
 
-      const isSameDoctor = appt.doctorId === doctor;
-      const isSameTime = date1.getTime() === date2.getTime();
+      const isOnArray = nextMonthScheduleAppointmentsOfDoctor(
+        selectedDoctor
+      ).some(appt => {
+        if (!appt.schedule) return null;
+        const apptDate = new Date(appt.schedule);
 
-      return isSameDoctor && isSameTime;
-    });
+        if (isNaN(apptDate.getTime())) {
+          console.error('Invalid date format in appointment:', appt.schedule);
+          return false; // Skip invalid appointment dates
+        }
+
+        return dateToCheck.getTime() === apptDate.getTime();
+      });
+
+      if (isOnArray) {
+        console.log('Date/time is taken:', dateToCheck);
+      }
+      return isOnArray;
+    } catch (error) {
+      console.error('Error in isDateTimeTaken:', error);
+      return false; // Fallback in case of unexpected errors
+    }
   };
 
   const maxDate = new Date(new Date().setMonth(new Date().getMonth() + 1));
   const now = new Date(new Date().setMonth(new Date().getMonth()));
 
   const filter = (date: Date): boolean => {
-    if (!selectedDoctor || !doctorsList.length) return true;
+    if (!selectedDoctor || !doctors.length) return true;
 
     // Find the selected doctor's data
-    const doctor = doctorsList.find(doctor => doctor.$id === selectedDoctor);
+    const doctor = doctors.find(doctor => doctor.$id === selectedDoctor);
 
     if (!doctor || !doctor.weeklyAvailability) return true;
 
     // Parse the doctor's weekly availability
-    const weeklyAvailability = JSON.parse(doctor.weeklyAvailability);
+    // const weeklyAvailability = JSON.parse(doctor.weeklyAvailability);
+    let weeklyAvailability;
+    try {
+      weeklyAvailability = JSON.parse(doctor.weeklyAvailability);
+    } catch (error) {
+      console.error('Error parsing weekly availability:', error);
+      return true;
+    }
 
     // Get the day of the week for the selected date
     const dayOfWeek = date.toLocaleDateString('en-US', { weekday: 'long' });
@@ -214,10 +322,10 @@ const AppointmentForm = ({
 
   //day
   const dayClassName = (date: Date): string => {
-    if (!selectedDoctor || !doctorsList.length) return 'selectable-day';
+    if (!selectedDoctor || !doctors.length) return 'selectable-day';
 
     // Find the selected doctor's data
-    const doctor = doctorsList.find(doctor => doctor.$id === selectedDoctor);
+    const doctor = doctors.find(doctor => doctor.$id === selectedDoctor);
     if (!doctor || !doctor.weeklyAvailability) return 'selectable-day';
 
     // Parse the doctor's weekly availability
@@ -246,11 +354,10 @@ const AppointmentForm = ({
   /////time
 
   const isTimeSelectable = (time: Date): boolean => {
-    // if (!field.value || !selectedDoctor || !doctorsList.length) return true;
-    if (!selectedDate || !selectedDoctor || !doctorsList.length) return true;
+    if (!selectedDate || !selectedDoctor || !doctors.length) return true;
 
     // Find the selected doctor's data
-    const doctor = doctorsList.find(doctor => doctor.$id === selectedDoctor);
+    const doctor = doctors.find(doctor => doctor.$id === selectedDoctor);
 
     if (!doctor || !doctor.weeklyAvailability) return true;
 
@@ -278,8 +385,12 @@ const AppointmentForm = ({
       `${selectedDate.toDateString()} ${availabilityForDay.endTime}`
     );
 
-    const isTaken = isDateTimeTaken(selectedDoctor, time);
-    if (isTaken) return false;
+    const isTaken = isDateTimeTaken(time);
+
+    if (isTaken) {
+      return false;
+    }
+    // console.log('false', isTaken);
     //Disable times outside of the availability range
     const nowValue = now.getTime();
     const timeValue = time.getTime();
@@ -291,11 +402,11 @@ const AppointmentForm = ({
   };
 
   const timeClassName = (time: Date): string => {
-    if (!selectedDate || !selectedDoctor || !doctorsList.length)
+    if (!selectedDate || !selectedDoctor || !doctors.length)
       return 'selectable-time';
 
     // Find the selected doctor's data
-    const doctor = doctorsList.find(doctor => doctor.$id === selectedDoctor);
+    const doctor = doctors.find(doctor => doctor.$id === selectedDoctor);
 
     if (!doctor || !doctor.weeklyAvailability) return 'selectable-time';
 
@@ -323,8 +434,11 @@ const AppointmentForm = ({
       `${selectedDate.toDateString()} ${availabilityForDay.endTime}`
     );
 
-    const isTaken = isDateTimeTaken(selectedDoctor, time);
-    if (isTaken) return 'non-selectable-time';
+    const isTaken = isDateTimeTaken(time);
+
+    if (isTaken) {
+      return 'non-selectable-time';
+    }
 
     //Disable times outside of the availability range
     const nowValue = now.getTime();
@@ -338,7 +452,7 @@ const AppointmentForm = ({
 
   const findEarliestAvailableDoctorAndDate = speciality => {
     // Filter doctors by the selected speciality
-    const filteredDoctors = doctorsList.filter(
+    const filteredDoctors = doctors.filter(
       doctor => doctor.speciality === speciality
     );
     //for each doctor get the next slot avaiable
@@ -355,63 +469,82 @@ const AppointmentForm = ({
     const date = nextSlotsForDoctors[0].slot;
     return { doctor: selectedDoctor, date: date };
   };
+
   const nextSlotsForDoctor = doctor => {
-    const today = new Date();
-    const dayOfWeek = today.toLocaleDateString('en-US', { weekday: 'long' });
-    if (!doctor || !doctor.weeklyAvailability) return today;
-    // Get the doctor's weekly availability
+    const today = roundedSchedule(new Date());
+    if (!doctor || !doctor.weeklyAvailability) return null;
+
+    // Parse the doctor's weekly availability
     const weeklyAvailability = JSON.parse(doctor.weeklyAvailability);
 
-    // Find the availability for today and future days
-    const todayAvailability = weeklyAvailability.find(
-      day => day.day === dayOfWeek
-    );
-
-    // Check for the next available slot
-    let nextAvailableSlot = null;
-    if (todayAvailability) {
-      const todayStart = new Date(
-        today.toDateString() + ' ' + todayAvailability.startTime
+    const findNextAvailableSlot = (startDate, availability) => {
+      const start = new Date(
+        startDate.toDateString() + ' ' + availability.startTime
       );
-      const todayEnd = new Date(
-        today.toDateString() + ' ' + todayAvailability.endTime
+      const end = new Date(
+        startDate.toDateString() + ' ' + availability.endTime
       );
+      const roundedStartDate = roundedSchedule(startDate);
 
-      // If it's today, we need to find the earliest available time after the current time
-
-      if (today > todayStart && today < todayEnd) {
-        nextAvailableSlot = roundedSchedule(new Date(today));
-        while (nextAvailableSlot <= todayEnd) {
-          const isTaken = isDateTimeTaken(doctor, nextAvailableSlot);
-          if (!isTaken) break; // If the time is not taken, break the loop
-          nextAvailableSlot.setMinutes(nextAvailableSlot.getMinutes() + 30); // Try next slot
-        }
+      // const roundedStartDate = startDate;
+      let nextSlot;
+      if (roundedStartDate < start) {
+        nextSlot = start;
+      } else {
+        nextSlot = roundedStartDate;
       }
-    }
 
-    if (!nextAvailableSlot) {
-      // If no available slot today, find the next available day
-      for (let i = 1; i < 7; i++) {
-        const nextDay = new Date(today);
-        nextDay.setDate(today.getDate() + i);
-        const nextDayOfWeek = nextDay.toLocaleDateString('en-US', {
+      while (nextSlot <= end) {
+        const isTaken = isDateTimeTaken(nextSlot);
+        if (!isTaken) {
+          return nextSlot; // Return the first available slot
+        }
+
+        nextSlot.setMinutes(nextSlot.getMinutes() + 30);
+      }
+      return null; // No slot found for this availability
+    };
+
+    const getNextAvailableDay = (startDate, offsetDays) => {
+      const date = new Date(startDate);
+      date.setDate(startDate.getDate() + offsetDays);
+      return date;
+    };
+
+    // Check for availability starting today and loop over future weeks
+    const MAX_WEEKS_TO_SEARCH = 4; // Limit the search to 6 weeks in the future
+    const DAYS_IN_WEEK = 7;
+
+    for (let week = 0; week < MAX_WEEKS_TO_SEARCH; week++) {
+      for (let day = 0; day < DAYS_IN_WEEK; day++) {
+        const searchDate = getNextAvailableDay(
+          today,
+          week * DAYS_IN_WEEK + day
+        );
+        // For subsequent days, set the time to the beginning of the day (7 AM or preferred time)
+        if (week !== 0 || day !== 0) {
+          searchDate.setHours(7, 0, 0, 0);
+        }
+
+        const dayOfWeek = searchDate.toLocaleDateString('en-US', {
           weekday: 'long',
         });
 
-        const availabilityForNextDay = weeklyAvailability.find(
-          day => day.day === nextDayOfWeek
+        const availabilityForDay = weeklyAvailability.find(
+          day => day.day === dayOfWeek
         );
-        if (availabilityForNextDay) {
-          nextAvailableSlot = new Date(
-            nextDay.toDateString() + ' ' + availabilityForNextDay.startTime
+        if (availabilityForDay) {
+          const nextSlot = findNextAvailableSlot(
+            searchDate,
+            availabilityForDay
           );
-          break;
+          if (nextSlot) return nextSlot;
         }
       }
     }
 
-    // Return the earliest available slot
-    return nextAvailableSlot;
+    // No available slots found within the maximum search window
+    return null;
   };
   const onSubmit = async (
     values: z.infer<typeof AppointmentFormValidation>
@@ -478,6 +611,7 @@ const AppointmentForm = ({
             note: values.note,
             reason: values.reason!,
             cancellationReason: values.cancellationReason,
+            result: values.result,
           },
           type,
         };
@@ -517,6 +651,18 @@ const AppointmentForm = ({
     default:
       buttonLabel = 'Schedule Apppointment';
   }
+  if (isFetchingData)
+    return (
+      <div className="flex justify-center items-center p-4">
+        <Image
+          src="/assets/icons/loader.svg"
+          alt="loader"
+          width={24}
+          height={24}
+          className="animate-spin"
+        />
+      </div>
+    );
 
   return (
     <Form {...form}>
@@ -583,8 +729,8 @@ const AppointmentForm = ({
                   handleDoctorChange(selectedValue);
                 }}
               >
-                {doctorsList &&
-                  doctorsList.map((doctor, i) => {
+                {doctors &&
+                  doctors.map((doctor, i) => {
                     if (
                       (speciality && speciality === doctor.speciality) ||
                       !speciality
@@ -659,9 +805,24 @@ const AppointmentForm = ({
             placeholder="Urgent meeting came up"
           />
         )}
-
+        {type === 'complete' && (
+          <CustomFormField
+            fieldType={FormFieldType.TEXTAREA}
+            control={form.control}
+            name="result"
+            label="Comment about the schedule"
+            placeholder="Everything OK"
+          />
+        )}
         <SubmitButton
-          disabled={!selectedDoctor || isLoading}
+          disabled={
+            (userId &&
+              userId === process.env.NEXT_PUBLIC_ADMIN_USER_ID &&
+              type === 'create' &&
+              !form.getValues('identificationNumber')) ||
+            !selectedDoctor ||
+            isLoading
+          }
           isLoading={isLoading}
           className={`${['cancel', 'no-show'].includes(type) ? 'shad-danger-btn' : 'shad-primary-btn'} w-full`}
         >

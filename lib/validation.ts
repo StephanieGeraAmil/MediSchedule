@@ -131,6 +131,7 @@ export const ScheduleAppointmentSchema = z.object({
   reason: z.string().optional(),
   note: z.string().optional(),
   cancellationReason: z.string().optional(),
+  result: z.string().optional(),
 });
 
 export const CancelAppointmentSchema = z.object({
@@ -144,6 +145,14 @@ export const CancelAppointmentSchema = z.object({
     .min(2, 'Reason must be at least 2 characters')
     .max(500, 'Reason must be at most 500 characters'),
 });
+export const CompleteAppointmentSchema = z.object({
+  // physician: z.string().min(2, 'Select at least one doctor'),
+  // doctor: z.string().min(2, 'Select at least one doctor'),
+  schedule: z.coerce.date(),
+  reason: z.string().optional(),
+  note: z.string().optional(),
+  result: z.string().optional(),
+});
 
 export function getAppointmentSchema(type: string) {
   switch (type) {
@@ -151,6 +160,8 @@ export function getAppointmentSchema(type: string) {
       return CreateAppointmentSchema;
     case 'cancel':
       return CancelAppointmentSchema;
+    case 'complete':
+      return CompleteAppointmentSchema;
     default:
       return ScheduleAppointmentSchema;
   }

@@ -10,9 +10,10 @@ import { UpdateModal } from '@/components/UpdateModal';
 import { columnsPatient } from '@/components/table/columnsPatient';
 import Header from '@/components/Header';
 import { useGlobalDispatch, useGlobalState } from '@/contexts/GlobalState';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 const PatientPage = ({ params: { userId } }: SearchParamProps) => {
+  const [isFetchingData, setIsFetchingData] = useState(true);
   const { appointments } = useGlobalState();
   const dispatch = useGlobalDispatch();
   const completedCount = appointments.filter(
@@ -37,8 +38,27 @@ const PatientPage = ({ params: { userId } }: SearchParamProps) => {
       }
     };
 
-    fetchAppointments();
+    const fetchingData = async () => {
+      const fetchPromises = [];
+      fetchPromises.push(fetchAppointments());
+
+      await Promise.all(fetchPromises);
+      setIsFetchingData(false);
+    };
+    fetchingData();
   }, []);
+  if (isFetchingData)
+    return (
+      <div className="flex justify-center items-center h-screen w-full p-5">
+        <Image
+          src="/assets/icons/loader.svg"
+          alt="loader"
+          width={24}
+          height={24}
+          className="animate-spin"
+        />
+      </div>
+    );
   return (
     <div className="mx-auto flex max-w-7xl flex-col space-y-14">
       <Header />

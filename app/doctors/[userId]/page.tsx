@@ -6,12 +6,13 @@ import { StatCard } from '@/components/StatCard';
 import { DataTable } from '@/components/table/DataTable';
 import { getDoctorAppointmentList } from '@/lib/actions/appointment.actions';
 import { columnsDoctor } from '@/components/table/columnsDoctor';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { UpdateModal } from '@/components/UpdateModal';
 import Header from '@/components/Header';
 import { useGlobalDispatch, useGlobalState } from '@/contexts/GlobalState';
 
 const DoctorPage = ({ params: { userId } }: SearchParamProps) => {
+  const [isFetchingData, setIsFetchingData] = useState(true);
   const { appointments } = useGlobalState();
   const dispatch = useGlobalDispatch();
   const completedCount = appointments.filter(
@@ -35,10 +36,27 @@ const DoctorPage = ({ params: { userId } }: SearchParamProps) => {
         console.error('Failed to fetch appointments:', error);
       }
     };
+    const fetchingData = async () => {
+      const fetchPromises = [];
+      fetchPromises.push(fetchAppointments());
 
-    fetchAppointments();
+      await Promise.all(fetchPromises);
+      setIsFetchingData(false);
+    };
+    fetchingData();
   }, []);
-
+  if (isFetchingData)
+    return (
+      <div className="flex justify-center items-center h-screen w-full p-5">
+        <Image
+          src="/assets/icons/loader.svg"
+          alt="loader"
+          width={24}
+          height={24}
+          className="animate-spin"
+        />
+      </div>
+    );
   return (
     <div className="mx-auto flex max-w-7xl flex-col space-y-14">
       <Header />
