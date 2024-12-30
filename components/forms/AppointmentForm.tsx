@@ -203,6 +203,7 @@ const AppointmentForm = ({
       reason: appointment ? appointment.reason : '',
       note: appointment?.note || '',
       cancellationReason: appointment?.cancellationReason || '',
+      result: appointment?.result || '',
       identificationNumber: '',
     },
   });
@@ -610,6 +611,7 @@ const AppointmentForm = ({
             note: values.note,
             reason: values.reason!,
             cancellationReason: values.cancellationReason,
+            result: values.result,
           },
           type,
         };
@@ -803,7 +805,15 @@ const AppointmentForm = ({
             placeholder="Urgent meeting came up"
           />
         )}
-
+        {type === 'complete' && (
+          <CustomFormField
+            fieldType={FormFieldType.TEXTAREA}
+            control={form.control}
+            name="result"
+            label="Comment about the schedule"
+            placeholder="Everything OK"
+          />
+        )}
         <SubmitButton
           disabled={
             (userId &&
