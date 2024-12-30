@@ -267,6 +267,7 @@ export const getNextMonthsAppointments = async () => {
 
     const filteredAppointments = appointments.documents.map(app => ({
       schedule: app.schedule,
+      status: app.status,
       doctorId: app.professional?.$id, // Extract only the doctor ID
     }));
     return parseStringify(filteredAppointments);
