@@ -101,7 +101,7 @@ const AppointmentForm = ({
 
       setIsFetchingData(false);
     };
-    if (!type || (type == 'create') | (type == 're-schedule')) {
+    if (!type || type == 'create' || type == 're-schedule') {
       fetchData();
     } else {
       setIsFetchingData(false);
@@ -256,6 +256,7 @@ const AppointmentForm = ({
       const isOnArray = nextMonthScheduleAppointmentsOfDoctor(
         selectedDoctor
       ).some(appt => {
+        if (!appt.schedule) return null;
         const apptDate = new Date(appt.schedule);
 
         if (isNaN(apptDate.getTime())) {
@@ -288,7 +289,14 @@ const AppointmentForm = ({
     if (!doctor || !doctor.weeklyAvailability) return true;
 
     // Parse the doctor's weekly availability
-    const weeklyAvailability = JSON.parse(doctor.weeklyAvailability);
+    // const weeklyAvailability = JSON.parse(doctor.weeklyAvailability);
+    let weeklyAvailability;
+    try {
+      weeklyAvailability = JSON.parse(doctor.weeklyAvailability);
+    } catch (error) {
+      console.error('Error parsing weekly availability:', error);
+      return true;
+    }
 
     // Get the day of the week for the selected date
     const dayOfWeek = date.toLocaleDateString('en-US', { weekday: 'long' });
@@ -719,30 +727,6 @@ const AppointmentForm = ({
                   handleDoctorChange(selectedValue);
                 }}
               >
-                {/* {doctorsList &&
-                  doctorsList.map((doctor, i) => {
-                    if (
-                      (speciality && speciality === doctor.speciality) ||
-                      !speciality
-                    ) {
-                      return (
-                        <SelectItem key={doctor.name + i} value={doctor.$id}>
-                          <div className="flex cursor-pointer items-center gap-2">
-                            <Image
-                              src={doctor.photoFileUrl}
-                              width={32}
-                              height={32}
-                              alt="doctor"
-                              className="rounded-full border border-dark-500"
-                            />
-                            <p>{doctor.name}</p>
-                            <p> - {doctor.speciality}</p>
-                          </div>
-                        </SelectItem>
-                      );
-                    }
-                    return null;
-                  })} */}
                 {doctors &&
                   doctors.map((doctor, i) => {
                     if (
@@ -821,7 +805,14 @@ const AppointmentForm = ({
         )}
 
         <SubmitButton
-          disabled={!selectedDoctor || isLoading}
+          disabled={
+            (userId &&
+              userId === process.env.NEXT_PUBLIC_ADMIN_USER_ID &&
+              type === 'create' &&
+              !form.getValues('identificationNumber')) ||
+            !selectedDoctor ||
+            isLoading
+          }
           isLoading={isLoading}
           className={`${['cancel', 'no-show'].includes(type) ? 'shad-danger-btn' : 'shad-primary-btn'} w-full`}
         >
