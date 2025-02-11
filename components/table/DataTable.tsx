@@ -6,10 +6,13 @@ import {
   flexRender,
   getCoreRowModel,
   useReactTable,
+  getSortedRowModel,
+  SortingState,
+  getFilteredRowModel,
 } from '@tanstack/react-table';
 import Image from 'next/image';
 import { redirect } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -25,12 +28,18 @@ import { decryptKey } from '@/lib/utils';
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  globalFilter: string;
+  setGlobalFilter: (value: string) => void;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  globalFilter,
+  setGlobalFilter,
 }: DataTableProps<TData, TValue>) {
+  const [sorting, setSorting] = useState<SortingState>([]);
+
   const encryptedKey =
     typeof window !== 'undefined'
       ? window.localStorage.getItem('accessKey')
@@ -48,6 +57,14 @@ export function DataTable<TData, TValue>({
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    state: {
+      sorting,
+      globalFilter,
+    },
+    onSortingChange: setSorting,
+    onGlobalFilterChange: setGlobalFilter,
   });
 
   return (
@@ -58,7 +75,24 @@ export function DataTable<TData, TValue>({
             <TableRow key={headerGroup.id} className="shad-table-row-header">
               {headerGroup.headers.map(header => {
                 return (
-                  <TableHead key={header.id}>
+                  <TableHead
+                    key={header.id}
+                    onClick={header.column.getToggleSortingHandler()}
+                    // onClick={event => {
+                    //   const toggleSort =
+                    //     header.column.getToggleSortingHandler();
+                    //   if (toggleSort) {
+                    //     toggleSort(event);
+                    //     setTimeout(() => {
+                    //       console.log(
+                    //         'Sorting changed!',
+                    //         header.column.getIsSorted()
+                    //       ); // ✅ Logs after update
+                    //     }, 100);
+                    //   }
+                    // }}
+                    className="cursor-pointer select-none"
+                  >
                     {header.isPlaceholder
                       ? null
                       : flexRender(
