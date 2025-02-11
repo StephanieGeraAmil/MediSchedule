@@ -14,6 +14,7 @@ import { useEffect, useState } from 'react';
 
 const PatientPage = ({ params: { userId } }: SearchParamProps) => {
   const [isFetchingData, setIsFetchingData] = useState(true);
+  const [globalFilter, setGlobalFilter] = useState('');
   const { appointments } = useGlobalState();
   const dispatch = useGlobalDispatch();
   const completedCount = appointments.filter(
@@ -101,8 +102,21 @@ const PatientPage = ({ params: { userId } }: SearchParamProps) => {
             icon={'/assets/icons/cancelled.svg'}
           />
         </section>
-
-        <DataTable columns={columnsPatient} data={appointments} />
+        <div className="w-[40%] mr-auto">
+          <input
+            type="text"
+            placeholder="Search..."
+            value={globalFilter}
+            onChange={e => setGlobalFilter(e.target.value)}
+            className="w-full rounded-md p-2"
+          />
+        </div>
+        <DataTable
+          columns={columnsPatient}
+          data={appointments}
+          globalFilter={globalFilter}
+          setGlobalFilter={setGlobalFilter}
+        />
       </main>
     </div>
   );
