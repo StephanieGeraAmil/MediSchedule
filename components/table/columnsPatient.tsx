@@ -16,10 +16,12 @@ export const columnsPatient: ColumnDef<Appointment>[] = [
     cell: ({ row }) => {
       return <p className="text-14-medium ">{row.index + 1}</p>;
     },
+    enableSorting: true,
+    enableGlobalFilter: true,
   },
 
   {
-    accessorKey: 'status',
+    accessorFn: row => row.status,
     header: 'Status',
     cell: ({ row }) => {
       const appointment = row.original;
@@ -29,9 +31,11 @@ export const columnsPatient: ColumnDef<Appointment>[] = [
         </div>
       );
     },
+    enableSorting: true,
+    enableGlobalFilter: true,
   },
   {
-    accessorKey: 'schedule',
+    accessorFn: row => formatDateTime(row.schedule).dateTime,
     header: 'Appointment',
     cell: ({ row }) => {
       const appointment = row.original;
@@ -41,9 +45,11 @@ export const columnsPatient: ColumnDef<Appointment>[] = [
         </p>
       );
     },
+    enableSorting: true,
+    enableGlobalFilter: true,
   },
   {
-    accessorKey: 'professional',
+    accessorFn: row => row.professional?.name,
     header: 'Doctor',
     cell: ({ row }) => {
       const appointment = row.original;
@@ -63,9 +69,11 @@ export const columnsPatient: ColumnDef<Appointment>[] = [
         </div>
       );
     },
+    enableSorting: true,
+    enableGlobalFilter: true,
   },
   {
-    accessorKey: 'professional_speciality',
+    accessorFn: row => row.professional?.speciality,
     header: 'Speciality',
     cell: ({ row }) => {
       const appointment = row.original;
@@ -76,6 +84,8 @@ export const columnsPatient: ColumnDef<Appointment>[] = [
         </p>
       );
     },
+    enableSorting: true,
+    enableGlobalFilter: true,
   },
 
   {

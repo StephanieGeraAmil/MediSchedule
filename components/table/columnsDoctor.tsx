@@ -16,17 +16,21 @@ export const columnsDoctor: ColumnDef<Appointment>[] = [
     cell: ({ row }) => {
       return <p className="text-14-medium ">{row.index + 1}</p>;
     },
+    enableSorting: true,
+    enableGlobalFilter: true,
   },
   {
-    accessorKey: 'patient',
+    accessorFn: row => row.client.name,
     header: 'Patient',
     cell: ({ row }) => {
       const appointment = row.original;
       return <p className="text-14-medium ">{appointment.client.name}</p>;
     },
+    enableSorting: true,
+    enableGlobalFilter: true,
   },
   {
-    accessorKey: 'status',
+    accessorFn: row => row.status,
     header: 'Status',
     cell: ({ row }) => {
       const appointment = row.original;
@@ -36,9 +40,11 @@ export const columnsDoctor: ColumnDef<Appointment>[] = [
         </div>
       );
     },
+    enableSorting: true,
+    enableGlobalFilter: true,
   },
   {
-    accessorKey: 'schedule',
+    accessorFn: row => formatDateTime(row.schedule).dateTime,
     header: 'Appointment',
     cell: ({ row }) => {
       const appointment = row.original;
@@ -48,6 +54,8 @@ export const columnsDoctor: ColumnDef<Appointment>[] = [
         </p>
       );
     },
+    enableSorting: true,
+    enableGlobalFilter: true,
   },
 
   {

@@ -5,53 +5,64 @@ import Image from 'next/image';
 
 import { Doctors } from '@/constants';
 import { formatDateTime } from '@/lib/utils';
-import { Appointment } from '@/types/appwrite.types';
+import { Doctor as DoctorsType } from '@/types/appwrite.types';
 
 import { AppointmentModal } from '../AppointmentModal';
 import { StatusBadge } from '../StatusBadge';
 
-export const columns: ColumnDef<Appointment>[] = [
+export const columns: ColumnDef<DoctorsType>[] = [
   {
     header: '#',
     cell: ({ row }) => {
       return <p className="text-14-medium ">{row.index + 1}</p>;
     },
+    enableSorting: true,
+    enableGlobalFilter: true,
   },
   {
-    accessorKey: 'patient',
-    header: 'Patient',
+    // accessorKey: 'doctor',
+    // id: 'doctor',
+    accessorFn: row => row.name,
+    header: 'Doctor',
     cell: ({ row }) => {
-      const professional = row.original;
-      return <p className="text-14-medium ">{professional.name}</p>;
+      return <p className="text-14-medium ">{row.original.name}</p>;
     },
+    enableSorting: true,
+    enableGlobalFilter: true,
   },
   {
-    accessorKey: 'email',
+    // accessorKey: 'email',
+    // id: 'email',
+    accessorFn: row => row.email,
     header: 'Email',
     cell: ({ row }) => {
-      const professional = row.original;
-
-      return <p className="text-14-medium ">{professional.email}</p>;
+      return <p className="text-14-medium ">{row.original.email}</p>;
     },
+    enableSorting: true,
+    enableGlobalFilter: true,
   },
   {
-    accessorKey: 'phone',
+    // accessorKey: 'phone',
+    // id: 'phone',
+    accessorFn: row => row.phone,
     header: 'Phone',
     cell: ({ row }) => {
-      const professional = row.original;
-
-      return <p className="text-14-medium ">{professional.phone}</p>;
+      return <p className="text-14-medium ">{row.original.phone}</p>;
     },
+    enableSorting: true,
+    enableGlobalFilter: true,
   },
   {
-    accessorKey: 'speciality',
+    // accessorKey: 'speciality',
+    // id: 'speciality',
+    accessorFn: row => row.speciality,
     header: 'Speciality',
     cell: ({ row }) => {
-      const professional = row.original;
-
       return (
-        <p className="whitespace-nowrap">{professional.speciality || ''}</p>
+        <p className="whitespace-nowrap">{row.original.speciality || ''}</p>
       );
     },
+    enableSorting: true,
+    enableGlobalFilter: true,
   },
 ];

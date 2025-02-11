@@ -14,6 +14,7 @@ export const DynamicTable = ({}: {}) => {
   const [selectedTable, setSelectedTable] = useState<
     'appointments' | 'clients' | 'doctors'
   >('appointments');
+  const [globalFilter, setGlobalFilter] = useState('');
   const handleTableChange = (type: 'appointments' | 'clients' | 'doctors') => {
     setSelectedTable(type);
     switch (type) {
@@ -44,33 +45,49 @@ export const DynamicTable = ({}: {}) => {
 
   return (
     <div className="w-full">
-      <div className="links flex flex-row space-x-8 justify-start py-4">
-        <button
-          onClick={() => handleTableChange('appointments')}
-          className={`px-4 py-2 rounded ${
-            selectedTable === 'appointments' ? 'text-white' : 'text-gray-500'
-          }`}
-        >
-          Appointments
-        </button>
-        <button
-          onClick={() => handleTableChange('clients')}
-          className={`px-4 py-2 rounded ${
-            selectedTable === 'clients' ? 'text-white' : 'text-gray-500'
-          }`}
-        >
-          Patients
-        </button>
-        <button
-          onClick={() => handleTableChange('doctors')}
-          className={`px-4 py-2 rounded ${
-            selectedTable === 'doctors' ? 'text-white' : 'text-gray-500'
-          }`}
-        >
-          Doctors
-        </button>
+      <div className="flex flex-row items-center justify-between py-4">
+        <div className="links flex flex-row space-x-8">
+          <button
+            onClick={() => handleTableChange('appointments')}
+            className={`px-4 py-2 rounded ${
+              selectedTable === 'appointments' ? 'text-white' : 'text-gray-500'
+            }`}
+          >
+            Appointments
+          </button>
+          <button
+            onClick={() => handleTableChange('clients')}
+            className={`px-4 py-2 rounded ${
+              selectedTable === 'clients' ? 'text-white' : 'text-gray-500'
+            }`}
+          >
+            Patients
+          </button>
+          <button
+            onClick={() => handleTableChange('doctors')}
+            className={`px-4 py-2 rounded ${
+              selectedTable === 'doctors' ? 'text-white' : 'text-gray-500'
+            }`}
+          >
+            Doctors
+          </button>
+        </div>
+        <div className="w-[30%] ml-auto">
+          <input
+            type="text"
+            placeholder="Search..."
+            value={globalFilter}
+            onChange={e => setGlobalFilter(e.target.value)}
+            className="w-full border rounded-md p-2"
+          />
+        </div>
       </div>
-      <DataTable columns={tableColumns} data={tableData} />
+      <DataTable
+        columns={tableColumns}
+        data={tableData}
+        globalFilter={globalFilter}
+        setGlobalFilter={setGlobalFilter}
+      />
     </div>
   );
 };
