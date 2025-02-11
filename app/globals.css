@@ -400,8 +400,14 @@
 .horizontal_div {
   display: flex;
   flex-direction: row;
+
   justify-content: center;
   width: auto;
-  align-items: flex-end;
+  align-items: center;
   gap: 10px;
 }
+/* .admin_combo {
+  background-color: red;
+  align-self: flex-end;
+  margin-right: 0;
+} */
