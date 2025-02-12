@@ -13,6 +13,7 @@ import { useGlobalDispatch, useGlobalState } from '@/contexts/GlobalState';
 
 const DoctorPage = ({ params: { userId } }: SearchParamProps) => {
   const [isFetchingData, setIsFetchingData] = useState(true);
+  const [globalFilter, setGlobalFilter] = useState('');
   const { appointments } = useGlobalState();
   const dispatch = useGlobalDispatch();
   const completedCount = appointments.filter(
@@ -96,8 +97,21 @@ const DoctorPage = ({ params: { userId } }: SearchParamProps) => {
             icon={'/assets/icons/cancelled.svg'}
           />
         </section>
-
-        <DataTable columns={columnsDoctor} data={appointments} />
+        <div className="w-[40%] mr-auto">
+          <input
+            type="text"
+            placeholder="Search..."
+            value={globalFilter}
+            onChange={e => setGlobalFilter(e.target.value)}
+            className="w-full rounded-md p-2"
+          />
+        </div>
+        <DataTable
+          columns={columnsDoctor}
+          data={appointments}
+          globalFilter={globalFilter}
+          setGlobalFilter={setGlobalFilter}
+        />
       </main>
     </div>
   );

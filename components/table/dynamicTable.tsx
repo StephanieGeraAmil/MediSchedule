@@ -78,7 +78,7 @@ export const DynamicTable = ({}: {}) => {
             placeholder="Search..."
             value={globalFilter}
             onChange={e => setGlobalFilter(e.target.value)}
-            className="w-full border rounded-md p-2"
+            className="w-full rounded-md p-2"
           />
         </div>
       </div>

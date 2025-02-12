@@ -16,8 +16,11 @@ const Header: React.FC<HeaderProps> = ({ isAdmin }) => {
 
   return (
     <header className="admin-header">
+      {isAdmin && <p className="text-18-bold">Admin Dashboard</p>}
+      {!isAdmin && <p></p>}
       <div className="cursor-pointer" onClick={handleLogoClick}>
         <div className="horizontal_div">
+          <p className="text-16">Logout</p>
           <Image
             src="/assets/icons/logo-icon.svg"
             height={32}
@@ -25,10 +28,8 @@ const Header: React.FC<HeaderProps> = ({ isAdmin }) => {
             alt="logo"
             className="h-8 w-fit"
           />
-          <p className="text-17">Logout</p>
         </div>
       </div>
-      {isAdmin && <p className="text-18-bold">Admin Dashboard</p>}
     </header>
   );
 };
